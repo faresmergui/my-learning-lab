@@ -1,0 +1,16 @@
+# Généré par npm et Astro : recréé par `npm install` et `npm run build`.
+node_modules/
+dist/
+.astro/
+
+# Fichiers système et caches
+.DS_Store
+__pycache__/
+*.log
+.env
+.env.*
+
+# Fichiers de travail temporaires (comparaisons, dossiers à vider)
+*.md5
+a-supprimer/
+a-deplacer/

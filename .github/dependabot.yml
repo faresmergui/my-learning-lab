@@ -1,0 +1,15 @@
+# Dependabot ouvre une PR par semaine quand une action GitHub ou un paquet npm
+# a une nouvelle version (et tout de suite en cas de faille connue).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      dependances:
+        patterns: ['*']
