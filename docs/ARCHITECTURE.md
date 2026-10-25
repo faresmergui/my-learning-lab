@@ -217,7 +217,7 @@ Les trois workflows ont été passés à **zizmor**, un vérificateur de sécuri
 Réglages à activer une fois dans le dépôt GitHub (*Settings*) :
 
 - *Code security* : **Secret scanning** et **Push protection**. GitHub refuse alors un push qui contiendrait un mot de passe ou une clé d'API.
-- *Branches* → *Add branch ruleset* sur `main` : exiger que les vérifications `build`, `analyze` et `review` passent avant de fusionner une PR. Sans ça, une PR rouge reste fusionnable.
+- *Rules → Rulesets → New branch ruleset* sur `main` : cocher **Restrict deletions** et **Block force pushes**, pour qu'un historique publié ne puisse être ni effacé ni réécrit. La règle « Require status checks to pass » n'est utile que si tu passes par des pull requests : elle bloquerait tes push directs sur `main`.
 
 ### Mise en route (une seule fois)
 
