@@ -5,7 +5,8 @@ import { defineConfig } from 'astro/config';
 // SITE_URL and BASE_PATH come from the deployment pipeline
 // (.github/workflows/deploy.yml). Locally, the site lives at the root "/".
 export default defineConfig({
-  site: process.env.SITE_URL,
+  // An empty value (pull requests: Pages is not configured) must count as "no site".
+  site: process.env.SITE_URL || undefined,
   base: process.env.BASE_PATH || '/',
   markdown: {
     // Syntax highlighting for code blocks (Shiki, bundled with Astro).
