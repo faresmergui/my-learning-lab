@@ -1,0 +1,169 @@
+---
+// Tableau de bord global : la progression de tous les modules sur une page.
+// La page est générée vide, le navigateur la remplit avec ta progression.
+import { url } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import ModuleIcon from '../components/ModuleIcon.astro';
+import { getModules, getFiches, moduleOf, ficheUrl, cardId, inline, jsonForScript } from '../lib/content';
+const modules = await getModules();
+const fiches = await getFiches();
+const count = (slug: string) => fiches.filter((f) => moduleOf(f) === slug).length;
+// Texte des cartes, pour afficher la liste des cartes difficiles.
+const cardText = Object.fromEntries(
+  fiches.flatMap((f) => f.data.cards.map((c) => [cardId(f.id, c), { q: inline(c.q), module: moduleOf(f), url: ficheUrl(f) }])),
+);
+---
+<Base title="Progression" nav="progression">
+  <div class="eyebrow rise">tableau de bord</div>
+  <h1 class="rise" style="--i:1">Ta progression, module par module</h1>
+  <p class="lead rise" style="--i:2">L'avancement compte les fiches lues et les cartes maîtrisées (revues avec succès à 7 jours d'intervalle ou plus).</p>
+
+  <div class="section grid stats">
+    <div class="card stat rise" style="--i:3"><div class="v" data-g="pct">0%</div><div class="l">avancement global</div><div class="d" data-g="pct-d"></div></div>
+    <div class="card stat rise" style="--i:4"><div class="v" data-g="due">0</div><div class="l">cartes à revoir</div><div class="d" data-g="due-d"></div></div>
+    <div class="card stat rise" style="--i:5"><div class="v" data-g="mastered">0</div><div class="l">cartes maîtrisées</div><div class="d" data-g="mastered-d"></div></div>
+    <div class="card stat rise" style="--i:6"><div class="v" data-g="quiz">–</div><div class="l">réussite aux quiz</div><div class="d" data-g="quiz-d"></div></div>
+  </div>
+
+  <div class="section grid split">
+    {(['tech', 'perso'] as const).map((u, i) => (
+      <div class="card universe-bar rise" style={`--i:${7 + i}`} data-universe={u}>
+        <div class="eyebrow">univers {u}</div>
+        <div class="ub-row"><b data-u-pct>0%</b><span data-u-detail></span></div>
+        <div class="bar"><i style="--w:0%" data-u-bar></i></div>
+      </div>
+    ))}
+  </div>
+
+  <div class="section card rise" style="--i:9">
+    <div class="eyebrow" style="margin-bottom:14px">modules</div>
+    <div class="dash-table">
+      <div class="dash-row head"><span>module</span><span>fiches lues</span><span>cartes maîtrisées</span><span>à revoir</span><span>quiz</span><span></span></div>
+      {modules.map((m) => (
+        <div class:list={['dash-row', { soon: count(m.id) === 0 }]} data-row={m.id} style={`--c:${m.data.color}`}>
+          <a class="dash-mod" href={url(`/${m.id}/`)}><ModuleIcon id={m.id} code={m.data.code} /><b>{m.data.title}</b></a>
+          <span class="dash-cell" data-label="fiches lues"><small data-read>0 / {count(m.id)}</small><span class="bar"><i style="--w:0%" data-read-bar></i></span></span>
+          <span class="dash-cell" data-label="cartes maîtrisées"><small data-mastered>0</small><span class="bar"><i style="--w:0%" data-mastered-bar></i></span></span>
+          <span class="dash-num" data-due data-label="à revoir : ">0</span>
+          <span class="dash-num" data-quiz data-label="quiz : ">–</span>
+          <span>{count(m.id) > 0 ? <a class="btn sm" href={url(`/reviser/?module=${m.id}`)}>Réviser</a> : <span class="tag">bientôt</span>}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="section grid split">
+    <div class="card rise" style="--i:10">
+      <div class="eyebrow" style="margin-bottom:14px">révisions · 14 prochains jours</div>
+      <div class="forecast" id="forecast"></div>
+      <p class="dash-note" id="forecast-note"></p>
+    </div>
+    <div class="card rise" style="--i:11">
+      <div class="eyebrow" style="margin-bottom:14px">cartes qui résistent</div>
+      <ul class="hard" id="hard"></ul>
+    </div>
+  </div>
+
+  <script type="application/json" id="card-text" set:html={jsonForScript(cardText)} />
+</Base>
+
+<script>
+  import { load, isDue, isMastered, dayKey } from '../lib/progress';
+  import { loadIndex, moduleStats } from '../lib/stats';
+
+  const idx = await loadIndex();
+  const p = load();
+  const texts: Record<string, { q: string; module: string; url: string }> =
+    JSON.parse(document.getElementById('card-text')!.textContent!);
+  const $ = (sel: string, root: ParentNode = document) => root.querySelector<HTMLElement>(sel)!;
+  const pctOf = (a: number, b: number) => (b ? Math.round((a / b) * 100) : 0);
+
+  // Quiz : cumul des réponses par module (le stockage est par fiche).
+  const quizOf = (slug: string) => {
+    const r = idx.modules[slug].fiches.reduce((a, f) => {
+      const q = p.quiz[f.id];
+      return q ? { right: a.right + q.right, total: a.total + q.total } : a;
+    }, { right: 0, total: 0 });
+    return r.total ? Math.round((r.right / r.total) * 100) : null;
+  };
+
+  // Lignes du tableau
+  const totals = { read: 0, fiches: 0, mastered: 0, cards: 0, due: 0, right: 0, answers: 0 };
+  const byUniverse: Record<string, { done: number; total: number; fiches: number; read: number }> = {
+    tech: { done: 0, total: 0, fiches: 0, read: 0 }, perso: { done: 0, total: 0, fiches: 0, read: 0 },
+  };
+  for (const [slug, m] of Object.entries(idx.modules)) {
+    const s = moduleStats(slug, idx, p);
+    totals.read += s.read; totals.fiches += s.fiches; totals.mastered += s.mastered; totals.cards += s.cards; totals.due += s.due;
+    for (const f of m.fiches) { const q = p.quiz[f.id]; if (q) { totals.right += q.right; totals.answers += q.total; } }
+    const u = byUniverse[m.universe];
+    u.done += s.read + s.mastered; u.total += s.fiches + s.cards; u.fiches += s.fiches; u.read += s.read;
+
+    const row = document.querySelector<HTMLElement>(`[data-row="${slug}"]`);
+    if (!row) continue;
+    $('[data-read]', row).textContent = `${s.read} / ${s.fiches}`;
+    $('[data-read-bar]', row).style.setProperty('--w', `${pctOf(s.read, s.fiches)}%`);
+    $('[data-mastered]', row).textContent = `${s.mastered} / ${s.cards}`;
+    $('[data-mastered-bar]', row).style.setProperty('--w', `${pctOf(s.mastered, s.cards)}%`);
+    $('[data-due]', row).textContent = String(s.due);
+    if (s.due) $('[data-due]', row).classList.add('hot');
+    const q = quizOf(slug);
+    $('[data-quiz]', row).textContent = q === null ? '–' : `${q}%`;
+  }
+
+  // Tuiles du haut
+  const set = (k: string, v: string) => { const el = document.querySelector(`[data-g="${k}"]`); if (el) el.textContent = v; };
+  set('pct', `${pctOf(totals.read + totals.mastered, totals.fiches + totals.cards)}%`);
+  set('pct-d', `${totals.read} fiches lues sur ${totals.fiches}`);
+  set('due', String(totals.due));
+  set('due-d', totals.due ? 'à faire aujourd\'hui' : 'rien en retard');
+  set('mastered', String(totals.mastered));
+  set('mastered-d', `sur ${totals.cards} cartes`);
+  set('quiz', totals.answers ? `${pctOf(totals.right, totals.answers)}%` : '–');
+  set('quiz-d', totals.answers ? `${totals.answers} réponses` : 'pas encore de quiz');
+
+  // Univers
+  for (const [u, v] of Object.entries(byUniverse)) {
+    const el = document.querySelector<HTMLElement>(`[data-universe="${u}"]`)!;
+    const pct = pctOf(v.done, v.total);
+    $('[data-u-pct]', el).textContent = `${pct}%`;
+    $('[data-u-detail]', el).textContent = `${v.read} / ${v.fiches} fiches lues`;
+    $('[data-u-bar]', el).style.setProperty('--w', `${pct}%`);
+  }
+
+  // Prévisions : nombre de cartes qui arrivent à échéance chaque jour.
+  // Les cartes en retard sont comptées aujourd'hui.
+  // Les jours sont construits par le calendrier (new Date(a, m, j + i)) et non en ajoutant
+  // 24 h : au changement d'heure, un jour dure 23 ou 25 h et le même jour apparaissait deux fois.
+  const now = new Date();
+  const dates = Array.from({ length: 14 }, (_, i) => new Date(now.getFullYear(), now.getMonth(), now.getDate() + i));
+  const index = new Map(dates.map((d, i) => [dayKey(d.getTime()), i]));
+  const days = Array.from({ length: 14 }, () => 0);
+  for (const s of Object.values(p.cards)) {
+    const i = s.due < dates[0].getTime() ? 0 : index.get(dayKey(s.due));
+    if (i !== undefined) days[i]++;
+  }
+  const max = Math.max(1, ...days);
+  $('#forecast').innerHTML = days.map((n, i) => {
+    const d = dates[i];
+    const label = i === 0 ? 'auj.' : d.toLocaleDateString('fr-FR', { weekday: 'short' }).slice(0, 2);
+    const full = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    return `<div class="fc${i === 0 ? ' is-today' : ''}" title="${full} · ${n} carte${n > 1 ? 's' : ''}"><span class="n">${n || ''}</span><span class="fc-bar"><i style="--h:${(n / max) * 100}%"></i></span><small>${label}</small></div>`;
+  }).join('');
+  const week = days.slice(0, 7).reduce((a, b) => a + b, 0);
+  $('#forecast-note').textContent = Object.keys(p.cards).length
+    ? `${week} révision${week > 1 ? 's' : ''} prévue${week > 1 ? 's' : ''} sur les 7 prochains jours. Les nouvelles cartes ne sont pas comptées.`
+    : 'Pas encore de cartes révisées. Lance une première session pour voir apparaître le planning.';
+
+  // Cartes difficiles : celles que tu as le plus oubliées, puis la facilité la plus basse.
+  const hard = Object.entries(p.cards)
+    .filter(([id, s]) => texts[id] && (s.lapses > 0 || s.ease < 2.5) && !isMastered(s))
+    .sort(([, a], [, b]) => b.lapses - a.lapses || a.ease - b.ease)
+    .slice(0, 6);
+  $('#hard').innerHTML = hard.length
+    ? hard.map(([id, s]) => {
+        const t = texts[id];
+        return `<li><a href="${t.url}"><span class="hq">${t.q}</span><span class="hm">${idx.modules[t.module]?.title ?? ''} · ${s.lapses} oubli${s.lapses > 1 ? 's' : ''}${isDue(s) ? ' · à revoir' : ''}</span></a></li>`;
+      }).join('')
+    : '<li class="empty">Aucune carte difficile pour l\'instant. Quand tu notes une carte « À revoir » ou « Difficile », elle apparaît ici.</li>';
+</script>

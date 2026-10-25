@@ -1,0 +1,78 @@
+---
+// Synthèse d'un module : un aide-mémoire sur une seule page, avec son sommaire.
+// Le texte vient de src/content/syntheses/<module>.md.
+import { url } from '../../lib/url';
+import Base from '../../layouts/Base.astro';
+import ModuleIcon from '../../components/ModuleIcon.astro';
+import KanjiExplorer from '../../components/KanjiExplorer.astro';
+import { render } from 'astro:content';
+import { getModules, getSyntheses, type Module } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const [modules, syns] = await Promise.all([getModules(), getSyntheses()]);
+  return syns
+    .filter((s) => modules.some((m) => m.id === s.id))
+    .map((s) => ({ params: { module: s.id }, props: { syn: s, mod: modules.find((m) => m.id === s.id) } }));
+}
+const { syn, mod } = Astro.props as { syn: Awaited<ReturnType<typeof getSyntheses>>[number]; mod: Module };
+const { Content, headings } = await render(syn);
+const kanji = mod.id === 'japonais';
+const toc = [
+  ...headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text })),
+  ...(kanji ? [{ slug: 'kanji', text: 'Les kanji par niveau' }] : []),
+];
+---
+<Base title={`Synthèse · ${mod.data.title}`} description={syn.data.description} universe={mod.data.universe} nav={mod.data.universe}>
+  <div class="module-layout">
+    <div class="rise path-col" style="--i:2">
+      <nav class="card toc" data-toc style={`--c:${mod.data.color}`}>
+        <div class="eyebrow">sommaire</div>
+        <ol>
+          {toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+        </ol>
+        <a class="btn" href={url(`/${mod.id}/`)} style="margin-top:12px">← Parcours du module</a>
+      </nav>
+    </div>
+    <div class="main-col">
+      <header class="page-head">
+        <div class="crumbs"><a href={url(`/${mod.data.universe}/`)}>{mod.data.universe}</a> / <a href={url(`/${mod.id}/`)}>{mod.id}</a> / synthèse</div>
+        <div class="page-title">
+          <ModuleIcon id={mod.id} code={mod.data.code} style={`--c:${mod.data.color}; width:54px; height:54px; font-size:17px;`} />
+          <div><h1>Synthèse · {mod.data.title}</h1><p class="lead" style="margin-top:4px">{syn.data.description}</p></div>
+        </div>
+      </header>
+      <article class="card sheet rise" style="--i:3; padding:28px;">
+      <div class="prose synthese" style={`--c:${mod.data.color}`}><Content /></div>
+      {kanji && <KanjiExplorer />}
+    </article>
+      <div class="syn-end" aria-hidden="true"></div>
+    </div>
+  </div>
+</Base>
+
+<script>
+  // Sommaire : suit la section en cours de lecture. Un clic sur une entrée la sélectionne
+  // tout de suite, même si la section est trop près du bas pour remonter en haut de l'écran.
+  const toc = document.querySelector<HTMLElement>('[data-toc]');
+  if (toc) {
+    const links = [...toc.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')];
+    const targets = links.map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1)))).filter(Boolean) as HTMLElement[];
+    let picked = -1;
+    const mark = (cur: number) => links.forEach((a, i) => a.classList.toggle('here', i === cur));
+    const spy = () => {
+      if (picked >= 0) return mark(picked);
+      let cur = 0;
+      targets.forEach((t, i) => { if (t.getBoundingClientRect().top < 120) cur = i; });
+      // Tout en bas de la page, la dernière section visible l'emporte.
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) {
+        targets.forEach((t, i) => { if (t.getBoundingClientRect().top < innerHeight) cur = i; });
+      }
+      mark(cur);
+    };
+    links.forEach((a, i) => a.addEventListener('click', () => { picked = i; mark(i); }));
+    // Le choix par clic tient jusqu'à ce que la personne fasse défiler elle-même.
+    for (const ev of ['wheel', 'touchmove', 'keydown']) addEventListener(ev, () => { picked = -1; }, { passive: true });
+    spy();
+    addEventListener('scroll', spy, { passive: true });
+  }
+</script>

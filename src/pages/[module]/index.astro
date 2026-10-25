@@ -1,0 +1,89 @@
+---
+// Page d'un module : son parcours, et des raccourcis pour réviser ou faire le quiz.
+import { url } from '../../lib/url';
+import Base from '../../layouts/Base.astro';
+import ModuleIcon from '../../components/ModuleIcon.astro';
+import ChapterPath from '../../components/ChapterPath.astro';
+import { getSyntheses, getModules, getFiches, ficheUrl, groupByStage, type Module } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const modules = await getModules();
+  return modules.map((mod) => ({ params: { module: mod.id }, props: { mod } }));
+}
+const { mod } = Astro.props as { mod: Module };
+const fiches = await getFiches(mod.id);
+const d = mod.data;
+const cards = fiches.reduce((a, f) => a + f.data.cards.length, 0);
+const questions = fiches.reduce((a, f) => a + f.data.quiz.length, 0);
+const stages = groupByStage(mod, fiches).filter((s) => s.label);
+const hasSynthese = (await getSyntheses()).some((s) => s.id === mod.id);
+---
+<Base title={d.title} description={d.description} universe={d.universe} nav={d.universe}>
+  <div class="module-layout">
+    <div class="rise path-col" style="--i:2"><ChapterPath mod={mod} fiches={fiches} /></div>
+    <div class="grid rise main-col" style="--i:3; align-content:start">
+      <header class="page-head">
+        <div class="crumbs"><a href={url(`/${d.universe}/`)}>{d.universe}</a> / {mod.id}</div>
+        <div class="page-title">
+          <ModuleIcon id={mod.id} code={d.code} style={`--c:${d.color}; width:54px; height:54px; font-size:17px;`} />
+          <div><h1>{d.title}</h1>{d.objective && <p class="lead" style="margin-top:4px">{d.objective}</p>}</div>
+        </div>
+      </header>
+      <div class="card">
+        <div class="eyebrow">le module en bref</div>
+        <p class="muted" style="margin-bottom:16px">{d.description}</p>
+        <div class="grid stats" style="grid-template-columns: repeat(3, 1fr)">
+          <div class="stat"><div class="v">{fiches.length}</div><div class="l">fiches</div></div>
+          <div class="stat"><div class="v">{cards}</div><div class="l">cartes</div></div>
+          <div class="stat"><div class="v">{questions}</div><div class="l">questions</div></div>
+        </div>
+        <div class="sheet-actions">
+          {fiches[0] && <a class="btn primary" href={ficheUrl(fiches[0])} id="start-btn">Commencer le parcours</a>}
+          {cards > 0 && <a class="btn" href={url(`/reviser/?module=${mod.id}`)}>Réviser ce module</a>}
+          {questions > 0 && <a class="btn" href={url(`/quiz/?module=${mod.id}`)}>Quiz du module</a>}
+          {hasSynthese && <a class="btn" href={url(`/${mod.id}/synthese/`)}>Synthèse</a>}
+        </div>
+      </div>
+      {stages.length > 0 && (
+        <div class="card">
+          <div class="eyebrow">les niveaux</div>
+          <div class="stages">
+            {stages.map((s) => {
+              const ids = s.chapters.flatMap((c) => c.fiches.map((f) => f.id));
+              return (
+                <div class:list={['stage-row', { 'empty-stage': ids.length === 0 }]} data-stage={ids.join(',')}>
+                  <span class="stage-badge">{s.label}</span>
+                  <div><b>{s.title}</b>{s.description && <p>{s.description}</p>}</div>
+                  <span class="pct">{ids.length ? '0 %' : 'à venir'}</span>
+                  {ids.length > 0 && <div class="bar"><i style="--w:0%"></i></div>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {fiches.length === 0 && <div class="empty">Aucune fiche pour l'instant. Le contenu de ce module arrive bientôt.</div>}
+    </div>
+  </div>
+</Base>
+
+<script>
+  import { load } from '../../lib/progress';
+  // Le bouton principal pointe vers la première fiche pas encore lue.
+  const btn = document.getElementById('start-btn');
+  const p = load();
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-fiche]')];
+  const next = links.find((a) => !p.read[a.dataset.fiche!]);
+  if (btn && links.some((a) => p.read[a.dataset.fiche!])) {
+    if (next) { btn.setAttribute('href', next.href); btn.textContent = `Continuer : ${next.textContent}`; }
+    else btn.textContent = 'Relire depuis le début';
+  }
+  // Avancement de chaque niveau : part des fiches lues.
+  document.querySelectorAll<HTMLElement>('[data-stage]').forEach((row) => {
+    const ids = (row.dataset.stage || '').split(',').filter(Boolean);
+    if (!ids.length) return;
+    const pct = Math.round((ids.filter((id) => p.read[id]).length / ids.length) * 100);
+    row.querySelector('.pct')!.textContent = `${pct} %`;
+    row.querySelector<HTMLElement>('.bar i')?.style.setProperty('--w', `${pct}%`);
+  });
+</script>

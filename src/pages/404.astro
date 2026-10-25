@@ -1,0 +1,15 @@
+---
+// Page affichée par GitHub Pages quand une adresse n'existe pas (fiche renommée, lien tapé à la main…).
+import { url } from '../lib/url';
+import Base from '../layouts/Base.astro';
+---
+<Base title="Page introuvable">
+  <div class="eyebrow rise">erreur 404</div>
+  <h1 class="rise" style="--i:1">Cette page n'existe pas (ou plus)</h1>
+  <p class="lead rise" style="--i:2">Une fiche a peut-être été renommée ou déplacée. La recherche (<kbd>⌘</kbd> <kbd>K</kbd>) la retrouvera, sinon repars de l'accueil.</p>
+  <div class="rise" style="--i:3; display:flex; flex-wrap:wrap; gap:10px; margin-top:24px">
+    <a class="btn primary" href={url('/')}>Retour à l'accueil</a>
+    <a class="btn" href={url('/tech/')}>Modules tech</a>
+    <a class="btn" href={url('/perso/')}>Modules perso</a>
+  </div>
+</Base>

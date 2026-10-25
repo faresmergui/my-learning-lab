@@ -1,0 +1,37 @@
+---
+// Carte d'un module (page Tech / Perso). Le pourcentage et le nombre de
+// cartes à réviser sont remplis dans le navigateur par le script plus bas.
+import { url } from '../lib/url';
+import ModuleIcon from './ModuleIcon.astro';
+import type { Module } from '../lib/content';
+interface Props { mod: Module; fiches: number; i: number }
+const { mod, fiches, i } = Astro.props;
+const { title, code, color, description, chapters } = mod.data;
+---
+<a href={url(`/${mod.id}/`)} class:list={['card link module rise', { soon: fiches === 0 }]}
+   style={`--i:${i}; --c:${color}; text-decoration:none`} data-module={mod.id}>
+  <div class="module-top">
+    <ModuleIcon id={mod.id} code={code} />
+    <div class="ring-wrap">
+      <svg class="ring" viewBox="0 0 46 46"><circle class="track" cx="23" cy="23" r="18" /><circle class="val" cx="23" cy="23" r="18" /></svg>
+      <span data-pct>0%</span>
+    </div>
+  </div>
+  <div><h3>{title}</h3><p>{description}</p></div>
+  <div class="module-foot">
+    <span>{chapters.length} chapitres · {fiches} fiche{fiches > 1 ? 's' : ''}</span>
+    <span data-due>{fiches === 0 ? 'bientôt' : 'à jour'}</span>
+  </div>
+</a>
+
+<script>
+  import { loadIndex, moduleStats } from '../lib/stats';
+  const idx = await loadIndex();
+  document.querySelectorAll<HTMLElement>('[data-module]').forEach((el) => {
+    const s = moduleStats(el.dataset.module!, idx);
+    el.querySelector('[data-pct]')!.textContent = `${s.pct}%`;
+    const ring = el.querySelector<SVGCircleElement>('.ring .val')!;
+    setTimeout(() => { ring.style.strokeDashoffset = String(113 - (113 * s.pct) / 100); }, 250);
+    if (s.due) el.querySelector('[data-due]')!.innerHTML = `<b>${s.due} à réviser</b>`;
+  });
+</script>

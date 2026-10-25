@@ -1,0 +1,119 @@
+---
+// Page d'une certification : le format de l'examen, ses domaines (avec les fiches
+// qui les couvrent et ce qui manque), puis la synthèse « jour J ».
+import { url } from '../../lib/url';
+import Base from '../../layouts/Base.astro';
+import { render } from 'astro:content';
+import { getCertifications, getCertIndex, getFiches, getModules, ficheUrl, moduleOf, jsonForScript, type Certification } from '../../lib/content';
+
+export async function getStaticPaths() {
+  return (await getCertifications()).map((c) => ({ params: { cert: c.id }, props: { cert: c } }));
+}
+const { cert } = Astro.props as { cert: Certification };
+const d = cert.data;
+const [fiches, mods, index] = await Promise.all([getFiches(), getModules(), getCertIndex()]);
+const modOf = Object.fromEntries(mods.map((m) => [m.id, m]));
+const { Content, headings } = await render(cert);
+const domains = d.domains.map((dom) => ({
+  ...dom,
+  fiches: dom.fiches.map((id) => fiches.find((f) => f.id === id)!).map((f) => ({
+    id: f.id, title: f.data.title, url: ficheUrl(f), color: modOf[moduleOf(f)]?.data.color ?? '#888', module: modOf[moduleOf(f)]?.data.title ?? '',
+  })),
+}));
+const toc = [
+  { slug: 'examen', text: "L'examen" },
+  { slug: 'domaines', text: 'Les domaines' },
+  ...headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text })),
+];
+const mine = index[cert.id];
+const maxWeight = Math.max(1, ...d.domains.map((x) => x.weight ?? 0));
+---
+<Base title={`Certification · ${d.title}`} description={d.description} nav="certifications">
+  <div class="module-layout">
+    <div class="rise path-col" style="--i:2">
+      <nav class="card toc" style={`--c:${d.color}`}>
+        <div class="eyebrow">sommaire</div>
+        <ol>{toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+        <a class="btn" href={url('/certifications/')} style="margin-top:12px">← Toutes les certifications</a>
+      </nav>
+    </div>
+    <div class="main-col">
+      <header class="page-head">
+        <div class="crumbs"><a href={url('/certifications/')}>certifications</a> / {cert.id}</div>
+        <div class="page-title">
+          <div class="module-icon" style={`--c:${d.color}; width:54px; height:54px; font-size:${d.title.split(" ")[0].length > 4 ? 13 : 15}px;`}>{((t) => t.length <= 5 ? t : t.slice(0, 4))(d.title.split(" ")[0])}</div>
+          <div><h1>{d.name}</h1><p class="lead" style="margin-top:4px">{d.org} · {d.description}</p></div>
+        </div>
+      </header>
+
+      <div class="card rise cert-actions" style="--i:2" data-cert-progress>
+        <div>
+          <b data-pct>0 %</b> <span class="muted" data-detail></span>
+          <div class="bar"><i style="--w:0%" data-bar></i></div>
+        </div>
+        <div class="sheet-actions">
+          {mine.cards.length > 0 && <a class="btn primary" href={url(`/reviser/?cert=${cert.id}`)}>Réviser les {mine.cards.length} cartes</a>}
+          <a class="btn" href={url(`/quiz/?cert=${cert.id}`)}>Quiz {d.title}</a>
+        </div>
+      </div>
+
+      <article class="card sheet rise" style={`--i:3; padding:28px; --c:${d.color}`}>
+        <div class="prose">
+          <h2 id="examen">L'examen</h2>
+          <table>
+            <tbody>{d.format.map((r) => <tr><th>{r.label}</th><td>{r.value}</td></tr>)}</tbody>
+          </table>
+          <p class="muted" style="font-size:13px">Informations vérifiées le {d.checked}. Les programmes changent : la référence reste la <a href={d.officialUrl} rel="noopener">page officielle de l'examen</a>.</p>
+
+          <h2 id="domaines">Les domaines</h2>
+          <p>Chaque domaine du programme officiel, avec son poids dans la note et les fiches du site qui le couvrent. Une fiche cochée est une fiche que tu as lue.</p>
+        </div>
+        <div class="cert-domains">
+          {domains.map((dom) => (
+            <section class="cert-domain" data-domain={dom.fiches.map((f) => f.id).join(' ')}>
+              <div class="cert-domain-head">
+                <b>{dom.name}</b>
+                {dom.weight !== undefined && <span class="tag">{dom.weight} %</span>}
+                <span class="muted cert-domain-count" data-count></span>
+              </div>
+              {dom.weight !== undefined && <div class="bar thin"><i style={`--w:${Math.round((dom.weight / maxWeight) * 100)}%`}></i></div>}
+              {dom.fiches.length > 0 && (
+                <ul>
+                  {dom.fiches.map((f) => (
+                    <li data-fiche={f.id}><a href={f.url}><i style={`--c:${f.color}`}></i>{f.title}</a><small>{f.module}</small></li>
+                  ))}
+                </ul>
+              )}
+              {dom.missing && <p class="cert-missing"><b>Pas encore sur le site :</b> {dom.missing}</p>}
+            </section>
+          ))}
+        </div>
+        <div class="prose"><Content /></div>
+      </article>
+      <div class="syn-end" aria-hidden="true"></div>
+    </div>
+  </div>
+  <script type="application/json" id="cert-data" set:html={jsonForScript(mine)} />
+</Base>
+
+<script>
+  import { load, isMastered } from '../../lib/progress';
+  const c: { fiches: string[]; cards: string[] } = JSON.parse(document.getElementById('cert-data')!.textContent!);
+  const p = load();
+  const read = c.fiches.filter((f) => p.read[f]).length;
+  const mastered = c.cards.filter((id) => isMastered(p.cards[id])).length;
+  const total = c.fiches.length + c.cards.length;
+  const pct = total ? Math.round(((read + mastered) / total) * 100) : 0;
+  const box = document.querySelector<HTMLElement>('[data-cert-progress]')!;
+  box.querySelector('[data-pct]')!.textContent = `${pct} % de préparation`;
+  box.querySelector('[data-detail]')!.textContent = `· ${read}/${c.fiches.length} fiches lues · ${mastered}/${c.cards.length} cartes maîtrisées`;
+  (box.querySelector('[data-bar]') as HTMLElement).style.setProperty('--w', `${pct}%`);
+
+  // Coche les fiches lues, et compte par domaine.
+  document.querySelectorAll<HTMLElement>('[data-fiche]').forEach((li) => li.classList.toggle('read', !!p.read[li.dataset.fiche!]));
+  document.querySelectorAll<HTMLElement>('[data-domain]').forEach((sec) => {
+    const ids = sec.dataset.domain!.split(' ').filter(Boolean);
+    const n = ids.filter((id) => p.read[id]).length;
+    sec.querySelector('[data-count]')!.textContent = ids.length ? `${n}/${ids.length} lues` : 'aucune fiche';
+  });
+</script>

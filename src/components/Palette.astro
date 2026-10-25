@@ -1,0 +1,128 @@
+---
+// Palette de recherche ⌘K (ou Ctrl+K) : saute vers n'importe quelle page ou fiche,
+// et cherche dans le texte de toutes les fiches. Les deux listes sont des fichiers statiques
+// téléchargés à la demande : /palette.json à l'ouverture, /search.json à la première recherche.
+---
+<div class="palette-bg" id="palette">
+  <div class="palette">
+    <input id="pal-in" placeholder="Aller à une page, ou chercher dans les fiches…" autocomplete="off" />
+    <ul id="pal-list"></ul>
+  </div>
+</div>
+
+<script>
+  import { esc } from '../lib/html';
+  import { url } from '../lib/url';
+  type Entry = { label: string; url: string; kind: string };
+  type Section = { u: string; t: string; m: string; h: string; x: string };
+  type Hit = { url: string; html: string };
+  let entries: Entry[] = [];
+  let entriesLoading: Promise<void> | null = null;
+  const loadEntries = () => (entriesLoading ??= fetch(url('/palette.json'))
+    .then((r) => r.json())
+    .then((data: Entry[]) => { entries = data; render(); })
+    .catch(() => { entriesLoading = null; }));
+  const pal = document.getElementById('palette')!;
+  const input = document.getElementById('pal-in') as HTMLInputElement;
+  const list = document.getElementById('pal-list')!;
+  let sel = 0;
+  let shown: Hit[] = [];
+
+  // Recherche tolérante : ignore les accents et la casse.
+  const norm = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+
+  // Index plein texte : téléchargé une seule fois, à la première recherche.
+  let index: (Section & { n: string; nh: string })[] | null = null;
+  let loading: Promise<void> | null = null;
+  function loadIndex() {
+    loading ??= fetch(url('/search.json'))
+      .then((r) => r.json())
+      .then((data: Section[]) => { index = data.map((e) => ({ ...e, n: norm(e.x), nh: norm(e.t + ' ' + e.h) })); render(); })
+      .catch(() => { /* hors ligne : la palette garde la recherche par titre */ });
+    return loading;
+  }
+
+  /** Extrait d'environ 140 caractères autour du premier mot trouvé, mots surlignés. */
+  function snippet(text: string, words: string[]) {
+    const n = norm(text);
+    const at = Math.max(0, n.indexOf(words[0]));
+    const start = Math.max(0, at - 50);
+    let part = text.slice(start, start + 140);
+    // La normalisation garde la longueur pour le français courant : les positions correspondent.
+    let html = '';
+    let i = 0;
+    const np = norm(part);
+    while (i < part.length) {
+      const w = words.find((w) => w && np.startsWith(w, i));
+      if (w) { html += `<mark>${esc(part.slice(i, i + w.length))}</mark>`; i += w.length; }
+      else { html += esc(part[i]); i++; }
+    }
+    return (start > 0 ? '…' : '') + html + (start + 140 < text.length ? '…' : '');
+  }
+
+  function fullText(words: string[]): Hit[] {
+    if (!index) return [];
+    const scored: { e: Section; score: number }[] = [];
+    for (const e of index) {
+      if (!words.every((w) => e.n.includes(w) || e.nh.includes(w))) continue;
+      let score = 0;
+      for (const w of words) {
+        if (e.nh.includes(w)) score += 10;
+        score += Math.min(5, e.n.split(w).length - 1);
+      }
+      scored.push({ e, score });
+    }
+    scored.sort((a, b) => b.score - a.score);
+    return scored.slice(0, 8).map(({ e }) => ({
+      url: e.u,
+      html: `<div><b>${esc(e.t)}</b>${e.h ? ` › ${esc(e.h)}` : ''}<small>${snippet(e.x, words)}</small></div><span>${esc(e.m)}</span>`,
+    }));
+  }
+
+  function render() {
+    const f = norm(input.value.trim());
+    const pages = entries
+      .filter((e) => norm(e.label + ' ' + e.kind).includes(f))
+      .slice(0, f ? 5 : 12)
+      .map((e) => ({ url: e.url, html: `${esc(e.label)}<span>${esc(e.kind)}</span>` }));
+    const words = f.split(/\s+/).filter((w) => w.length >= 2);
+    const text = f.length >= 3 ? fullText(words) : [];
+    if (f.length >= 3 && !index) loadIndex();
+    shown = [...pages, ...text];
+    sel = Math.min(sel, Math.max(shown.length - 1, 0));
+    const li = (h: Hit, i: number) => `<li class="${i === sel ? 'sel' : ''}${i >= pages.length ? ' hit' : ''}" data-i="${i}">${h.html}</li>`;
+    let html = pages.map(li).join('');
+    if (text.length) html += '<li class="pal-sep">Dans les fiches</li>' + text.map((h, j) => li(h, pages.length + j)).join('');
+    else if (f.length >= 3 && !index) html += '<li class="pal-sep">Recherche dans les fiches…</li>';
+    else if (!shown.length && entries.length) html += '<li class="pal-sep">Aucun résultat</li>';
+    list.innerHTML = html;
+  }
+  const open = () => { pal.classList.add('on'); input.value = ''; sel = 0; loadEntries(); render(); input.focus(); };
+  const close = () => pal.classList.remove('on');
+  const goTo = (i: number) => { if (shown[i]) { close(); location.href = shown[i].url; } };
+
+  input.addEventListener('input', () => { sel = 0; render(); });
+  list.addEventListener('click', (e) => {
+    const li = (e.target as HTMLElement).closest('li[data-i]') as HTMLElement | null;
+    if (li) goTo(Number(li.dataset.i));
+  });
+  pal.addEventListener('click', (e) => { if (e.target === pal) close(); });
+  // D'autres éléments (le bouton « Recherche » du menu) peuvent ouvrir la palette.
+  document.addEventListener('palette:open', open);
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      pal.classList.contains('on') ? close() : open();
+      return;
+    }
+    if (!pal.classList.contains('on')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      sel = (sel + (e.key === 'ArrowDown' ? 1 : -1) + shown.length) % Math.max(shown.length, 1);
+      render();
+      list.querySelector('li.sel')?.scrollIntoView({ block: 'nearest' });
+    }
+    if (e.key === 'Enter') goTo(sel);
+  });
+</script>

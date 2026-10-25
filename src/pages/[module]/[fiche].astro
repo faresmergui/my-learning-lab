@@ -1,0 +1,80 @@
+---
+// Page d'une fiche : le parcours à gauche, le contenu Markdown à droite.
+import { url } from '../../lib/url';
+import Base from '../../layouts/Base.astro';
+import ChapterPath from '../../components/ChapterPath.astro';
+import { render } from 'astro:content';
+import { getModules, getFiches, moduleOf, ficheSlug, ficheUrl, type Fiche, type Module } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const [modules, fiches] = await Promise.all([getModules(), getFiches()]);
+  return fiches.map((fiche) => ({
+    params: { module: moduleOf(fiche), fiche: ficheSlug(fiche) },
+    props: { fiche, mod: modules.find((m) => m.id === moduleOf(fiche)) },
+  }));
+}
+const { fiche, mod } = Astro.props as { fiche: Fiche; mod: Module };
+const fiches = await getFiches(mod.id);
+const { Content } = await render(fiche);
+const d = fiche.data;
+const inChapter = fiches.filter((f) => f.data.chapter === d.chapter);
+const pos = inChapter.findIndex((f) => f.id === fiche.id) + 1;
+const i = fiches.findIndex((f) => f.id === fiche.id);
+const prev = fiches[i - 1];
+const next = fiches[i + 1];
+---
+<Base title={d.title} description={`${d.title} · fiche du module ${mod.data.title}, avec flashcards et quiz.`} universe={mod.data.universe} nav={mod.data.universe}>
+  <div class="module-layout">
+    <div class="rise path-col" style="--i:1"><ChapterPath mod={mod} fiches={fiches} current={fiche.id} /></div>
+
+    <div class="main-col">
+      <div class="crumbs rise"><a href={url(`/${mod.data.universe}/`)}>{mod.data.universe}</a> / <a href={url(`/${mod.id}/`)}>{mod.id}</a> / {ficheSlug(fiche)}</div>
+    <article class="card sheet rise" style="--i:2; padding:28px;" data-fiche-id={fiche.id} data-title={d.title} data-module={mod.id}>
+      <div class="eyebrow">chapitre {String(d.chapter).padStart(2, '0')} · fiche {pos}/{inChapter.length}</div>
+      <h2>{d.title}</h2>
+      <div class="meta-row">
+        {d.duration && <span class="tag">⏱ {d.duration} min</span>}
+        {d.level && <span class="tag">niveau {d.level}</span>}
+        {d.tags.map((t) => <span class="tag">{t}</span>)}
+      </div>
+      <div class="prose" style={`--c:${mod.data.color}`}><Content /></div>
+
+      <div class="sheet-actions">
+        <button class="btn read-toggle" id="read-toggle">✓ Marquer comme lue</button>
+        {d.cards.length > 0 && <a class="btn primary" href={url(`/reviser/?fiche=${encodeURIComponent(fiche.id)}`)}>Réviser les {d.cards.length} cartes</a>}
+        {d.quiz.length > 0 && <a class="btn" href={url(`/quiz/?fiche=${encodeURIComponent(fiche.id)}`)}>Quiz de la fiche</a>}
+      </div>
+      {(prev || next) && <div class="sheet-actions" style="justify-content:space-between; border-top:1px dashed var(--line); padding-top:16px;">
+        {prev ? <a class="btn" href={ficheUrl(prev)}>← {prev.data.title}</a> : <span />}
+        {next && <a class="btn" href={ficheUrl(next)}>{next.data.title} →</a>}
+      </div>}
+    </article>
+    </div>
+  </div>
+</Base>
+
+<script>
+  import { load, markRead, setLast } from '../../lib/progress';
+  const art = document.querySelector<HTMLElement>('[data-fiche-id]')!;
+  const id = art.dataset.ficheId!;
+  setLast({ url: location.pathname, title: art.dataset.title!, module: art.dataset.module! });
+
+  const btn = document.getElementById('read-toggle')!;
+  const paint = () => {
+    const read = !!load().read[id];
+    btn.classList.toggle('on', read);
+    btn.textContent = read ? '✓ Lue' : '✓ Marquer comme lue';
+    document.querySelector(`[data-fiche="${id}"]`)?.classList.toggle('is-read', read);
+  };
+  btn.addEventListener('click', () => { markRead(id, !load().read[id]); paint(); });
+  paint();
+
+  // Schémas : ils s'animent quand ils arrivent à l'écran (sauf si le système
+  // demande de réduire les animations, auquel cas ils restent affichés tels quels).
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    }), { threshold: 0.25 });
+    document.querySelectorAll('.diagram').forEach((el) => { el.classList.add('anim'); io.observe(el); });
+  }
+</script>

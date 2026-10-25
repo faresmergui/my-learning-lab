@@ -1,0 +1,41 @@
+---
+// Toutes les synthèses (aide-mémoire), rangées par univers.
+import { url } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import ModuleIcon from '../components/ModuleIcon.astro';
+import { getModules, getSyntheses, getCertifications } from '../lib/content';
+const [mods, syns, certs] = await Promise.all([getModules(), getSyntheses(), getCertifications()]);
+const has = new Set(syns.map((s) => s.id));
+const desc = Object.fromEntries(syns.map((s) => [s.id, s.data.description]));
+const groups = (['tech', 'perso'] as const).map((u) => ({ u, mods: mods.filter((m) => m.data.universe === u && has.has(m.id)) }));
+---
+<Base title="Synthèses" nav="syntheses">
+  <div class="crumbs rise">synthèses</div>
+  <h1 class="rise">Synthèses</h1>
+  <p class="lead rise" style="--i:1">L'essentiel de chaque sujet sur une seule page, pour réviser vite ou retrouver une info.</p>
+  {groups.map((g, gi) => g.mods.length > 0 && (
+    <section class="section rise" style={`--i:${gi + 2}`}>
+      <div class="eyebrow">{g.u}</div>
+      <div class="grid modules">
+        {g.mods.map((m) => (
+          <a class="card syn-card" href={url(`/${m.id}/synthese/`)} style={`--c:${m.data.color}`}>
+            <ModuleIcon id={m.id} code={m.data.code} style={`--c:${m.data.color}`} />
+            <div><b>{m.data.title}</b><p class="muted">{desc[m.id]}</p></div>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+  <section class="section rise" style={`--i:${groups.length + 2}`}>
+    <div class="eyebrow">certifications</div>
+    <p class="muted" style="margin:-2px 0 12px; font-size:14px">Pour chaque examen : le format, les pièges et la stratégie le jour J.</p>
+    <div class="grid modules">
+      {certs.map((c) => (
+        <a class="card syn-card" href={url(`/certifications/${c.id}/`)} style={`--c:${c.data.color}`}>
+          <div class="module-icon" style={`--c:${c.data.color}`}>{c.data.title.split(' ')[0].slice(0, 4)}</div>
+          <div><b>{c.data.name}</b><p class="muted">{c.data.description}</p></div>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>

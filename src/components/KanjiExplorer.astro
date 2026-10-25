@@ -1,0 +1,84 @@
+---
+// Explorateur de kanji par niveau JLPT (page de synthèse du japonais).
+// Les données sont dans src/data/kanji.ts. Tout le filtrage se fait dans le navigateur.
+import { LEVELS } from '../data/kanji';
+const total = LEVELS.reduce((a, l) => a + l.kanji.length, 0);
+---
+<section class="kanji-x" data-kanji>
+  <h2 id="kanji">Les kanji par niveau</h2>
+  <p class="muted">{total} kanji pour le N5 et le N4. Clique sur un kanji pour voir ses lectures. Le mode « s'entraîner » cache le sens pour te tester.</p>
+
+  <div class="kx-bar">
+    <div class="kx-tabs" role="tablist">
+      {LEVELS.map((l, i) => (
+        <button role="tab" class={i === 0 ? 'on' : ''} data-level={l.id} disabled={l.kanji.length === 0}>
+          {l.id}<small>{l.kanji.length || 'à venir'}</small>
+        </button>
+      ))}
+    </div>
+    <input class="kx-search" type="search" placeholder="Chercher : eau, みず, スイ…" aria-label="Chercher un kanji" />
+    <label class="kx-hide"><input type="checkbox" /> s'entraîner</label>
+  </div>
+
+  {LEVELS.map((l, i) => (
+    <div class="kx-grid" data-grid={l.id} hidden={i !== 0}>
+      {l.kanji.map((k) => (
+        <button class="kx-tile" data-search={`${k.k} ${k.on} ${k.kun} ${k.sens}`.toLowerCase()}>
+          <span class="kx-k">{k.k}</span>
+          <span class="kx-s">{k.sens}</span>
+          <span class="kx-d">
+            {k.on && <span><em>on</em> {k.on}</span>}
+            {k.kun && <span><em>kun</em> {k.kun}</span>}
+          </span>
+        </button>
+      ))}
+    </div>
+  ))}
+  <p class="kx-empty muted" hidden>Aucun kanji ne correspond.</p>
+  <p class="muted kx-note">Le JLPT ne publie plus de liste officielle depuis 2010 : ces listes suivent les listes de référence courantes. N3, N2 et N1 arriveront avec les chapitres correspondants.</p>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-kanji]');
+  if (root) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-level]')];
+    const grids = [...root.querySelectorAll<HTMLElement>('[data-grid]')];
+    const search = root.querySelector<HTMLInputElement>('.kx-search')!;
+    const hide = root.querySelector<HTMLInputElement>('.kx-hide input')!;
+    const empty = root.querySelector<HTMLElement>('.kx-empty')!;
+    let level = tabs[0].dataset.level!;
+
+    const apply = () => {
+      const q = search.value.trim().toLowerCase();
+      // En français, on cherche le début des mots (« eau » ne trouve pas « nouveau »).
+      const latin = /^[a-zà-ÿœ' -]+$/.test(q);
+      const match = (s: string) => latin ? s.split(/[\s,()·]+/).some((w) => w.startsWith(q)) : s.includes(q);
+      let shown = 0;
+      grids.forEach((g) => {
+        // Pendant une recherche, on cherche dans tous les niveaux.
+        const visible = q ? true : g.dataset.grid === level;
+        let n = 0;
+        g.querySelectorAll<HTMLElement>('.kx-tile').forEach((t) => {
+          const ok = !q || match(t.dataset.search!);
+          t.hidden = !ok;
+          if (ok) n++;
+        });
+        g.hidden = !visible || n === 0;
+        if (!g.hidden) shown += n;
+      });
+      empty.hidden = shown > 0;
+    };
+    tabs.forEach((t) => t.addEventListener('click', () => {
+      level = t.dataset.level!;
+      tabs.forEach((x) => x.classList.toggle('on', x === t));
+      search.value = '';
+      apply();
+    }));
+    search.addEventListener('input', apply);
+    hide.addEventListener('change', () => root.classList.toggle('kx-train', hide.checked));
+    root.addEventListener('click', (e) => {
+      const tile = (e.target as HTMLElement).closest<HTMLElement>('.kx-tile');
+      if (tile) tile.classList.toggle('open');
+    });
+  }
+</script>

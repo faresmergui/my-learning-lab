@@ -1,0 +1,149 @@
+---
+// Révision par flashcards avec répétition espacée.
+// Filtres possibles dans l'adresse : /reviser/?module=kubernetes ou ?fiche=kubernetes/07-taints
+import { url } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import { getAllCards, getModules, getCertIndex, jsonForScript } from '../lib/content';
+const cards = await getAllCards();
+const modules = (await getModules()).filter((m) => cards.some((c) => c.module === m.id));
+const certs = await getCertIndex();
+---
+<Base title="Réviser" nav="reviser">
+  <div class="review-wrap">
+    <div class="filters rise">
+      <a class="tag" href={url('/reviser/')} data-filter="">tout</a>
+      {modules.map((m) => <a class="tag" href={url(`/reviser/?module=${m.id}`)} data-filter={m.id}>{m.data.title.toLowerCase()}</a>)}
+      <span class="filters-sep" aria-hidden="true"></span>
+      {Object.entries(certs).map(([id, c]) => <a class="tag" href={url(`/reviser/?cert=${id}`)} data-filter={`cert:${id}`}>{c.title}</a>)}
+    </div>
+
+    <div id="session">
+      <div class="review-head rise" style="margin-top:18px"><span id="rv-count"></span><div class="progress-dots" id="rv-dots"></div><span id="rv-scope"></span></div>
+      <div class="flash-scene rise" style="--i:1">
+        <div class="flash" id="flash">
+          <div class="face front">
+            <div class="hint"><span class="tagline"><i id="rv-dot"></i><span id="rv-tag"></span></span><span>question</span></div>
+            <div class="q" id="rv-q"></div>
+            <div class="hint"><span>clic ou <kbd>espace</kbd> pour retourner</span><span id="rv-state"></span></div>
+          </div>
+          <div class="face back">
+            <div class="hint"><span id="rv-fiche"></span><span>réponse</span></div>
+            <div class="a" id="rv-a"></div>
+            <div class="hint"><span>comment t'en es-tu sorti ?</span><span></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="grades rise" style="--i:2" id="grades">
+        <button class="grade" style="--g:var(--accent)" data-grade="1"><kbd>1</kbd><b>À revoir</b><small></small></button>
+        <button class="grade" style="--g:var(--warn)" data-grade="2"><kbd>2</kbd><b>Difficile</b><small></small></button>
+        <button class="grade" style="--g:var(--ok)" data-grade="3"><kbd>3</kbd><b>Bien</b><small></small></button>
+        <button class="grade" style="--g:var(--k8s)" data-grade="4"><kbd>4</kbd><b>Facile</b><small></small></button>
+      </div>
+      <p class="lead rise" style="--i:3; text-align:center; margin:22px auto 0; font-size:13px;">Répétition espacée : plus une carte te paraît facile, plus elle revient tard.</p>
+    </div>
+
+    <div id="done" class="card" style="text-align:center; padding:44px; margin-top:24px;" hidden>
+      <div style="font:700 48px var(--font-mono); color:var(--accent)" id="done-n">✓</div>
+      <h2 style="margin-top:8px" id="done-title">Session terminée</h2>
+      <p class="lead" style="margin:8px auto 22px" id="done-lead"></p>
+      <div class="sheet-actions" style="justify-content:center"><a class="btn primary" href={url('/')}>Retour à l'accueil</a><a class="btn" href={url('/quiz/')}>Faire un quiz</a></div>
+    </div>
+  </div>
+  <script type="application/json" id="cards-data" set:html={jsonForScript(cards)} />
+  <script type="application/json" id="cert-index" set:html={jsonForScript(certs)} />
+</Base>
+
+<script>
+  import { load, gradeCard, preview, reviewQueue, type Grade } from '../lib/progress';
+  import { loadIndex } from '../lib/stats';
+
+  type Card = { id: string; fiche: string; ficheTitle: string; module: string; moduleTitle: string; color: string; q: string; a: string };
+  const all: Card[] = JSON.parse(document.getElementById('cards-data')!.textContent!);
+  const params = new URLSearchParams(location.search);
+  const mod = params.get('module');
+  const fiche = params.get('fiche');
+  // ?cert=cka : seulement les cartes des fiches liées à cette certification.
+  const cert = params.get('cert');
+  const certInfo: { title: string; fiches: string[] } | undefined = cert ? JSON.parse(document.getElementById('cert-index')!.textContent!)[cert] : undefined;
+  const certFiches = certInfo ? new Set(certInfo.fiches) : null;
+  const scoped = all.filter((c) => (!mod || c.module === mod) && (!fiche || c.fiche === fiche) && (!certFiches || certFiches.has(c.fiche)));
+
+  const current = cert ? `cert:${cert}` : mod || (fiche ? '#' : null);
+  document.querySelectorAll<HTMLElement>('[data-filter]').forEach((a) => a.classList.toggle('on', (a.dataset.filter || null) === current));
+  if (mod) loadIndex().then((idx) => { if (idx.modules[mod]?.universe === 'perso') document.body.classList.add('perso'); });
+
+  // Une révision ciblée sur une fiche montre toutes ses cartes ; sinon on suit le planning.
+  // Les cartes sont mélangées à chaque session pour ne pas apprendre l'ordre au lieu du contenu.
+  const shuffle = <T,>(a: T[]) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+  let queue = shuffle(fiche ? scoped : reviewQueue(scoped));
+  const total = queue.length;
+  let done = 0;
+  let flipped = false;
+  const $ = (id: string) => document.getElementById(id)!;
+  const flash = $('flash');
+  const grades = $('grades');
+  $('rv-scope').textContent = fiche ? (scoped[0]?.ficheTitle ?? '') : certInfo ? `certification ${certInfo.title}` : mod ? (scoped[0]?.moduleTitle ?? mod) : 'tous les modules';
+
+  function render() {
+    const c = queue[0];
+    if (!c) return finish();
+    const s = load().cards[c.id];
+    $('rv-q').innerHTML = c.q;
+    // Une question très courte (un kana, un kanji) s'affiche en grand.
+    $('rv-q').classList.toggle('big', c.q.replace(/<[^>]+>/g, '').trim().length <= 3);
+    $('rv-a').innerHTML = c.a;
+    $('rv-tag').textContent = c.moduleTitle.toLowerCase();
+    $('rv-dot').style.setProperty('--c', c.color);
+    $('rv-fiche').textContent = c.ficheTitle;
+    $('rv-state').textContent = s ? (s.lapses ? `oubliée ${s.lapses}×` : `revue ${s.reps}×`) : 'nouvelle';
+    $('rv-count').textContent = `carte ${done + 1} / ${total}`;
+    const dots = Math.min(total, 20);
+    $('rv-dots').innerHTML = Array.from({ length: dots }, (_, i) => `<i class="${i < Math.round((done / total) * dots) + 1 ? 'on' : ''}"></i>`).join('');
+    grades.querySelectorAll<HTMLElement>('[data-grade]').forEach((b) => {
+      b.querySelector('small')!.textContent = preview(s, Number(b.dataset.grade) as Grade);
+    });
+  }
+
+  function flip() {
+    flipped = !flipped;
+    flash.classList.toggle('flipped', flipped);
+    grades.classList.toggle('on', flipped);
+  }
+
+  function grade(g: Grade) {
+    if (!flipped || !queue[0]) return;
+    const c = queue.shift()!;
+    gradeCard(c.id, g);
+    if (g === 1) queue.push(c); else done++; // une carte ratée revient en fin de session
+    flipped = false;
+    grades.classList.remove('on');
+    flash.classList.add('leave');
+    setTimeout(() => {
+      flash.classList.remove('leave', 'flipped');
+      render();
+      flash.classList.add('enter');
+      setTimeout(() => flash.classList.remove('enter'), 450);
+    }, 350);
+  }
+
+  function finish() {
+    $('session').hidden = true;
+    $('done').hidden = false;
+    if (total === 0) {
+      $('done-title').textContent = 'Rien à réviser pour l\'instant';
+      $('done-lead').textContent = 'Tes cartes reviendront quand ce sera le bon moment. Tu peux lire une nouvelle fiche en attendant.';
+    } else {
+      $('done-n').textContent = String(total);
+      $('done-lead').textContent = `cartes révisées. Les prochaines reviendront au fil des jours.`;
+    }
+  }
+
+  flash.addEventListener('click', flip);
+  grades.querySelectorAll<HTMLElement>('[data-grade]').forEach((b) => b.addEventListener('click', () => grade(Number(b.dataset.grade) as Grade)));
+  document.addEventListener('keydown', (e) => {
+    if (document.getElementById('palette')?.classList.contains('on')) return;
+    if (e.key === ' ') { e.preventDefault(); flip(); }
+    if (['1', '2', '3', '4'].includes(e.key)) grade(Number(e.key) as Grade);
+  });
+  render();
+</script>

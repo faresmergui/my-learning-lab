@@ -1,0 +1,48 @@
+---
+// Les certifications visées : une carte par examen, avec ta préparation.
+// La page est générée sans progression ; le navigateur remplit les jauges.
+import { url } from '../../lib/url';
+import Base from '../../layouts/Base.astro';
+import { getCertifications, getCertIndex, jsonForScript } from '../../lib/content';
+const [certs, index] = await Promise.all([getCertifications(), getCertIndex()]);
+---
+<Base title="Certifications" nav="certifications">
+  <div class="crumbs rise">certifications</div>
+  <h1 class="rise">Certifications</h1>
+  <p class="lead rise" style="--i:1">Les examens que tu vises, dans ton ordre de priorité. Chaque certification regroupe les fiches qui la préparent, montre ce qui manque encore, et se révise à part.</p>
+  <div class="grid modules section">
+    {certs.map((c, i) => (
+      <a class="card cert-card rise" href={url(`/certifications/${c.id}/`)} style={`--i:${i + 2}; --c:${c.data.color}`} data-cert={c.id}>
+        <div class="cert-top">
+          <div class="module-icon" style={`--c:${c.data.color}${c.data.title.split(" ")[0].length > 4 ? "; font-size:11px" : ""}`}>{((t) => t.length <= 5 ? t : t.slice(0, 4))(c.data.title.split(" ")[0])}</div>
+          <div><b>{c.data.name}</b><p class="muted">{c.data.org}</p></div>
+        </div>
+        <p class="muted cert-desc">{c.data.description}</p>
+        <div class="cert-meter">
+          <span data-pct>0 %</span>
+          <small data-detail>{index[c.id].fiches.length} fiches liées</small>
+        </div>
+        <div class="bar"><i style="--w:0%" data-bar></i></div>
+        {c.data.domains.some((d) => d.missing) && <small class="cert-gap">Couverture partielle : voir ce qui manque</small>}
+      </a>
+    ))}
+  </div>
+  <script type="application/json" id="cert-index" set:html={jsonForScript(index)} />
+</Base>
+
+<script>
+  import { load, isMastered } from '../../lib/progress';
+  type CertIndex = Record<string, { title: string; fiches: string[]; cards: string[] }>;
+  const index: CertIndex = JSON.parse(document.getElementById('cert-index')!.textContent!);
+  const p = load();
+  document.querySelectorAll<HTMLElement>('[data-cert]').forEach((el) => {
+    const c = index[el.dataset.cert!];
+    const read = c.fiches.filter((f) => p.read[f]).length;
+    const mastered = c.cards.filter((id) => isMastered(p.cards[id])).length;
+    const total = c.fiches.length + c.cards.length;
+    const pct = total ? Math.round(((read + mastered) / total) * 100) : 0;
+    el.querySelector('[data-pct]')!.textContent = `${pct} %`;
+    el.querySelector('[data-detail]')!.textContent = `${read}/${c.fiches.length} fiches lues · ${mastered}/${c.cards.length} cartes maîtrisées`;
+    (el.querySelector('[data-bar]') as HTMLElement).style.setProperty('--w', `${pct}%`);
+  });
+</script>

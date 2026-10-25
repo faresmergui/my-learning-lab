@@ -1,0 +1,102 @@
+---
+// Quiz : jusqu'à 10 questions tirées au hasard, filtrables par module ou par fiche.
+import { url } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import { getAllQuestions, getModules, getCertIndex, jsonForScript } from '../lib/content';
+const questions = await getAllQuestions();
+const modules = (await getModules()).filter((m) => questions.some((q) => q.module === m.id));
+const certs = await getCertIndex();
+---
+<Base title="Quiz" nav="quiz">
+  <div class="review-wrap">
+    <div class="filters rise">
+      <a class="tag" href={url('/quiz/')} data-filter="">tout</a>
+      {modules.map((m) => <a class="tag" href={url(`/quiz/?module=${m.id}`)} data-filter={m.id}>{m.data.title.toLowerCase()}</a>)}
+      <span class="filters-sep" aria-hidden="true"></span>
+      {Object.entries(certs).map(([id, c]) => <a class="tag" href={url(`/quiz/?cert=${id}`)} data-filter={`cert:${id}`}>{c.title}</a>)}
+    </div>
+    <div class="review-head rise" style="margin-top:18px"><span id="qz-count"></span><span id="qz-score">score 0</span></div>
+    <div id="qz-body" class="rise" style="--i:1"></div>
+  </div>
+  <script type="application/json" id="quiz-data" set:html={jsonForScript(questions)} />
+  <script type="application/json" id="cert-index" set:html={jsonForScript(certs)} />
+</Base>
+
+<script>
+  import { recordAnswer } from '../lib/progress';
+  import { loadIndex } from '../lib/stats';
+
+  type Q = { fiche: string; module: string; moduleTitle: string; q: string; options: string[]; answer: number; explain: string };
+  const all: Q[] = JSON.parse(document.getElementById('quiz-data')!.textContent!);
+  const params = new URLSearchParams(location.search);
+  const mod = params.get('module');
+  const fiche = params.get('fiche');
+  // ?cert=cka : seulement les questions des fiches liées à cette certification.
+  const cert = params.get('cert');
+  const certFiches = cert ? new Set<string>(JSON.parse(document.getElementById('cert-index')!.textContent!)[cert]?.fiches ?? []) : null;
+  const current = cert ? `cert:${cert}` : mod;
+  document.querySelectorAll<HTMLElement>('[data-filter]').forEach((a) => a.classList.toggle('on', (a.dataset.filter || null) === current && !fiche));
+  if (mod) loadIndex().then((idx) => { if (idx.modules[mod]?.universe === 'perso') document.body.classList.add('perso'); });
+
+  const shuffle = <T,>(a: T[]) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+  const pool = all.filter((q) => (!mod || q.module === mod) && (!fiche || q.fiche === fiche) && (!certFiches || certFiches.has(q.fiche)));
+
+  let quiz: Q[] = [];
+  let qi = 0;
+  let score = 0;
+  const body = document.getElementById('qz-body')!;
+  const $count = document.getElementById('qz-count')!;
+  const $score = document.getElementById('qz-score')!;
+
+  function start() { quiz = shuffle(pool).slice(0, 10); qi = 0; score = 0; renderQ(); }
+
+  function renderQ() {
+    $score.textContent = `score ${score}`;
+    if (!quiz.length) {
+      $count.textContent = '';
+      body.innerHTML = '<div class="empty" style="margin-top:20px">Pas encore de questions ici.</div>';
+      return;
+    }
+    if (qi >= quiz.length) {
+      $count.textContent = 'terminé';
+      body.innerHTML = `<div class="card" style="text-align:center; padding:40px; margin-top:20px; animation: rise .6s var(--ease)">
+        <div style="font:700 56px var(--font-mono); color:var(--accent)">${score}/${quiz.length}</div>
+        <p class="lead" style="margin:8px auto 20px">${score === quiz.length ? 'Sans faute.' : 'Relis les fiches des questions ratées, puis réessaie.'}</p>
+        <button class="btn primary" id="qz-again">Recommencer</button></div>`;
+      document.getElementById('qz-again')!.onclick = start;
+      return;
+    }
+    const q = quiz[qi];
+    // Les options sont mélangées à chaque fois pour éviter de retenir la position.
+    const order = shuffle(q.options.map((_, i) => i));
+    $count.textContent = `question ${qi + 1} / ${quiz.length} · ${q.moduleTitle.toLowerCase()}`;
+    body.innerHTML = `<div class="quiz-q">${q.q}</div><div class="opts">${order.map((oi, k) =>
+      `<button class="opt" data-i="${oi}"><span class="letter">${'ABCDEF'[k]}</span><span>${q.options[oi]}</span></button>`).join('')}</div>
+      <div class="explain card" id="qz-ex">${q.explain ? `<b>Pourquoi ?</b><p style="margin-top:6px">${q.explain}</p>` : ''}
+      <div style="margin-top:14px"><button class="btn primary" id="qz-next">${qi + 1 < quiz.length ? 'Question suivante →' : 'Voir le score →'}</button></div></div>`;
+    body.querySelectorAll<HTMLButtonElement>('.opt').forEach((b) => b.addEventListener('click', () => answer(q, b)));
+  }
+
+  function answer(q: Q, b: HTMLButtonElement) {
+    const i = Number(b.dataset.i);
+    body.querySelectorAll<HTMLButtonElement>('.opt').forEach((x) => (x.disabled = true));
+    body.querySelector(`.opt[data-i="${q.answer}"]`)!.classList.add('good');
+    const right = i === q.answer;
+    if (right) score++; else b.classList.add('bad');
+    recordAnswer(q.fiche, right);
+    $score.textContent = `score ${score}`;
+    document.getElementById('qz-ex')!.classList.add('on');
+    const next = document.getElementById('qz-next')!;
+    next.onclick = () => { qi++; renderQ(); };
+    next.focus();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (document.getElementById('palette')?.classList.contains('on')) return;
+    const opts = body.querySelectorAll<HTMLButtonElement>('.opt:not([disabled])');
+    const k = '1234'.indexOf(e.key);
+    if (k >= 0 && opts[k]) opts[k].click();
+  });
+
+  start();
+</script>

@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learning Hub · maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Maquette v1 — données fictives, tout tient dans ce fichier.
+   Deux ambiances : "tech" (sombre, terminal) et "perso" (washi).
+   ============================================================ */
+:root {
+  --bg: #0b0c10;
+  --bg-glow: rgba(224, 58, 70, .10);
+  --surface: #12141a;
+  --surface-2: #181b23;
+  --line: #242833;
+  --text: #e9eaf0;
+  --muted: #8a8f9d;
+  --accent: #e03a46;          /* rouge signature, dérivé de #C5212E */
+  --accent-soft: rgba(224, 58, 70, .14);
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --radius: 14px;
+  --font-ui: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-title: "Inter", system-ui, sans-serif;
+  --k8s: #4f7cf0; --tf: #8b5cf6; --linux: #f2c94c; --sec: #34d399; --net: #22d3ee; --ops: #fb923c;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+}
+body.perso {
+  --bg: #f3eee4;
+  --bg-glow: rgba(197, 33, 46, .08);
+  --surface: #fbf8f1;
+  --surface-2: #f1ebdf;
+  --line: #e2d9c8;
+  --text: #1f1c17;
+  --muted: #7a7264;
+  --accent: #c5212e;
+  --accent-soft: rgba(197, 33, 46, .10);
+  --font-title: "Shippori Mincho", serif;
+  --font-ui: "Zen Kaku Gothic New", "Inter", sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.55 var(--font-ui);
+  transition: background .6s var(--ease), color .6s var(--ease);
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+code, kbd, pre { font-family: var(--font-mono); }
+
+/* --- Fond : grille de points + halo qui dérive lentement --- */
+.backdrop { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.backdrop::before {
+  content: ""; position: absolute; inset: 0;
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse at 70% 0%, #000 10%, transparent 70%);
+}
+.backdrop::after {
+  content: ""; position: absolute; width: 60vw; height: 60vw; top: -25vw; right: -15vw;
+  background: radial-gradient(circle, var(--bg-glow), transparent 65%);
+  animation: drift 18s ease-in-out infinite alternate;
+}
+@keyframes drift { to { transform: translate(-12vw, 8vw) scale(1.15); } }
+
+/* --- Layout --- */
+.app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+.side {
+  position: sticky; top: 0; height: 100vh; padding: 22px 16px;
+  border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 6px;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(8px);
+}
+.logo { display: flex; align-items: center; gap: 10px; padding: 4px 10px 22px; font-weight: 700; letter-spacing: -.01em; }
+.logo-mark {
+  width: 28px; height: 28px; border-radius: 8px; background: var(--accent);
+  display: grid; place-items: center; color: #fff; font: 700 13px var(--font-mono);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.logo small { display: block; font: 500 11px var(--font-mono); color: var(--muted); }
+.nav-label { font: 500 11px var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 14px 10px 6px; }
+.nav a {
+  display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px;
+  color: var(--muted); text-decoration: none; font-weight: 500; position: relative;
+  transition: color .2s, background .2s;
+}
+.nav a:hover { color: var(--text); background: var(--surface); }
+.nav a.active { color: var(--text); background: var(--surface-2); }
+.nav a.active::before { content: ""; position: absolute; left: -16px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); }
+.nav .count { margin-left: auto; font: 500 11px var(--font-mono); background: var(--accent-soft); color: var(--accent); padding: 1px 7px; border-radius: 99px; }
+.nav svg { width: 18px; height: 18px; flex: none; }
+.side-foot { margin-top: auto; padding: 12px 10px; border: 1px solid var(--line); border-radius: 12px; font-size: 13px; color: var(--muted); }
+.side-foot b { color: var(--text); }
+.kbd-hint { display: flex; justify-content: space-between; margin-top: 8px; }
+kbd { font-size: 11px; padding: 1px 6px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; color: var(--muted); }
+
+main { padding: 28px clamp(16px, 4vw, 56px) 80px; max-width: 1180px; width: 100%; min-width: 0; }
+.mock-banner { font: 500 12px var(--font-mono); color: var(--muted); margin-bottom: 18px; display: flex; gap: 8px; align-items: center; }
+.mock-banner::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--warn); }
+
+/* --- Vues + animation d'entrée en cascade --- */
+.view { display: none; }
+.view.active { display: block; }
+.view.active .rise { animation: rise .7s var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+
+h1, h2, h3 { font-family: var(--font-title); letter-spacing: -.02em; line-height: 1.15; }
+h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; }
+h2 { font-size: 20px; font-weight: 600; margin-bottom: 14px; }
+.eyebrow { font: 500 12px var(--font-mono); color: var(--accent); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+.lead { color: var(--muted); margin-top: 8px; max-width: 60ch; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 20px; transition: border-color .25s, transform .35s var(--ease), box-shadow .35s var(--ease), background .6s;
+}
+.card.link { cursor: pointer; }
+.card.link:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); box-shadow: 0 14px 40px -18px var(--accent-soft); }
+.grid { display: grid; gap: 16px; }
+.grid > *, .hero > *, .module-layout > * { min-width: 0; }
+.split { grid-template-columns: 1fr 1fr; align-items: start; }
+.section { margin-top: 36px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 10px;
+  font-weight: 600; font-size: 14px; border: 1px solid var(--line); background: var(--surface-2);
+  transition: transform .15s, border-color .2s, background .2s;
+}
+.btn:hover { border-color: var(--muted); }
+.btn:active { transform: scale(.97); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { filter: brightness(1.08); }
+.tag { display: inline-block; font: 500 11px var(--font-mono); padding: 2px 8px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); }
+
+/* --- Accueil --- */
+.hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; align-items: center; }
+.today { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+.terminal { padding: 0; overflow: hidden; font: 13px/1.7 var(--font-mono); }
+.term-bar { display: flex; gap: 6px; padding: 11px 14px; border-bottom: 1px solid var(--line); align-items: center; }
+.term-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.term-bar i:first-child { background: var(--accent); }
+.term-bar span { margin-left: 8px; color: var(--muted); font-size: 11px; }
+.term-body { padding: 14px 16px; min-height: 196px; white-space: pre; overflow-x: auto; }
+.term-body .p { color: var(--accent); }
+.term-body .dim { color: var(--muted); }
+.term-body .ok { color: var(--ok); }
+.caret { display: inline-block; width: 8px; height: 15px; background: var(--text); vertical-align: -2px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.universes { grid-template-columns: 1fr 1fr; }
+.universe { position: relative; overflow: hidden; min-height: 200px; display: flex; flex-direction: column; }
+.universe h3 { font-size: 24px; margin: 6px 0 6px; }
+.universe p { color: var(--muted); max-width: 34ch; }
+.universe .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; padding-top: 18px; }
+.universe .watermark { position: absolute; right: -6px; bottom: -34px; font-size: 150px; line-height: 1; opacity: .07; pointer-events: none; transition: transform .8s var(--ease), opacity .4s; }
+.universe:hover .watermark { transform: translate(-10px, -10px) rotate(-4deg); opacity: .12; }
+.u-tech .watermark { font-family: var(--font-mono); font-weight: 700; }
+.u-perso { background: linear-gradient(135deg, #f6f0e5, #ede4d3); color: #1f1c17; border-color: #e2d9c8; }
+.u-perso p { color: #6f6758; }
+.u-perso h3, .u-perso .watermark { font-family: "Shippori Mincho", serif; }
+.u-perso .tag { border-color: #d9cdb7; color: #6f6758; }
+.u-perso .eyebrow { color: #c5212e; }
+body.perso .u-tech { background: #12141a; color: #e9eaf0; border-color: #242833; }
+body.perso .u-tech p { color: #8a8f9d; }
+
+.stats { grid-template-columns: repeat(4, 1fr); }
+.stat .v { font: 700 28px var(--font-mono); letter-spacing: -.03em; }
+.stat .l { color: var(--muted); font-size: 13px; }
+.stat .d { font: 500 12px var(--font-mono); color: var(--ok); margin-top: 4px; }
+
+.resume { display: flex; align-items: center; gap: 18px; }
+.resume .meta { flex: 1; }
+.bar { height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-top: 10px; }
+.bar > i { display: block; height: 100%; width: var(--w); background: var(--accent); border-radius: inherit; transform-origin: left; animation: grow 1.2s var(--ease) both .3s; }
+@keyframes grow { from { transform: scaleX(0); } }
+
+.heat { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 1fr); gap: 3px; overflow-x: auto; padding-bottom: 4px; }
+.heat i { width: 12px; height: 12px; border-radius: 3px; background: var(--surface-2); }
+.heat i[data-l="1"] { background: color-mix(in srgb, var(--accent) 30%, var(--surface-2)); }
+.heat i[data-l="2"] { background: color-mix(in srgb, var(--accent) 55%, var(--surface-2)); }
+.heat i[data-l="3"] { background: color-mix(in srgb, var(--accent) 80%, var(--surface-2)); }
+.heat i[data-l="4"] { background: var(--accent); }
+.heat-legend { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin-top: 10px; }
+
+/* --- Univers Tech --- */
+.modules { grid-template-columns: repeat(3, 1fr); }
+.module { display: flex; flex-direction: column; gap: 14px; }
+.module-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.module-icon { width: 42px; height: 42px; border-radius: 11px; display: grid; place-items: center; font: 700 15px var(--font-mono); color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c) 30%, transparent); }
+.module h3 { font-size: 18px; }
+.module p { color: var(--muted); font-size: 14px; }
+.module-foot { display: flex; justify-content: space-between; font: 500 12px var(--font-mono); color: var(--muted); border-top: 1px dashed var(--line); padding-top: 12px; margin-top: auto; }
+.module-foot b { color: var(--accent); font-weight: 500; }
+.ring { width: 46px; height: 46px; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 4; }
+.ring .track { stroke: var(--surface-2); }
+.ring .val { stroke: var(--c, var(--accent)); stroke-linecap: round; stroke-dasharray: 113; stroke-dashoffset: 113; transition: stroke-dashoffset 1.4s var(--ease); }
+.ring-wrap { position: relative; }
+.ring-wrap span { position: absolute; inset: 0; display: grid; place-items: center; font: 600 11px var(--font-mono); }
+
+/* --- Module Kubernetes --- */
+.crumbs { font: 500 13px var(--font-mono); color: var(--muted); margin-bottom: 14px; }
+.crumbs a { color: var(--muted); text-decoration: none; cursor: pointer; }
+.crumbs a:hover { color: var(--text); }
+.module-layout { display: grid; grid-template-columns: 300px 1fr; gap: 22px; align-items: start; margin-top: 26px; }
+.path { list-style: none; padding: 0; position: relative; }
+.path::before { content: ""; position: absolute; left: 30px; top: 12px; bottom: 12px; width: 2px; background: var(--line); }
+.path li { position: relative; display: flex; gap: 14px; padding: 9px 8px; border-radius: 10px; cursor: pointer; transition: background .2s; }
+.path li:hover { background: var(--surface); }
+.path li.current { background: var(--surface-2); }
+.dot { width: 12px; height: 12px; margin: 5px 7px 0 7px; border-radius: 50%; border: 2px solid var(--line); background: var(--bg); flex: none; z-index: 1; }
+.done .dot { background: var(--ok); border-color: var(--ok); }
+.current .dot { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 0 var(--accent-soft); animation: pulse 2s infinite; }
+@keyframes pulse { 70% { box-shadow: 0 0 0 9px transparent; } 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 50%, transparent); } }
+.path b { display: block; font-weight: 600; font-size: 14px; }
+.path small { color: var(--muted); font-size: 12px; font-family: var(--font-mono); }
+.path li:not(.done):not(.current) b { color: var(--muted); font-weight: 500; }
+
+.sheet h2 { font-size: 26px; margin: 4px 0 6px; }
+.sheet .meta-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.sheet p { margin: 10px 0; max-width: 72ch; }
+.sheet h4 { margin: 22px 0 6px; font-size: 15px; }
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+.compare > div { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--surface-2); }
+.compare b { display: block; margin-bottom: 4px; font-family: var(--font-mono); font-size: 13px; }
+.compare span { color: var(--muted); font-size: 14px; }
+pre.code { background: #08090c; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; font-size: 13px; line-height: 1.65; overflow-x: auto; color: #c9ccd6; margin: 12px 0; }
+pre.code .k { color: #7aa2f7; } pre.code .s { color: #9ece6a; } pre.code .c { color: #565f89; } pre.code .n { color: #ff9e64; }
+.callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 14px; border-radius: 0 10px 10px 0; margin: 16px 0; font-size: 14px; }
+.callout b { color: var(--accent); }
+.sheet-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+
+/* --- Flashcards --- */
+.review-wrap { max-width: 680px; margin: 0 auto; }
+.review-head { display: flex; justify-content: space-between; align-items: center; font: 500 13px var(--font-mono); color: var(--muted); }
+.flash-scene { perspective: 1400px; margin: 22px 0; }
+.flash {
+  position: relative; height: 320px; transform-style: preserve-3d; cursor: pointer;
+  transition: transform .7s var(--ease);
+}
+.flash.flipped { transform: rotateY(180deg); }
+.flash.leave { animation: leave .35s var(--ease) forwards; }
+.flash.enter { animation: enter .45s var(--ease) both; }
+@keyframes leave { to { opacity: 0; transform: translateX(-40px) rotateY(180deg); } }
+@keyframes enter { from { opacity: 0; transform: translateX(40px); } }
+.face {
+  position: absolute; inset: 0; backface-visibility: hidden; border-radius: 18px;
+  background: var(--surface); border: 1px solid var(--line); padding: 28px 30px;
+  display: flex; flex-direction: column;
+}
+.face.back { transform: rotateY(180deg); background: var(--surface-2); }
+.face .q { font: 600 22px/1.35 var(--font-title); margin: auto 0; letter-spacing: -.01em; }
+.face .a { margin: auto 0; font-size: 16px; }
+.face .a code { background: var(--bg); padding: 1px 6px; border-radius: 5px; font-size: 14px; }
+.face .hint { font: 500 12px var(--font-mono); color: var(--muted); display: flex; justify-content: space-between; }
+.grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; opacity: .35; pointer-events: none; transition: opacity .3s; }
+.grades.on { opacity: 1; pointer-events: auto; }
+.grade { padding: 12px 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); text-align: center; transition: transform .15s, border-color .2s; }
+.grade:hover { transform: translateY(-2px); border-color: var(--g); }
+.grade b { display: block; font-size: 14px; }
+.grade small { font: 500 11px var(--font-mono); color: var(--muted); }
+.grade kbd { float: right; }
+.progress-dots { display: flex; gap: 4px; }
+.progress-dots i { width: 18px; height: 4px; border-radius: 9px; background: var(--line); transition: background .3s; }
+.progress-dots i.on { background: var(--accent); }
+
+/* --- Quiz --- */
+.quiz-q { font: 600 21px/1.35 var(--font-title); margin: 16px 0 20px; }
+.opts { display: grid; gap: 10px; }
+.opt {
+  text-align: left; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface);
+  display: flex; gap: 12px; align-items: center; transition: border-color .2s, background .2s, transform .15s;
+}
+.opt:hover:not([disabled]) { border-color: var(--muted); transform: translateX(3px); }
+.opt .letter { font: 600 12px var(--font-mono); width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; border: 1px solid var(--line); flex: none; }
+.opt.good { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 10%, var(--surface)); }
+.opt.good .letter { background: var(--ok); color: #06281c; border-color: var(--ok); }
+.opt.bad { border-color: var(--accent); background: var(--accent-soft); animation: shake .4s; }
+@keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+.explain { margin-top: 16px; display: none; }
+.explain.on { display: block; animation: rise .5s var(--ease); }
+
+/* --- Univers Perso --- */
+.perso-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
+.hanko { width: 74px; height: 74px; border-radius: 12px; background: var(--accent); color: #fbf8f1; display: grid; place-items: center; font: 700 30px "Shippori Mincho", serif; transform: rotate(-6deg); box-shadow: 0 10px 30px -10px rgba(197,33,46,.6); animation: stamp .8s var(--ease) both .2s; }
+@keyframes stamp { from { transform: rotate(-6deg) scale(1.6); opacity: 0; } }
+.perso-grid { grid-template-columns: 1.2fr 1fr; }
+.kanji-card { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center; }
+.kanji { font: 700 96px/1 "Shippori Mincho", serif; color: var(--text); position: relative; }
+.kanji::after { content: ""; position: absolute; inset: -8px -10px; border: 1px solid var(--line); border-radius: 12px; background: repeating-linear-gradient(0deg, transparent 0 49.5%, var(--line) 49.5% 50.5%, transparent 50.5%), repeating-linear-gradient(90deg, transparent 0 49.5%, var(--line) 49.5% 50.5%, transparent 50.5%); z-index: -1; opacity: .7; }
+.kanji-info .read { font: 500 14px var(--font-mono); color: var(--accent); }
+.kanji-info p { color: var(--muted); font-size: 14px; margin-top: 6px; }
+.kana-row { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-top: 14px; }
+.kana { aspect-ratio: 1; display: grid; place-items: center; border-radius: 8px; background: var(--surface-2); font: 500 18px "Zen Kaku Gothic New"; transition: transform .2s, background .2s; cursor: default; }
+.kana.m { background: color-mix(in srgb, var(--accent) 16%, var(--surface-2)); }
+.kana:hover { transform: translateY(-3px) scale(1.06); }
+.shuttle-steps { list-style: none; padding: 0; display: grid; gap: 10px; margin-top: 10px; }
+.shuttle-steps li { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); }
+.shuttle-steps .n { font: 700 12px var(--font-mono); color: var(--accent); padding-top: 2px; }
+.shuttle-steps small { display: block; color: var(--muted); }
+.court { width: 100%; height: auto; margin-top: 8px; }
+
+/* --- Palette de commandes (⌘K) --- */
+.palette-bg { position: fixed; inset: 0; background: rgba(5, 6, 9, .55); backdrop-filter: blur(4px); display: none; align-items: flex-start; justify-content: center; padding-top: 14vh; z-index: 50; }
+.palette-bg.on { display: flex; animation: fade .2s; }
+@keyframes fade { from { opacity: 0; } }
+.palette { width: min(560px, 92vw); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 30px 80px -20px rgba(0,0,0,.5); animation: rise .3s var(--ease); }
+.palette input { width: 100%; padding: 16px 18px; background: none; border: 0; border-bottom: 1px solid var(--line); color: var(--text); font: 15px var(--font-mono); outline: none; }
+.palette ul { list-style: none; padding: 6px; max-height: 300px; overflow: auto; }
+.palette li { padding: 10px 12px; border-radius: 9px; display: flex; justify-content: space-between; cursor: pointer; }
+.palette li.sel, .palette li:hover { background: var(--surface-2); }
+.palette li span { color: var(--muted); font: 12px var(--font-mono); }
+
+/* --- Mobile --- */
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .side { position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: auto; flex-direction: row; padding: 8px; border-right: 0; border-top: 1px solid var(--line); z-index: 20; justify-content: space-around; }
+  .logo, .nav-label, .side-foot, .nav .count, .nav a span.t { display: none; }
+  .nav { display: contents; }
+  .nav a { flex-direction: column; gap: 2px; font-size: 11px; padding: 6px 10px; }
+  .nav a.active::before { display: none; }
+  .hero, .universes, .module-layout, .perso-grid, .compare, .split { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .modules { grid-template-columns: 1fr; }
+  .kana-row { grid-template-columns: repeat(5, 1fr); }
+  main { padding-bottom: 110px; }
+}
+@media (min-width: 901px) and (max-width: 1150px) { .modules { grid-template-columns: repeat(2, 1fr); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="backdrop"></div>
+
+<div class="app">
+  <aside class="side">
+    <div class="logo"><div class="logo-mark">fm</div><div>learning hub<small>~/apprendre</small></div></div>
+    <nav class="nav">
+      <div class="nav-label">Navigation</div>
+      <a data-go="home" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span class="t">Accueil</span></a>
+      <a data-go="tech"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 9l-3 3 3 3M16 9l3 3-3 3M13 6l-2 12"/></svg><span class="t">Tech</span></a>
+      <a data-go="perso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 4v16M4 12h16" opacity=".35"/></svg><span class="t">Perso</span></a>
+      <div class="nav-label">Pratiquer</div>
+      <a data-go="review"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="6" width="13" height="14" rx="2"/><path d="M8 3h11a1 1 0 0 1 1 1v13"/></svg><span class="t">Réviser</span><span class="count">18</span></a>
+      <a data-go="quiz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/></svg><span class="t">Quiz</span></a>
+    </nav>
+    <div class="side-foot">
+      🔥 Série de <b>6 jours</b>
+      <div class="kbd-hint"><span>Recherche</span><span><kbd>⌘</kbd> <kbd>K</kbd></span></div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="mock-banner">maquette v1 · données fictives · rien n'est enregistré</div>
+
+    <!-- ================= ACCUEIL ================= -->
+    <section class="view active" data-view="home">
+      <div class="hero">
+        <div>
+          <div class="eyebrow rise" style="--i:0" id="today-date">jeudi 22 octobre</div>
+          <h1 class="rise" style="--i:1">Bonjour Fares.<br>On reprend où tu t'étais arrêté ?</h1>
+          <p class="lead rise" style="--i:2">18 cartes t'attendent aujourd'hui, surtout sur le scheduling Kubernetes. Compte une quinzaine de minutes.</p>
+          <div class="today rise" style="--i:3">
+            <button class="btn primary" data-go="review">Réviser les 18 cartes →</button>
+            <button class="btn" data-go="quiz">Quiz rapide</button>
+          </div>
+        </div>
+        <div class="card terminal rise" style="--i:2">
+          <div class="term-bar"><i></i><i></i><i></i><span>fares@hub ~ zsh</span></div>
+          <div class="term-body" id="term"></div>
+        </div>
+      </div>
+
+      <div class="section grid universes">
+        <div class="card link universe u-tech rise" style="--i:4" data-go="tech">
+          <div class="eyebrow">univers 01</div>
+          <h3>Tech</h3>
+          <p>Kubernetes, Linux, Terraform, sécurité, réseaux, DevOps. Parcours, fiches et pratique.</p>
+          <div class="chips"><span class="tag">kubernetes</span><span class="tag">linux</span><span class="tag">terraform</span><span class="tag">+3</span></div>
+          <div class="watermark">&gt;_</div>
+        </div>
+        <div class="card link universe u-perso rise" style="--i:5" data-go="perso">
+          <div class="eyebrow">univers 02</div>
+          <h3>Perso</h3>
+          <p>Le japonais au quotidien et ta progression en badminton.</p>
+          <div class="chips"><span class="tag">日本語</span><span class="tag">badminton</span></div>
+          <div class="watermark">学</div>
+        </div>
+      </div>
+
+      <div class="section grid stats">
+        <div class="card stat rise" style="--i:6"><div class="v">142</div><div class="l">cartes maîtrisées</div><div class="d">+12 cette semaine</div></div>
+        <div class="card stat rise" style="--i:7"><div class="v">3h20</div><div class="l">temps cette semaine</div><div class="d">+40 min</div></div>
+        <div class="card stat rise" style="--i:8"><div class="v">84%</div><div class="l">réussite aux quiz</div><div class="d">+6 pts</div></div>
+        <div class="card stat rise" style="--i:9"><div class="v">6 j</div><div class="l">série en cours</div><div class="d" style="color:var(--muted)">record : 14 j</div></div>
+      </div>
+
+      <div class="section grid split">
+        <div class="card link resume rise" style="--i:10" data-go="k8s">
+          <div class="module-icon" style="--c:var(--k8s)">k8s</div>
+          <div class="meta">
+            <div class="eyebrow" style="margin:0">reprendre</div>
+            <b>Kubernetes · 07 Scheduling avancé</b>
+            <div class="bar"><i style="--w:60%"></i></div>
+          </div>
+        </div>
+        <div class="card rise" style="--i:11">
+          <div class="eyebrow" style="margin-bottom:12px">activité · 20 semaines</div>
+          <div class="heat" id="heat"></div>
+          <div class="heat-legend"><span>moins</span><span>plus</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TECH ================= -->
+    <section class="view" data-view="tech">
+      <div class="eyebrow rise">univers 01 · tech</div>
+      <h1 class="rise" style="--i:1">Ton labo d'apprentissage</h1>
+      <p class="lead rise" style="--i:2">Chaque module suit le même rythme : un parcours en chapitres, une fiche par notion, des cartes à réviser et un quiz pour valider.</p>
+      <div class="section grid modules" id="modules"></div>
+    </section>
+
+    <!-- ================= MODULE K8S ================= -->
+    <section class="view" data-view="k8s">
+      <div class="crumbs rise"><a data-go="tech">tech</a> / kubernetes</div>
+      <div style="display:flex; gap:18px; align-items:center; --i:1;" class="rise">
+        <div class="module-icon" style="--c:var(--k8s); width:54px; height:54px; font-size:17px;">k8s</div>
+        <div><h1>Kubernetes</h1><p class="lead" style="margin-top:4px">Objectif : être à l'aise en production et prêt pour la CKA.</p></div>
+      </div>
+
+      <div class="module-layout">
+        <ol class="path card rise" style="--i:2; padding:10px;" id="path"></ol>
+
+        <article class="card sheet rise" style="--i:3; padding:28px;">
+          <div class="eyebrow">chapitre 07 · fiche 2/4</div>
+          <h2>Taints, tolerations et affinités</h2>
+          <div class="meta-row"><span class="tag">⏱ 6 min</span><span class="tag">niveau intermédiaire</span><span class="tag">CKA</span></div>
+          <p>Deux mécanismes complémentaires pour contrôler <b>où</b> les pods atterrissent. Ils se ressemblent mais ne regardent pas dans le même sens.</p>
+          <div class="compare">
+            <div><b>Taint → repousse</b><span>Posé sur le <em>nœud</em>. Aucun pod n'y est planifié sauf s'il porte la toleration correspondante.</span></div>
+            <div><b>Affinity → attire</b><span>Déclarée dans le <em>pod</em>. Le scheduler préfère ou exige des nœuds portant certains labels.</span></div>
+          </div>
+          <h4>Dédier des nœuds GPU</h4>
+<pre class="code"><span class="c"># 1. On repousse tout le monde du nœud</span>
+kubectl taint nodes gpu-01 <span class="s">gpu=true:NoSchedule</span>
+
+<span class="c"># 2. Le pod tolère le taint… et cible le nœud</span>
+<span class="k">tolerations:</span>
+  - <span class="k">key:</span> <span class="s">"gpu"</span>
+    <span class="k">operator:</span> <span class="s">"Equal"</span>
+    <span class="k">value:</span> <span class="s">"true"</span>
+    <span class="k">effect:</span> <span class="s">"NoSchedule"</span>
+<span class="k">nodeSelector:</span>
+  <span class="k">accelerator:</span> <span class="s">nvidia</span></pre>
+          <div class="callout"><b>Piège classique.</b> Une toleration <em>autorise</em> un pod à aller sur le nœud, elle ne l'y <em>envoie</em> pas. Pour réserver vraiment des nœuds, il faut combiner taint + affinité (ou nodeSelector).</div>
+          <div class="sheet-actions">
+            <button class="btn primary" data-go="review">Réviser les 12 cartes du chapitre</button>
+            <button class="btn" data-go="quiz">Quiz du chapitre</button>
+            <button class="btn">✎ Ajouter une note perso</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================= RÉVISION ================= -->
+    <section class="view" data-view="review">
+      <div class="review-wrap">
+        <div class="review-head rise"><span id="rv-count">carte 1 / 4</span><div class="progress-dots" id="rv-dots"></div><span>kubernetes · linux</span></div>
+        <div class="flash-scene rise" style="--i:1">
+          <div class="flash" id="flash">
+            <div class="face front"><div class="hint"><span id="rv-tag">kubernetes</span><span>question</span></div><div class="q" id="rv-q"></div><div class="hint"><span>clic ou <kbd>espace</kbd> pour retourner</span><span></span></div></div>
+            <div class="face back"><div class="hint"><span>réponse</span><span></span></div><div class="a" id="rv-a"></div><div class="hint"><span>comment t'en es-tu sorti ?</span><span></span></div></div>
+          </div>
+        </div>
+        <div class="grades rise" style="--i:2" id="grades">
+          <button class="grade" style="--g:var(--accent)" data-grade><kbd>1</kbd><b>À revoir</b><small>dans 10 min</small></button>
+          <button class="grade" style="--g:var(--warn)" data-grade><kbd>2</kbd><b>Difficile</b><small>dans 1 j</small></button>
+          <button class="grade" style="--g:var(--ok)" data-grade><kbd>3</kbd><b>Bien</b><small>dans 3 j</small></button>
+          <button class="grade" style="--g:var(--k8s)" data-grade><kbd>4</kbd><b>Facile</b><small>dans 8 j</small></button>
+        </div>
+        <p class="lead rise" style="--i:3; text-align:center; margin:22px auto 0; font-size:13px;">Répétition espacée : plus une carte te paraît facile, plus elle revient tard.</p>
+      </div>
+    </section>
+
+    <!-- ================= QUIZ ================= -->
+    <section class="view" data-view="quiz">
+      <div class="review-wrap">
+        <div class="review-head rise"><span id="qz-count">question 1 / 3</span><span id="qz-score">score 0</span></div>
+        <div id="qz-body" class="rise" style="--i:1"></div>
+      </div>
+    </section>
+
+    <!-- ================= PERSO ================= -->
+    <section class="view" data-view="perso">
+      <div class="perso-hero">
+        <div>
+          <div class="eyebrow rise">univers 02 · perso</div>
+          <h1 class="rise" style="--i:1">Prendre le temps d'apprendre</h1>
+          <p class="lead rise" style="--i:2">Un espace plus calme, pour ce qui ne relève pas du travail.</p>
+        </div>
+        <div class="hanko">学</div>
+      </div>
+
+      <div class="section grid perso-grid">
+        <div class="card rise" style="--i:3">
+          <div class="eyebrow">日本語 · japonais</div>
+          <div class="kanji-card" style="margin-top:12px">
+            <div class="kanji">学</div>
+            <div class="kanji-info">
+              <div class="read">まなぶ · manabu · ガク</div>
+              <h3 style="font-size:20px; margin-top:4px">apprendre, étudier</h3>
+              <p>学生 (gakusei) étudiant · 大学 (daigaku) université · 学校 (gakkō) école</p>
+            </div>
+          </div>
+          <h4 style="margin-top:24px">Hiragana · 34 / 46 maîtrisés</h4>
+          <div class="kana-row" id="kana"></div>
+          <div class="sheet-actions"><button class="btn primary" data-go="review">Réviser 9 mots</button><button class="btn">Kanji du jour suivant</button></div>
+        </div>
+
+        <div class="card rise" style="--i:4">
+          <div class="eyebrow">🏸 badminton</div>
+          <h3 style="font-size:20px; margin-top:6px">Séance de jeudi · amorti croisé</h3>
+          <svg class="court" viewBox="0 0 300 140" fill="none">
+            <rect x="4" y="4" width="292" height="132" rx="3" stroke="var(--line)" stroke-width="2"/>
+            <line x1="150" y1="4" x2="150" y2="136" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 4"/>
+            <line x1="4" y1="20" x2="296" y2="20" stroke="var(--line)"/><line x1="4" y1="120" x2="296" y2="120" stroke="var(--line)"/>
+            <line x1="106" y1="4" x2="106" y2="136" stroke="var(--line)"/><line x1="194" y1="4" x2="194" y2="136" stroke="var(--line)"/>
+            <circle cx="40" cy="104" r="6" fill="var(--accent)"/>
+            <path id="shot" d="M40 104 Q 120 10 172 34" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 5">
+              <animate attributeName="stroke-dashoffset" from="60" to="0" dur="1.6s" repeatCount="indefinite"/>
+            </path>
+            <circle r="4" fill="var(--text)"><animateMotion dur="1.6s" repeatCount="indefinite"><mpath href="#shot"/></animateMotion></circle>
+          </svg>
+          <ul class="shuttle-steps">
+            <li><span class="n">01</span><div>Préparation identique au dégagement<small>l'adversaire ne doit pas lire le coup</small></div></li>
+            <li><span class="n">02</span><div>Frappe en coupant le volant<small>poignet relâché, tamis légèrement ouvert</small></div></li>
+            <li><span class="n">03</span><div>3 × 15 amortis croisés depuis le fond droit<small>objectif : tomber avant la ligne de service</small></div></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="palette-bg" id="palette">
+  <div class="palette">
+    <input id="pal-in" placeholder="Aller à… (kubernetes, quiz, japonais)" autocomplete="off">
+    <ul id="pal-list"></ul>
+  </div>
+</div>
+
+<script>
+/* ---------- Navigation entre les vues ---------- */
+const views = document.querySelectorAll('.view');
+const navLinks = document.querySelectorAll('.nav a');
+function go(name) {
+  views.forEach(v => v.classList.toggle('active', v.dataset.view === name));
+  const navName = name === 'k8s' ? 'tech' : name;
+  navLinks.forEach(a => a.classList.toggle('active', a.dataset.go === navName));
+  document.body.classList.toggle('perso', name === 'perso');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  if (name === 'tech') animateRings();
+  if (name === 'review') resetReview();
+  if (name === 'quiz') startQuiz();
+  history.replaceState(null, '', '#' + name);
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-go]');
+  if (t) { e.preventDefault(); go(t.dataset.go); }
+});
+
+/* ---------- Date du jour ---------- */
+document.getElementById('today-date').textContent =
+  new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+/* ---------- Terminal animé ---------- */
+const termLines = [
+  { cmd: 'hub status --today' },
+  { out: '<span class="dim">NAMESPACE     DUE   STREAK  MASTERY</span>' },
+  { out: 'kubernetes    <span class="p">12</span>    6j      ████████░░ 78%' },
+  { out: 'linux         <span class="p">4</span>     6j      █████████░ 88%' },
+  { out: 'terraform     <span class="p">2</span>     3j      █████░░░░░ 52%' },
+  { out: 'japonais      9     2j      ███░░░░░░░ 31%' },
+  { cmd: 'hub review --focus scheduling' },
+  { out: '<span class="ok">✓</span> 18 cartes prêtes · ~15 min' },
+];
+const term = document.getElementById('term');
+async function typeTerm() {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  let html = '';
+  for (const l of termLines) {
+    if (l.cmd) {
+      html += '<span class="p">❯</span> ';
+      for (const ch of l.cmd) { html += ch; term.innerHTML = html + '<span class="caret"></span>'; await sleep(38); }
+      html += '\n'; await sleep(260);
+    } else { html += l.out + '\n'; term.innerHTML = html + '<span class="caret"></span>'; await sleep(110); }
+  }
+  term.innerHTML = html + '<span class="p">❯</span> <span class="caret"></span>';
+}
+typeTerm();
+
+/* ---------- Heatmap d'activité (aléatoire mais stable) ---------- */
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+document.getElementById('heat').innerHTML = Array.from({ length: 140 }, (_, i) => {
+  const r = rnd(), boost = i > 110 ? .25 : 0, l = r + boost > .92 ? 4 : r + boost > .75 ? 3 : r + boost > .55 ? 2 : r + boost > .35 ? 1 : 0;
+  return `<i data-l="${l}"></i>`;
+}).join('');
+
+/* ---------- Modules Tech ---------- */
+const modules = [
+  { id: 'k8s', name: 'Kubernetes', code: 'k8s', c: '--k8s', desc: 'Architecture, workloads, réseau, stockage, sécurité, troubleshooting.', ch: '7/10', due: 12, p: 64 },
+  { id: 'linux', name: 'Linux', code: '$_', c: '--linux', desc: 'Système de fichiers, process, systemd, permissions, scripting bash.', ch: '8/9', due: 4, p: 88 },
+  { id: 'tf', name: 'Terraform', code: 'tf', c: '--tf', desc: 'State, modules, workspaces, providers, bonnes pratiques en équipe.', ch: '4/8', due: 2, p: 52 },
+  { id: 'sec', name: 'Sécurité', code: '🔒', c: '--sec', desc: 'Durcissement, secrets, supply chain, scan d\'images, RBAC.', ch: '1/7', due: 0, p: 12 },
+  { id: 'net', name: 'Réseaux', code: '⇄', c: '--net', desc: 'Modèle OSI, TCP/IP, DNS, load balancing, CNI et service mesh.', ch: '2/8', due: 0, p: 24 },
+  { id: 'ops', name: 'DevOps & CI/CD', code: 'ci', c: '--ops', desc: 'Pipelines GitLab CI, GitOps avec ArgoCD, Ansible, observabilité.', ch: '0/8', due: 0, p: 0 },
+];
+document.getElementById('modules').innerHTML = modules.map((m, i) => `
+  <div class="card link module rise" style="--i:${i + 3}; --c:var(${m.c})" ${m.id === 'k8s' ? 'data-go="k8s"' : ''}>
+    <div class="module-top">
+      <div class="module-icon">${m.code}</div>
+      <div class="ring-wrap"><svg class="ring" viewBox="0 0 46 46"><circle class="track" cx="23" cy="23" r="18"/><circle class="val" cx="23" cy="23" r="18" data-p="${m.p}"/></svg><span>${m.p}%</span></div>
+    </div>
+    <div><h3>${m.name}</h3><p>${m.desc}</p></div>
+    <div class="module-foot"><span>chapitres ${m.ch}</span>${m.due ? `<b>${m.due} à réviser</b>` : '<span>à jour</span>'}</div>
+  </div>`).join('');
+function animateRings() {
+  document.querySelectorAll('.ring .val').forEach(c => { c.style.strokeDashoffset = 113; });
+  requestAnimationFrame(() => setTimeout(() => document.querySelectorAll('.ring .val').forEach(c => {
+    c.style.strokeDashoffset = 113 - 113 * c.dataset.p / 100;
+  }), 150));
+}
+
+/* ---------- Parcours Kubernetes ---------- */
+const chapters = [
+  ['Architecture du cluster', 'control plane, etcd, kubelet'], ['Pods et cycle de vie', 'probes, restartPolicy'],
+  ['Workloads', 'Deployment, StatefulSet, Job'], ['Services et Ingress', 'ClusterIP, NodePort, Gateway API'],
+  ['ConfigMaps et Secrets', 'injection, rotation'], ['Stockage', 'PV, PVC, StorageClass'],
+  ['Scheduling avancé', 'taints, affinités, priorités'], ['RBAC et sécurité', 'ServiceAccount, PodSecurity'],
+  ['Observabilité et debug', 'logs, events, kubectl debug'], ['Helm et GitOps', 'charts, ArgoCD'],
+];
+document.getElementById('path').innerHTML = chapters.map(([t, s], i) =>
+  `<li class="${i < 6 ? 'done' : i === 6 ? 'current' : ''}"><span class="dot"></span><div><b>${String(i + 1).padStart(2, '0')} · ${t}</b><small>${s}</small></div></li>`).join('');
+
+/* ---------- Flashcards ---------- */
+const cards = [
+  { tag: 'kubernetes', q: 'Quel est le seul composant qui lit et écrit directement dans etcd ?', a: 'Le <b>kube-apiserver</b>. Le scheduler, le controller-manager et les kubelets passent tous par l\'API.' },
+  { tag: 'kubernetes', q: 'Un pod reste en <code>Pending</code>. Quelles sont les trois premières pistes ?', a: '1. Ressources demandées trop élevées (<code>requests</code>).<br>2. Taint non toléré ou affinité impossible.<br>3. PVC non lié. On vérifie avec <code>kubectl describe pod</code>, section <em>Events</em>.' },
+  { tag: 'linux', q: 'Différence entre un hard link et un lien symbolique ?', a: 'Le <b>hard link</b> pointe vers le même inode (il survit à la suppression de l\'original, même système de fichiers). Le <b>symlink</b> pointe vers un chemin et casse si la cible disparaît.' },
+  { tag: 'terraform', q: 'À quoi sert <code>terraform state mv</code> ?', a: 'À renommer ou déplacer une ressource dans le state (par exemple vers un module) <b>sans la détruire et la recréer</b>. Depuis Terraform 1.1, on peut aussi utiliser un bloc <code>moved</code>.' },
+];
+let ci = 0;
+const flash = document.getElementById('flash'), grades = document.getElementById('grades');
+function renderCard() {
+  const c = cards[ci];
+  document.getElementById('rv-q').innerHTML = c.q;
+  document.getElementById('rv-a').innerHTML = c.a;
+  document.getElementById('rv-tag').textContent = c.tag;
+  document.getElementById('rv-count').textContent = `carte ${ci + 1} / ${cards.length}`;
+  document.getElementById('rv-dots').innerHTML = cards.map((_, i) => `<i class="${i <= ci ? 'on' : ''}"></i>`).join('');
+}
+function resetReview() { ci = 0; flash.classList.remove('flipped'); grades.classList.remove('on'); renderCard(); }
+function flip() { flash.classList.toggle('flipped'); grades.classList.toggle('on', flash.classList.contains('flipped')); }
+function grade() {
+  if (!flash.classList.contains('flipped')) return;
+  flash.classList.add('leave'); grades.classList.remove('on');
+  setTimeout(() => {
+    ci = (ci + 1) % cards.length;
+    flash.classList.remove('leave', 'flipped'); renderCard();
+    flash.classList.add('enter'); setTimeout(() => flash.classList.remove('enter'), 450);
+  }, 350);
+}
+flash.addEventListener('click', flip);
+document.querySelectorAll('[data-grade]').forEach(b => b.addEventListener('click', grade));
+
+/* ---------- Quiz ---------- */
+const quiz = [
+  { q: 'Un pod affiche <code>CrashLoopBackOff</code>. Que se passe-t-il ?', o: ['L\'image est introuvable dans le registre', 'Le conteneur démarre puis s\'arrête en erreur, et le kubelet le relance avec un délai croissant', 'Aucun nœud n\'a assez de ressources', 'Le nœud est NotReady'], a: 1, e: 'L\'image introuvable donne <code>ImagePullBackOff</code>, et le manque de ressources laisse le pod en <code>Pending</code>. Ici, regarde <code>kubectl logs --previous</code> pour voir pourquoi le conteneur s\'arrête.' },
+  { q: 'Quelle commande affiche les processus qui écoutent sur un port TCP ?', o: ['ps aux | grep tcp', 'ss -tlnp', 'netstat -r', 'lsof -d'], a: 1, e: '<code>ss -tlnp</code> : <b>t</b>cp, <b>l</b>istening, adresses <b>n</b>umériques, et <b>p</b>rocessus associé. C\'est le remplaçant moderne de <code>netstat -tlnp</code>.' },
+  { q: 'Deux personnes lancent <code>terraform apply</code> en même temps sur un backend S3. Qu\'est-ce qui évite la corruption du state ?', o: ['Le versioning du bucket', 'Le verrouillage du state (lockfile S3 natif ou table DynamoDB)', 'Le fichier .terraform.lock.hcl', 'Rien, il faut se coordonner'], a: 1, e: 'Le verrou de state bloque le second apply. Attention : <code>.terraform.lock.hcl</code> verrouille les <em>versions des providers</em>, pas le state.' },
+];
+let qi = 0, score = 0;
+function startQuiz() { qi = 0; score = 0; renderQ(); }
+function renderQ() {
+  const body = document.getElementById('qz-body');
+  document.getElementById('qz-score').textContent = `score ${score}`;
+  if (qi >= quiz.length) {
+    document.getElementById('qz-count').textContent = 'terminé';
+    body.innerHTML = `<div class="card" style="text-align:center; padding:40px; margin-top:20px; animation: rise .6s var(--ease)">
+      <div style="font:700 56px var(--font-mono); color:var(--accent)">${score}/${quiz.length}</div>
+      <p class="lead" style="margin:8px auto 20px">Les questions ratées sont ajoutées à tes cartes de révision.</p>
+      <button class="btn primary" onclick="startQuiz()">Recommencer</button></div>`;
+    return;
+  }
+  const q = quiz[qi];
+  document.getElementById('qz-count').textContent = `question ${qi + 1} / ${quiz.length}`;
+  body.innerHTML = `<div class="quiz-q">${q.q}</div><div class="opts">${q.o.map((o, i) =>
+    `<button class="opt" data-i="${i}"><span class="letter">${'ABCD'[i]}</span><span>${o}</span></button>`).join('')}</div>
+    <div class="explain card" id="qz-ex"><b>Pourquoi ?</b><p style="margin-top:6px">${q.e}</p>
+    <div style="margin-top:14px"><button class="btn primary" id="qz-next">Question suivante →</button></div></div>`;
+  body.querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
+    const i = +b.dataset.i;
+    body.querySelectorAll('.opt').forEach(x => x.disabled = true);
+    body.querySelector(`.opt[data-i="${q.a}"]`).classList.add('good');
+    if (i === q.a) score++; else b.classList.add('bad');
+    document.getElementById('qz-score').textContent = `score ${score}`;
+    document.getElementById('qz-ex').classList.add('on');
+    document.getElementById('qz-next').onclick = () => { qi++; renderQ(); };
+  }));
+}
+
+/* ---------- Hiragana ---------- */
+const kana = 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほ';
+document.getElementById('kana').innerHTML = [...kana].map((k, i) => `<div class="kana ${i < 24 ? 'm' : ''}">${k}</div>`).join('');
+
+/* ---------- Palette ⌘K + raccourcis ---------- */
+const pal = document.getElementById('palette'), palIn = document.getElementById('pal-in'), palList = document.getElementById('pal-list');
+const entries = [
+  ['Accueil', 'home', 'page'], ['Univers Tech', 'tech', 'page'], ['Kubernetes', 'k8s', 'module'],
+  ['Réviser mes cartes', 'review', 'action'], ['Lancer un quiz', 'quiz', 'action'], ['Univers Perso', 'perso', 'page'],
+  ['Japonais', 'perso', 'module'], ['Badminton', 'perso', 'module'],
+];
+let sel = 0;
+function renderPal() {
+  const f = palIn.value.toLowerCase();
+  const list = entries.filter(e => e[0].toLowerCase().includes(f));
+  sel = Math.min(sel, Math.max(list.length - 1, 0));
+  palList.innerHTML = list.map((e, i) => `<li class="${i === sel ? 'sel' : ''}" data-to="${e[1]}">${e[0]}<span>${e[2]}</span></li>`).join('');
+}
+function openPal() { pal.classList.add('on'); palIn.value = ''; sel = 0; renderPal(); palIn.focus(); }
+function closePal() { pal.classList.remove('on'); }
+palIn.addEventListener('input', () => { sel = 0; renderPal(); });
+palList.addEventListener('click', e => { const li = e.target.closest('li'); if (li) { closePal(); go(li.dataset.to); } });
+pal.addEventListener('click', e => { if (e.target === pal) closePal(); });
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); pal.classList.contains('on') ? closePal() : openPal(); return; }
+  if (pal.classList.contains('on')) {
+    const items = palList.querySelectorAll('li');
+    if (e.key === 'Escape') closePal();
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); sel = (sel + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length; renderPal(); }
+    if (e.key === 'Enter' && items[sel]) { closePal(); go(items[sel].dataset.to); }
+    return;
+  }
+  if (document.querySelector('[data-view="review"]').classList.contains('active')) {
+    if (e.key === ' ') { e.preventDefault(); flip(); }
+    if (['1', '2', '3', '4'].includes(e.key)) grade();
+  }
+});
+
+/* ---------- Démarrage ---------- */
+const start = location.hash.slice(1);
+if (start && document.querySelector(`[data-view="${start}"]`)) go(start);
+</script>
+</body>
+</html>

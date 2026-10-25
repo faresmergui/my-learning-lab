@@ -1,0 +1,61 @@
+---
+// Parcours d'un module : la liste des chapitres et leurs fiches, rangés par
+// niveau quand le module en a (JLPT pour le japonais, classement en badminton).
+// L'état (fait / en cours) dépend de ta progression, il est calculé dans le navigateur.
+import { groupByStage, ficheUrl, type Module, type Fiche } from '../lib/content';
+interface Props { mod: Module; fiches: Fiche[]; current?: string }
+const { mod, fiches, current } = Astro.props;
+const stages = groupByStage(mod, fiches);
+---
+<ol class="path card" style="padding:10px;" data-path>
+  {stages.map((s) => (
+    <>
+      {s.label && (
+        <li class="stage-head">
+          <span class="stage-badge">{s.label}</span>
+          <span>{s.title}</span>
+        </li>
+      )}
+      {s.chapters.map((c) => (
+        <li data-fiches={c.fiches.map((f) => f.id).join(',')}>
+          <span class="dot"></span>
+          <div>
+            <b>{String(c.n).padStart(2, '0')} · {c.title}</b>
+            {c.fiches.length === 0
+              ? <small>à venir</small>
+              : (
+                <ul class="sub">
+                  {c.fiches.map((f) => (
+                    <li><a href={ficheUrl(f)} data-fiche={f.id} class={f.id === current ? 'here' : ''}>{f.data.title}</a></li>
+                  ))}
+                </ul>
+              )}
+          </div>
+        </li>
+      ))}
+    </>
+  ))}
+</ol>
+
+<script>
+  import { load } from '../lib/progress';
+  const p = load();
+  document.querySelectorAll<HTMLElement>('[data-path]').forEach((path) => {
+    let currentSet = false;
+    path.querySelectorAll<HTMLElement>(':scope > li[data-fiches]').forEach((li) => {
+      const ids = (li.dataset.fiches || '').split(',').filter(Boolean);
+      const done = ids.length > 0 && ids.every((id) => p.read[id]);
+      if (done) li.classList.add('done');
+      else if (!currentSet && ids.length) { li.classList.add('current'); currentSet = true; }
+    });
+    path.querySelectorAll<HTMLElement>('[data-fiche]').forEach((a) => {
+      if (p.read[a.dataset.fiche!]) a.classList.add('is-read');
+    });
+    // Le parcours défile seul : on y amène la fiche ouverte (ou le chapitre en cours).
+    const target = path.querySelector<HTMLElement>('a.here') || path.querySelector<HTMLElement>(':scope > li.current');
+    if (target && path.scrollHeight > path.clientHeight) {
+      const delta = target.getBoundingClientRect().top - path.getBoundingClientRect().top;
+      path.scrollTop = delta - path.clientHeight / 3;
+    }
+  });
+</script>

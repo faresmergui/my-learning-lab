@@ -1,0 +1,209 @@
+---
+import { url } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import { getModules } from '../lib/content';
+const tech = await getModules('tech');
+const perso = await getModules('perso');
+---
+<Base title="Accueil" nav="home">
+  <div class="hero">
+    <div>
+      <div class="eyebrow rise" style="--i:0" id="today-date">aujourd'hui</div>
+      <h1 class="rise" style="--i:1">Bonjour Fares.<br /><span id="hero-sub">On reprend où tu t'étais arrêté ?</span></h1>
+      <p class="lead rise" style="--i:2" id="hero-lead">Chargement de ta progression…</p>
+      <div class="today rise" style="--i:3">
+        <a class="btn primary" href={url('/reviser/')} id="hero-cta">Réviser →</a>
+        <a class="btn" href={url('/quiz/')}>Quiz rapide</a>
+      </div>
+    </div>
+    <div class="card terminal rise" style="--i:2">
+      <div class="term-bar"><i></i><i></i><i></i><span>fares@hub ~ zsh</span></div>
+      <div class="term-body" id="term"></div>
+    </div>
+  </div>
+
+  <div class="section grid universes">
+    <a class="card link universe u-tech rise" style="--i:4; text-decoration:none" href={url('/tech/')}>
+      <div class="eyebrow">univers 01</div>
+      <h3>Tech</h3>
+      <p>{tech.map((m) => m.data.title).join(', ')}. Parcours, fiches et pratique.</p>
+      <div class="chips">{tech.slice(0, 3).map((m) => <span class="tag">{m.data.title.toLowerCase()}</span>)}{tech.length > 3 && <span class="tag">+{tech.length - 3}</span>}</div>
+      <div class="watermark">&gt;_</div>
+    </a>
+    <a class="card link universe u-perso rise" style="--i:5; text-decoration:none" href={url('/perso/')}>
+      <div class="eyebrow">univers 02</div>
+      <h3>Perso</h3>
+      <p>Langue, sport, jeux, musique et finances : tout ce qui ne relève pas du travail, au même rythme de fiches et de révisions.</p>
+      <div class="chips">{perso.map((m) => <span class="tag">{m.data.title.toLowerCase()}</span>)}</div>
+      <div class="watermark">学</div>
+    </a>
+  </div>
+
+  <div class="section grid stats">
+    <div class="card stat rise" style="--i:6"><div class="v" data-stat="mastered">0</div><div class="l">cartes maîtrisées</div><div class="d" data-stat="mastered-d"></div></div>
+    <div class="card stat rise" style="--i:7"><div class="v" data-stat="read">0</div><div class="l">fiches lues</div><div class="d" data-stat="read-d"></div></div>
+    <div class="card stat rise" style="--i:8"><div class="v" data-stat="quiz">–</div><div class="l">réussite aux quiz</div><div class="d" data-stat="quiz-d"></div></div>
+    <div class="card stat rise" style="--i:9"><div class="v" data-stat="streak">0 j</div><div class="l">série en cours</div><div class="d" style="color:var(--muted)">un jour = au moins une action</div></div>
+  </div>
+
+  <div class="section grid split">
+    <a class="card link resume rise" style="--i:10; text-decoration:none" href={url('/tech/')} id="resume">
+      <div class="module-icon" style="--c:var(--accent)" id="resume-icon">&gt;_</div>
+      <div class="meta">
+        <div class="eyebrow" style="margin:0" id="resume-eyebrow">pour commencer</div>
+        <b id="resume-title">Choisis un module dans l'univers Tech</b>
+        <div class="bar"><i style="--w:0%" id="resume-bar"></i></div>
+      </div>
+    </a>
+    <div class="card rise" style="--i:11">
+      <div class="eyebrow" style="margin-bottom:12px">activité · 20 semaines</div>
+      <div class="heat" id="heat"></div>
+      <div class="heat-legend"><span>moins</span><span>plus</span></div>
+    </div>
+  </div>
+
+  <div class="section card backup rise" style="--i:12">
+    <p>Ta progression est enregistrée dans ce navigateur. Exporte-la de temps en temps pour la garder ou la passer sur un autre ordinateur.
+      <span class="backup-status" id="backup-status"></span></p>
+    <button class="btn" id="export">Exporter</button>
+    <label class="btn" style="cursor:pointer">Importer<input type="file" accept="application/json" id="import" hidden /></label>
+    <button class="btn sm" id="undo-import" hidden>Annuler le dernier import</button>
+  </div>
+</Base>
+
+<script>
+  import { url } from '../lib/url';
+  import { load, streak, dayKey, exportJson, readBackup, applyImport, canUndoImport, undoImport, lastExport, summary, isEmpty } from '../lib/progress';
+  import { globalStats, moduleStats, loadIndex } from '../lib/stats';
+
+  const idx = await loadIndex();
+  const p = load();
+  const g = globalStats(idx, p);
+  const newToday = Math.min(g.fresh, 15);
+  const todo = g.due + newToday;
+  const $ = (id: string) => document.getElementById(id)!;
+
+  $('today-date').textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  // Message du jour
+  if (todo === 0) {
+    $('hero-sub').textContent = 'Tout est à jour.';
+    $('hero-lead').textContent = 'Aucune carte à réviser. Profite-en pour lire une nouvelle fiche.';
+    $('hero-cta').textContent = 'Explorer les modules →';
+    $('hero-cta').setAttribute('href', url('/tech/'));
+  } else {
+    const parts = [];
+    if (g.due) parts.push(`${g.due} carte${g.due > 1 ? 's' : ''} à revoir`);
+    if (newToday) parts.push(`${newToday} nouvelle${newToday > 1 ? 's' : ''}`);
+    $('hero-lead').textContent = `${parts.join(' et ')} t'attendent. Compte environ ${Math.max(2, Math.round(todo * 0.6))} minutes.`;
+    $('hero-cta').textContent = `Réviser ${todo} carte${todo > 1 ? 's' : ''} →`;
+  }
+
+  // Stats
+  const set = (k: string, v: string) => { const el = document.querySelector(`[data-stat="${k}"]`); if (el) el.textContent = v; };
+  const n = streak(p);
+  set('mastered', String(g.mastered));
+  set('mastered-d', `sur ${Object.values(idx.modules).reduce((a, m) => a + m.cards.length, 0)} cartes`);
+  set('read', String(g.read));
+  set('read-d', `sur ${Object.values(idx.modules).reduce((a, m) => a + m.fiches.length, 0)} fiches`);
+  set('quiz', g.quizPct === null ? '–' : `${g.quizPct}%`);
+  set('quiz-d', g.quizPct === null ? 'pas encore de quiz' : 'toutes questions confondues');
+  set('streak', `${n} j`);
+
+  // Reprendre
+  if (p.last) {
+    const s = moduleStats(p.last.module, idx, p);
+    $('resume').setAttribute('href', p.last.url);
+    $('resume-eyebrow').textContent = 'reprendre';
+    $('resume-title').textContent = `${idx.modules[p.last.module]?.title ?? ''} · ${p.last.title}`;
+    $('resume-bar').style.setProperty('--w', `${s.pct}%`);
+    $('resume-icon').textContent = '↺';
+  }
+
+  // Terminal : un vrai résumé, tapé lettre par lettre
+  const bar = (pct: number) => '█'.repeat(Math.round(pct / 10)).padEnd(10, '░');
+  const rows = Object.entries(idx.modules)
+    .filter(([, m]) => m.cards.length)
+    .map(([slug]) => {
+      const s = moduleStats(slug, idx, p);
+      return `${slug.padEnd(14)}<span class="p">${String(s.due).padEnd(6)}</span>${String(s.cards).padEnd(7)}${bar(s.pct)} ${s.pct}%`;
+    });
+  const lines = [
+    { cmd: 'hub status --today' },
+    { out: '<span class="dim">MODULE        DUE   CARDS  PROGRESS</span>' },
+    ...rows.map((out) => ({ out })),
+    { cmd: 'hub review' },
+    { out: todo ? `<span class="ok">✓</span> ${todo} cartes prêtes` : '<span class="ok">✓</span> rien à réviser, bravo' },
+  ];
+  const term = $('term');
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  (async () => {
+    let html = '';
+    for (const l of lines) {
+      if ('cmd' in l && l.cmd) {
+        html += '<span class="p">❯</span> ';
+        for (const ch of l.cmd) { html += ch; term.innerHTML = html + '<span class="caret"></span>'; await sleep(38); }
+        html += '\n'; await sleep(260);
+      } else if ('out' in l) {
+        html += l.out + '\n'; term.innerHTML = html + '<span class="caret"></span>'; await sleep(110);
+      }
+    }
+    term.innerHTML = html + '<span class="p">❯</span> <span class="caret"></span>';
+  })();
+
+  // Heatmap : 20 semaines, une case par jour, du plus ancien au plus récent
+  const DAY = 86_400_000;
+  const today = new Date(); today.setHours(12, 0, 0, 0);
+  const start = today.getTime() - (19 * 7 + ((today.getDay() + 6) % 7)) * DAY; // commence un lundi
+  const cells = [];
+  for (let t = start; t <= today.getTime(); t += DAY) {
+    const c = p.activity[dayKey(t)] ?? 0;
+    const l = c === 0 ? 0 : c < 5 ? 1 : c < 15 ? 2 : c < 30 ? 3 : 4;
+    cells.push(`<i data-l="${l}" title="${new Date(t).toLocaleDateString('fr-FR')} · ${c} action${c > 1 ? 's' : ''}"></i>`);
+  }
+  $('heat').innerHTML = cells.join('');
+
+  // Sauvegarde
+  const fmtDate = (t: number) => new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const plural = (n: number, w: string) => `${n} ${w}${n > 1 ? 's' : ''}`;
+  const describe = (s: ReturnType<typeof summary>) => `${plural(s.cards, 'carte')} déjà vue${s.cards > 1 ? 's' : ''}, ${plural(s.read, 'fiche')} lue${s.read > 1 ? 's' : ''}`;
+
+  function showBackupStatus() {
+    const el = $('backup-status');
+    const last = lastExport();
+    const days = last ? Math.floor((Date.now() - last) / 86_400_000) : null;
+    el.textContent = last
+      ? `Dernier export : ${days === 0 ? "aujourd'hui" : days === 1 ? 'hier' : `il y a ${days} jours`}.`
+      : 'Aucun export depuis ce navigateur pour l\'instant.';
+    // Rappel discret : progression non vide et pas d'export depuis deux semaines.
+    el.classList.toggle('warn', !isEmpty(p) && (days === null || days >= 14));
+    $('undo-import').hidden = !canUndoImport();
+  }
+  showBackupStatus();
+
+  $('export').addEventListener('click', () => { exportJson(); showBackupStatus(); });
+
+  ($('import') as HTMLInputElement).addEventListener('change', async (e) => {
+    const input = e.target as HTMLInputElement;
+    const f = input.files?.[0];
+    input.value = ''; // pour pouvoir choisir deux fois le même fichier
+    if (!f) return;
+    let backup;
+    try { backup = await readBackup(f); } catch { alert('Ce fichier ne ressemble pas à une sauvegarde du hub.'); return; }
+    const from = backup.exportedAt ? ` du ${fmtDate(backup.exportedAt)}` : '';
+    const ok = confirm(
+      `Sauvegarde${from} : ${describe(summary(backup.progress))}.\n\n` +
+      `Elle va remplacer ta progression actuelle (${describe(summary(p))}).\n` +
+      `Ta progression actuelle est gardée de côté : tu pourras annuler cet import.`
+    );
+    if (!ok) return;
+    applyImport(backup.progress);
+    location.reload();
+  });
+
+  $('undo-import').addEventListener('click', () => {
+    if (!confirm('Revenir à la progression d\'avant le dernier import ?')) return;
+    undoImport();
+    location.reload();
+  });
+</script>

@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import ModuleCard from '../components/ModuleCard.astro';
+import { getModules, getFiches, moduleOf } from '../lib/content';
+const modules = await getModules('tech');
+const fiches = await getFiches();
+const count = (slug: string) => fiches.filter((f) => moduleOf(f) === slug).length;
+---
+<Base title="Tech" nav="tech">
+  <div class="eyebrow rise">univers 01 · tech</div>
+  <h1 class="rise" style="--i:1">Ton labo d'apprentissage</h1>
+  <p class="lead rise" style="--i:2">Chaque module suit le même rythme : un parcours en chapitres, une fiche par notion, des cartes à réviser et un quiz pour valider.</p>
+  <div class="section grid modules">
+    {modules.map((m, i) => <ModuleCard mod={m} fiches={count(m.id)} i={i + 3} />)}
+  </div>
+</Base>
