@@ -2,13 +2,13 @@ from svg import D, figure
 from inject import put
 
 M = 'echecs'
-# Glyphes pleins pour les deux camps (la couleur vient du CSS), ︎ force l'affichage texte et non emoji.
+# Solid glyphs for both sides (color comes from the CSS); \ufe0e forces text rather than emoji rendering.
 GLYPH = {'R': '♚', 'D': '♛', 'T': '♜', 'F': '♝', 'C': '♞', 'P': '♟'}
 S = 34
 
 
 def sq(x0, y0, square):
-    """Coin haut gauche d'une case, échiquier vu des Blancs."""
+    """Top-left corner of a square, board seen from White's side."""
     f, r = ord(square[0]) - 97, int(square[1])
     return x0 + f * S, y0 + (8 - r) * S
 
@@ -19,7 +19,7 @@ def center(x0, y0, square):
 
 
 def board(d, x0, y0, white=(), black=(), hl=()):
-    """white / black : listes « Re1 », « Pe4 »… ; hl : cases surlignées."""
+    """white / black: lists like "Re1", "Pe4" (French piece letters); hl: highlighted squares."""
     for f in range(8):
         for r in range(8):
             k = 'sqd' if (f + r) % 2 == 0 else 'sql'
@@ -44,7 +44,7 @@ def arrow(d, x0, y0, a, b, color='a', k=''):
 
 X0, Y0 = 60, 20
 
-# --- 04 : la fourchette de cavalier --------------------------------------
+# --- 04: the knight fork --------------------------------------
 d = D(680, 320)
 board(d, X0, Y0, white=['Re1', 'Cd5'], black=['Re8', 'Ta8', 'Pb7', 'Pf7'], hl=['c7'])
 arrow(d, X0, Y0, 'd5', 'c7')
@@ -58,7 +58,7 @@ put(f'{M}/04-les-motifs-tactiques.md', 'fourchette', figure(d, 'La fourchette ro
     "Le cavalier arrive en c7 avec échec et attaque aussi la tour : une seule des deux menaces peut être parée."),
     before='## Le clouage')
 
-# --- 06 : le mat étouffé -------------------------------------------------
+# --- 06: smothered mate -------------------------------------------------
 d = D(680, 320)
 board(d, X0, Y0, white=['Rg1', 'Cf7', 'Ph2', 'Pg2'], black=['Rh8', 'Tg8', 'Pg7', 'Ph7'], hl=['h8'])
 arrow(d, X0, Y0, 'f7', 'h8', k='dash')
@@ -70,7 +70,7 @@ put(f'{M}/06-attaquer-le-roi.md', 'etouffe', figure(d, 'Le mat étouffé',
     "g8, g7 et h7 sont occupées par des pièces noires : l'échec du cavalier ne peut être ni intercepté ni fui."),
     before='## Le sacrifice grec')
 
-# --- 15 : l'opposition et les cases critiques ----------------------------
+# --- 15: opposition and key squares ----------------------------
 d = D(680, 320)
 board(d, X0, Y0, white=['Re5', 'Pe4'], black=['Re7'], hl=['d6', 'e6', 'f6'])
 d.text(380, 100, 'Les rois sont face à face :', 'tl', anchor='start')

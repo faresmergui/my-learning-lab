@@ -1,5 +1,5 @@
 ---
-// Quiz : jusqu'à 10 questions tirées au hasard, filtrables par module ou par fiche.
+// Quiz: up to 10 random questions, filterable by module or note.
 import { url } from '../lib/url';
 import Base from '../layouts/Base.astro';
 import { getAllQuestions, getModules, getCertIndex, jsonForScript } from '../lib/content';
@@ -31,7 +31,7 @@ const certs = await getCertIndex();
   const params = new URLSearchParams(location.search);
   const mod = params.get('module');
   const fiche = params.get('fiche');
-  // ?cert=cka : seulement les questions des fiches liées à cette certification.
+  // ?cert=cka: only questions from the notes linked to that certification.
   const cert = params.get('cert');
   const certFiches = cert ? new Set<string>(JSON.parse(document.getElementById('cert-index')!.textContent!)[cert]?.fiches ?? []) : null;
   const current = cert ? `cert:${cert}` : mod;
@@ -67,7 +67,7 @@ const certs = await getCertIndex();
       return;
     }
     const q = quiz[qi];
-    // Les options sont mélangées à chaque fois pour éviter de retenir la position.
+    // Options are shuffled every time so the position can't be memorized.
     const order = shuffle(q.options.map((_, i) => i));
     $count.textContent = `question ${qi + 1} / ${quiz.length} · ${q.moduleTitle.toLowerCase()}`;
     body.innerHTML = `<div class="quiz-q">${q.q}</div><div class="opts">${order.map((oi, k) =>

@@ -1,4 +1,4 @@
-// Fichier statique /search.json : l'index de recherche plein texte des fiches.
+// Static file /search.json: the full-text search index of the notes.
 import { buildSearchIndex } from '../lib/search';
 
 export async function GET() {

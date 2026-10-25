@@ -4,11 +4,11 @@ from sch_badminton_lib import court, NET, SSL, LSD, L, W
 
 B = 'badminton/'
 
-# --- Anatomie : les quatre premiers coups --------------------------------
+# --- Anatomy: the first four shots --------------------------------
 d = D(680, 330)
 X, Y = court(d, 70, 40, 40)
-S, P = (NET - SSL - 0.25, W * 0.72), (2.4, W / 2 + 0.6)       # serveur (droite), partenaire
-R, RP = (NET + SSL + 0.35, W * 0.28), (L - 2.4, W / 2 - 0.4)  # receveur en diagonale
+S, P = (NET - SSL - 0.25, W * 0.72), (2.4, W / 2 + 0.6)       # server (right), partner
+R, RP = (NET + SSL + 0.35, W * 0.28), (L - 2.4, W / 2 - 0.4)  # receiver, diagonally
 for (x, y), lab, k in [(S, 'serveur', 'c'), (P, 'partenaire', 'c'), (R, 'receveur', 'a'), (RP, 'partenaire', 'a')]:
     d.circle(X(x), Y(y), 9, k=k)
     d.text(X(x), Y(y) + 24, lab, 'ct' if k == 'c' else 'at')
@@ -22,7 +22,7 @@ d.h = 360
 put(B + '10-anatomie-d-un-point.md', 'anatomie', figure(d, 'Les premiers coups d\'un point en double',
     'Le retour vise la zone entre le serveur et son partenaire. Qui doit lever au troisième coup perd l\'initiative.'))
 
-# --- Rotation : attaque -> défense après un lift --------------------------
+# --- Rotation: attack -> defense after a lift --------------------------
 d = D(680, 260)
 for i, (title, x0, pos, arrows, note) in enumerate([
         ('avant : ton équipe attaque', 20, [(NET - 1.2, W * 0.75), (1.8, W / 2)], [], 'le joueur avant (droite) doit lever'),
@@ -44,7 +44,7 @@ for i, (title, x0, pos, arrows, note) in enumerate([
 put(B + '10-rotations.md', 'rotation', figure(d, 'Rotation de l\'attaque vers la défense après un lift',
     'Celui qui lève défend la ligne de son côté ; le partenaire glisse sur l\'autre moitié.'))
 
-# --- Erreurs de placement : joueur avant collé au filet --------------------
+# --- Positioning errors: front player glued to the net --------------------
 d = D(680, 260)
 for i, (title, x0, front, ok) in enumerate([('joueur avant collé au filet', 20, NET - 0.35, False),
                                               ('joueur avant bien placé', 360, NET - SSL + 0.2, True)]):
@@ -63,7 +63,7 @@ for i, (title, x0, front, ok) in enumerate([('joueur avant collé au filet', 20,
 put(B + '10-erreurs-de-placement.md', 'erreurs', figure(d, 'Joueur avant trop collé au filet ou bien placé',
     'Collé au filet, le joueur avant laisse un trou au milieu. Vers la ligne de service court, il couvre la poussée.'))
 
-# --- Service et retour : positions -----------------------------------------
+# --- Serve and return: positions -----------------------------------------
 d = D(680, 300)
 X, Y = court(d, 70, 30, 40)
 S, P = (NET - SSL - 0.25, W * 0.72), (2.6, W * 0.62)

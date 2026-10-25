@@ -1,5 +1,5 @@
-// Fonctions utilisées au moment du build pour lire et organiser le contenu.
-// Rien ici n'est envoyé au navigateur : seules les données préparées le sont.
+// Build-time helpers that read and organize the content.
+// Nothing here ships to the browser: only the prepared data does.
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { marked } from 'marked';
 import { url } from './url';
@@ -7,14 +7,14 @@ import { url } from './url';
 export type Module = CollectionEntry<'modules'>;
 export type Fiche = CollectionEntry<'fiches'>;
 
-/** JSON à placer dans un <script type="application/json"> : « < » est échappé pour
- *  qu'un texte contenant </script> ne puisse jamais refermer la balise. */
+/** JSON for a <script type="application/json"> tag: "<" is escaped so that
+ *  text containing </script> can never close the tag. */
 export const jsonForScript = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c');
 
-/** Les questions/réponses des cartes acceptent du Markdown simple (`code`, **gras**). */
+/** Card questions/answers accept simple Markdown (`code`, **bold**). */
 export const inline = (md: string) => marked.parseInline(md, { async: false }) as string;
 
-/** Identifiant stable d'une carte : son `id` s'il existe, sinon un hash de la question. */
+/** Stable card ID: its `id` if set, otherwise a hash of the question. */
 export function cardId(ficheId: string, card: { id?: string; q: string }) {
   if (card.id) return `${ficheId}#${card.id}`;
   let h = 0;
@@ -34,7 +34,7 @@ export async function getModules(universe?: 'tech' | 'perso') {
     .sort((a, b) => u(a) - u(b) || a.data.order - b.data.order);
 }
 
-/** Fiches triées dans l'ordre des modules, puis des chapitres. */
+/** Notes sorted by module order, then by chapter. */
 export async function getFiches(moduleSlug?: string) {
   const [all, mods] = await Promise.all([getCollection('fiches'), getCollection('modules')]);
   const rank = (f: Fiche) => {
@@ -46,7 +46,7 @@ export async function getFiches(moduleSlug?: string) {
     .sort((a, b) => rank(a) - rank(b) || a.data.chapter - b.data.chapter || a.data.order - b.data.order);
 }
 
-/** Chapitres d'un module, avec les fiches rangées dedans. */
+/** A module's chapters, with their notes. */
 export function groupByChapter(mod: Module, fiches: Fiche[]) {
   return mod.data.chapters.map((title, i) => ({
     n: i + 1,
@@ -56,8 +56,8 @@ export function groupByChapter(mod: Module, fiches: Fiche[]) {
 }
 
 /**
- * Chapitres rangés par niveau, si le module en définit (JLPT, classement…).
- * Sans niveaux, un seul groupe sans titre.
+ * Chapters grouped by level, if the module defines levels (JLPT, rankings…).
+ * Without levels, a single untitled group.
  */
 export function groupByStage(mod: Module, fiches: Fiche[]) {
   const chapters = groupByChapter(mod, fiches);
@@ -69,12 +69,12 @@ export function groupByStage(mod: Module, fiches: Fiche[]) {
     start += s.chapters;
     return g;
   });
-  // Chapitres non couverts par un niveau : rangés à la fin, sans perdre de contenu.
+  // Chapters not covered by a level go at the end, so no content is lost.
   if (start < chapters.length) groups.push({ label: '', title: 'Autres', description: '', chapters: chapters.slice(start) });
   return groups;
 }
 
-/** Toutes les cartes, prêtes pour la page de révision. */
+/** All cards, ready for the review page. */
 export async function getAllCards() {
   const [mods, fiches] = await Promise.all([getModules(), getFiches()]);
   const byId = Object.fromEntries(mods.map((m) => [m.id, m]));
@@ -93,7 +93,7 @@ export async function getAllCards() {
   });
 }
 
-/** Toutes les questions de quiz. */
+/** All quiz questions. */
 export async function getAllQuestions() {
   const [mods, fiches] = await Promise.all([getModules(), getFiches()]);
   const byId = Object.fromEntries(mods.map((m) => [m.id, m]));
@@ -111,9 +111,9 @@ export async function getAllQuestions() {
 }
 
 /**
- * Index léger embarqué dans chaque page : quelles cartes et fiches
- * appartiennent à quel module. Le navigateur le croise avec ta progression
- * pour afficher les compteurs (à réviser, pourcentages...).
+ * Lightweight index (served as /hub-index.json): which cards and notes belong
+ * to which module. The browser combines it with the user's progress to show
+ * the counters (cards due, percentages...).
  */
 export async function getHubIndex() {
   const [mods, fiches] = await Promise.all([getModules(), getFiches()]);
@@ -132,12 +132,12 @@ export async function getHubIndex() {
   };
 }
 
-/** Synthèses (aide-mémoire), une par module au plus. */
+/** Summaries (cheat sheets), at most one per module. */
 export async function getSyntheses() {
   return getCollection('syntheses');
 }
 
-/** Entrées de la palette ⌘K. */
+/** ⌘K palette entries. */
 export async function getPaletteEntries() {
   const [mods, fiches, syns, certs] = await Promise.all([getModules(), getFiches(), getSyntheses(), getCertifications()]);
   const byId = Object.fromEntries(mods.map((m) => [m.id, m]));
@@ -157,14 +157,14 @@ export async function getPaletteEntries() {
   ];
 }
 
-/** Certifications, dans l'ordre de priorité. */
+/** Certifications, in priority order. */
 export async function getCertifications() {
   return (await getCollection('certifications')).sort((a, b) => a.data.order - b.data.order);
 }
 
 export type Certification = Awaited<ReturnType<typeof getCertifications>>[number];
 
-/** Fiches d'une certification (sans doublon) ; une fiche introuvable fait échouer le build. */
+/** Notes for a certification (deduplicated); a missing note fails the build. */
 export async function certFiches(cert: Certification) {
   const fiches = await getFiches();
   const ids = [...new Set(cert.data.domains.flatMap((d) => d.fiches))];
@@ -175,7 +175,7 @@ export async function certFiches(cert: Certification) {
   });
 }
 
-/** Pour le navigateur : les fiches et cartes de chaque certification (progression, filtres). */
+/** For the browser: each certification's notes and cards (progress, filters). */
 export async function getCertIndex() {
   const certs = await getCertifications();
   return Object.fromEntries(await Promise.all(certs.map(async (c) => {

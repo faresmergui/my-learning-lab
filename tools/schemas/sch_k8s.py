@@ -3,7 +3,7 @@ from inject import put
 
 M = 'kubernetes'
 
-# 1. Composants du cluster ---------------------------------------------
+# 1. Cluster components ---------------------------------------------
 d = D(680, 330)
 d.box(14, 140, 92, 48, 'kubectl', 'toi', d=0)
 d.zone(124, 14, 268, 302, 'control plane', k='c')
@@ -30,7 +30,7 @@ d.arrow([(436, 88), (398, 88), (398, 156), (378, 156)], color='c')
 d.arrow([(436, 226), (404, 226), (404, 172), (378, 172)], color='c')
 put(f'{M}/01-composants-du-cluster.md', 'architecture', figure(d, 'Architecture d\'un cluster Kubernetes', 'Tout passe par l\'API server : aucun composant ne parle directement à un autre, ni à etcd.'), before='## Le control plane')
 
-# 2. Trajet d'une requête : le hub API server ---------------------------
+# 2. A request's journey: the API server hub ---------------------------
 d = D(680, 300)
 d.box(250, 122, 180, 56, 'kube-apiserver', 'stocke et notifie', k='c', d=0)
 d.box(20, 124, 120, 52, 'kubectl apply', 'Deployment', d=0)
@@ -55,7 +55,7 @@ d.text(250, 112, 'watch', 's', anchor='end')
 d.text(440, 112, 'watch', 's', anchor='start')
 put(f'{M}/01-trajet-d-une-requete.md', 'hub', figure(d, 'Le trajet d\'un kubectl apply', '1 la requête arrive, 2 elle est enregistrée, 3 les contrôleurs créent les Pods, 4 le scheduler leur donne un nœud, 5 le kubelet le voit, 6 il lance les conteneurs.'), before='## 1. L\'API server reçoit la requête')
 
-# 3. Pod multi-conteneurs -----------------------------------------------
+# 3. Multi-container pod -----------------------------------------------
 d = D(680, 262)
 d.zone(16, 12, 648, 238, 'pod', k='c')
 d.box(36, 56, 104, 50, 'init 1', 'attendre la DB', d=0)
@@ -71,7 +71,7 @@ d.arrow([(472, 137), (502, 137)], k='dash', start=True)
 d.box(36, 186, 608, 44, 'réseau partagé : une seule IP, les conteneurs se parlent en localhost', k='off', d=5)
 put(f'{M}/02-pods-multi-conteneurs.md', 'pod', figure(d, 'Ce que contient et partage un pod', 'Les init containers préparent, puis l\'app et ses sidecars tournent ensemble avec le même réseau et les mêmes volumes.'), before='## Ce que partage un pod')
 
-# 4. Probes sur une ligne de temps --------------------------------------
+# 4. Probes on a timeline --------------------------------------
 d = D(680, 230)
 X0 = 150
 lanes = [('startupProbe', 40), ('readinessProbe', 96), ('livenessProbe', 152)]
@@ -184,7 +184,7 @@ d.text(340, 248, 'ordre d\'éviction quand le nœud manque de mémoire', 's')
 d.h = 256
 put(f'{M}/07-requests-limits-qos.md', 'qos', figure(d, 'Les trois classes QoS', 'La classe dépend uniquement de la façon dont tu remplis requests et limits.'), before='## Encadrer un namespace')
 
-# 10. Taints et tolérations -------------------------------------------------
+# 10. Taints and tolerations -------------------------------------------------
 d = D(680, 236)
 d.box(16, 30, 160, 56, 'pod ia', 'tolère gpu=true', k='c', d=0)
 d.box(16, 150, 160, 56, 'pod web', 'aucune tolération', d=0)
@@ -243,7 +243,7 @@ d.arrow([(154, 208), (230, 208)])
 d.text(440, 264, 'quoi', 'zl')
 put(f'{M}/08-rbac.md', 'rbac', figure(d, 'Les quatre objets RBAC', 'Un Role définit des droits, un Binding les donne à des sujets. Un RoleBinding peut réutiliser un ClusterRole, limité à son namespace.'), fence='définit les droits')
 
-# 13. Méthode de debug ------------------------------------------------------------
+# 13. Debugging method ------------------------------------------------------------
 d = D(680, 270)
 d.box(240, 12, 200, 48, 'kubectl get pod', 'quel état ?', k='c', d=0)
 cases = [('Pending', 'describe : events', 'ressources, PVC,\ntaints, quota'),
@@ -341,7 +341,7 @@ d.text(340, 188, 'topologySpreadConstraints · maxSkew: 1 · topologyKey: zone',
 d.text(340, 204, 'la perte d\'une zone ne coupe qu\'un tiers des réplicas', 'ct')
 put(f'{M}/07-repartir-et-prioriser.md', 'spread', figure(d, 'Six réplicas répartis sur trois zones', 'Sans contrainte, le scheduler peut tout mettre sur les mêmes nœuds.'), before='## Prioriser')
 
-# 19. ConfigMap : env ou volume ----------------------------------------------------------------
+# 19. ConfigMap: env or volume ----------------------------------------------------------------
 d = D(680, 220)
 d.box(14, 80, 150, 60, 'ConfigMap', 'LOG_LEVEL=debug', k='c', d=0)
 d.box(250, 14, 200, 64, 'en variable d\'env', 'lue au démarrage', d=1)

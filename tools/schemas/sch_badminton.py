@@ -4,13 +4,13 @@ from inject import put
 M = 'badminton'
 L, W = 13.4, 6.1
 NET = L / 2
-SSL = 1.98      # ligne de service court, depuis le filet
-LSD = 0.76      # ligne de service long double, depuis le fond
-SIDE = 0.46     # couloir latéral
+SSL = 1.98      # short service line, from the net
+LSD = 0.76      # doubles long service line, from the back
+SIDE = 0.46     # side alley
 
 
 def court(d, x0, y0, s, labels=False):
-    """Terrain vu de dessus, filet vertical au centre."""
+    """Court seen from above, net vertical in the middle."""
     X = lambda m: round(x0 + m * s, 1)
     Y = lambda m: round(y0 + m * s, 1)
     d.rect(X(0), Y(0), L * s, W * s, k='floor', rx=2)
@@ -25,7 +25,7 @@ def court(d, x0, y0, s, labels=False):
     return X, Y
 
 
-# --- 1. Le terrain et ses lignes --------------------------------------
+# --- 1. The court and its lines --------------------------------------
 d = D(680, 330)
 X, Y = court(d, 40, 40, 40)
 d.text(X(NET), Y(0) - 14, 'filet · 1,55 m', 's')
@@ -34,7 +34,7 @@ d.text(X(L / 2), Y(W) + 44, '13,40 m', 's')
 d.arrow([(X(L) + 22, Y(0)), (X(L) + 22, Y(W))], start=True)
 d.text(X(L) + 30, Y(W / 2) - 6, '6,10 m', 's', anchor='start')
 d.text(X(L) + 30, Y(W / 2) + 10, 'en double', 's', anchor='start')
-# repères numérotés
+# numbered markers
 marks = [
     (NET - SSL, 1.4, '1'), (LSD, 1.4, '2'), (4.0, SIDE / 2, '3'), (2.2, W / 2, '4'),
 ]
@@ -50,12 +50,12 @@ for i, l in enumerate(legend):
 d.h = 390
 put(f'{M}/01-regles-et-score.md', 'terrain', figure(d, 'Le terrain de badminton vu de dessus', 'Le terrain vu de dessus. Une ligne touchée par le volant fait partie du terrain.'), before='## Le service')
 
-# --- 2. Zones de service simple / double ------------------------------
+# --- 2. Singles / doubles service areas ------------------------------
 d = D(680, 230)
 for i, (title, x0, single) in enumerate([('simple : long et étroit', 20, True), ('double : court et large', 360, False)]):
     s = 22.5
     X, Y = court(d, x0, 40, s)
-    # zone de réception (diagonale du serveur, placé en bas à gauche)
+    # receiving area (diagonal from the server, placed bottom left)
     rx0, rx1 = NET + SSL, (L if single else L - LSD)
     ry0, ry1 = (SIDE if single else 0), W / 2
     d.raw(f'<rect x="{X(rx0)}" y="{Y(ry0)}" width="{round((rx1 - rx0) * s, 1)}" height="{round((ry1 - ry0) * s, 1)}" class="dg-fillA"/>')
@@ -65,7 +65,7 @@ for i, (title, x0, single) in enumerate([('simple : long et étroit', 20, True),
     d.text(X(L / 2), Y(W) + 22, 'serveur (point pair) → zone de réception en rouge', 's')
 put(f'{M}/01-regles-et-score.md', 'zones-service', figure(d, 'Zones de service en simple et en double', 'Le service part en diagonale. En double, le fond de court est interdit, les couloirs latéraux sont autorisés.'), before='> **À retenir.**')
 
-# --- Vue de côté : trajectoires ---------------------------------------
+# --- Side view: trajectories ---------------------------------------
 def side(d, x0, ground, sx, sy, xmin=0.0, xmax=L, hmax=8):
     X = lambda m: round(x0 + (m - xmin) * sx, 1)
     Yh = lambda h: round(ground - h * sy, 1)
@@ -95,7 +95,7 @@ for i, (lab, col, p, (lx, ly)) in enumerate(paths):
 d.circle(X(1.2), Yh(2.7), 5, k='c')
 put(f'{M}/04-degagement-et-smash.md', 'trajectoires', figure(d, 'Trajectoires des coups de fond de court, vue de côté', 'Même préparation, quatre trajectoires. L\'adversaire ne doit pas savoir laquelle arrive.'), before='## Le smash, en trois points')
 
-# --- Amorti lent / rapide ---------------------------------------------
+# --- Slow / fast drop shot ---------------------------------------------
 d = D(680, 230)
 X, Yh = side(d, 30, 190, 46, 26)
 d.line(X(NET + SSL), 190, X(NET + SSL), 198, k='court')
@@ -108,7 +108,7 @@ d.text(X(8.6), Yh(1.2), 'amorti rapide : tendu, arrive vite', 'at', anchor='star
 d.circle(X(1.2), Yh(2.7), 5, k='c')
 put(f'{M}/04-amorti.md', 'amortis', figure(d, 'Amorti lent et amorti rapide, vue de côté', 'Les deux doivent tomber avant la ligne de service court (zone verte).'), before='## Les clés techniques')
 
-# --- Jeu au filet : trois hauteurs ------------------------------------
+# --- Net play: three heights ------------------------------------
 d = D(680, 290)
 X, Yh = side(d, 20, 250, 92, 62, xmin=3.4, xmax=10.5, hmax=3.4)
 d.text(X(9.3), 272, 'toi, au filet', 's')
@@ -127,7 +127,7 @@ d.arrow(f'M{X(7.3)} {Yh(0.7)} C {X(6.6)} {Yh(4)}, {X(5)} {Yh(4.4)}, {X(3.45)} {Y
 d.text(X(3.6), Yh(3.15), 'lift, vers le fond', 'okt', anchor='start', d=5)
 put(f'{M}/05-jeu-au-filet.md', 'hauteurs', figure(d, 'Les trois options au filet selon la hauteur du volant', 'Plus tu prends le volant haut, plus tu as d\'options.'), before='## Les clés techniques')
 
-# --- Déplacements : l'étoile ------------------------------------------
+# --- Footwork: the star ------------------------------------------
 d = D(680, 300)
 s = 40
 X, Y = court(d, 70, 30, s)
@@ -146,7 +146,7 @@ d.text(X(NET + 3.3), Y(3.6), '3. frappe en équilibre', 's')
 d.text(X(NET + 3.3), Y(4.6), '4. retour à la base', 's')
 put(f'{M}/06-deplacements.md', 'etoile', figure(d, 'Les six directions de déplacement depuis la base', 'Le shadow en étoile : chaque coin, puis retour à la base, à chaque fois.'), before="## Les appuis clés")
 
-# --- Prises : position de base ----------------------------------------
+# --- Grips: base position ----------------------------------------
 d = D(680, 300)
 s = 40
 X, Y = court(d, 70, 30, s)
@@ -160,7 +160,7 @@ for i, (x, y) in enumerate([(6.3, 0.5), (6.3, W - 0.5), (0.4, 0.5), (0.4, W - 0.
     d.arrow([(X(3.9), Y(W / 2)), (X(x), Y(y))], k='dash', d=i + 1)
 put(f'{M}/02-prises-et-placement.md', 'base', figure(d, 'Position d\'attente en simple', 'Depuis la base, les quatre coins sont à distance comparable.'), before='## Exercice')
 
-# --- Tactique simple : les quatre coins -------------------------------
+# --- Singles tactics: the four corners -------------------------------
 d = D(680, 330)
 s = 40
 X, Y = court(d, 70, 40, s)
@@ -178,7 +178,7 @@ d.arrow(f'M{X(3.0)} {Y(W * 0.66)} Q {X(6.2)} {Y(W * 0.85)} {X(NET + 1.2)} {Y(W -
 d.text(X(NET + 1.4), Y(W) + 20, '2. amorti en ligne, dans le coin opposé', 'at', d=5)
 put(f'{M}/09-tactique-simple.md', 'coins', figure(d, 'Les quatre coins et un enchaînement type', 'Fond croisé, puis avant opposé : l\'adversaire traverse tout le terrain.'), before="## Lire l'adversaire")
 
-# --- Tactique double : formations -------------------------------------
+# --- Doubles tactics: formations -------------------------------------
 d = D(680, 240)
 for i, (title, x0, pos, note) in enumerate([
         ('attaque : avant-arrière', 20, [(NET - 1.4, W / 2), (2.0, W / 2)], 'ton équipe frappe vers le bas'),

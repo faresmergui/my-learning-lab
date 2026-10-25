@@ -1,5 +1,5 @@
-// Calculs affichés sur les pages (compteurs, pourcentages), côté navigateur.
-// Ils croisent l'index du contenu (/hub-index.json) et ta progression.
+// Numbers shown on the pages (counters, percentages), computed in the browser.
+// They combine the content index (/hub-index.json) with the user's progress.
 import { isDue, isMastered, load, type Progress } from './progress';
 import { url } from './url';
 
@@ -12,7 +12,7 @@ export type HubIndex = {
   }>;
 };
 
-// Téléchargé une seule fois par page (et mis en cache par le navigateur entre les pages).
+// Downloaded once per page (and cached by the browser across pages).
 let pending: Promise<HubIndex> | null = null;
 export const loadIndex = (): Promise<HubIndex> =>
   (pending ??= fetch(url('/hub-index.json'))
@@ -26,7 +26,7 @@ export function moduleStats(slug: string, idx: HubIndex, p: Progress = load()) {
   const mastered = m.cards.filter((id) => isMastered(p.cards[id])).length;
   const read = m.fiches.filter((f) => p.read[f.id]).length;
   const total = m.cards.length + m.fiches.length;
-  // Avancement = fiches lues + cartes maîtrisées, sur le total des deux.
+  // Progress = notes read + cards mastered, over the total of both.
   const pct = total ? Math.round(((read + mastered) / total) * 100) : 0;
   return { due, mastered, cards: m.cards.length, read, fiches: m.fiches.length, pct };
 }

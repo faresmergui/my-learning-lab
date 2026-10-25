@@ -3,7 +3,7 @@ from inject import put
 
 M = 'ansible'
 
-# --- 01 : le modèle sans agent ----------------------------------------
+# --- 01: the agentless model ----------------------------------------
 d = D(680, 300)
 d.zone(14, 14, 252, 200, 'nœud de contrôle', k='c')
 d.box(30, 44, 106, 52, 'inventaire', 'qui', d=0)
@@ -21,7 +21,7 @@ for i, t in enumerate(['1. copie le module', '2. l\'exécute (Python)', '3. renv
 d.text(14, 236, 'à chaque tâche, sur chaque machine', 'zl', anchor='start')
 put(f'{M}/01-comprendre-ansible.md', 'push', figure(d, 'Ansible pousse ses tâches en SSH', 'Aucun agent ne tourne sur les serveurs : ils ont seulement besoin de SSH et de Python.'), before="À chaque tâche, Ansible")
 
-# --- 04 : l'ordre d'exécution -----------------------------------------
+# --- 04: execution order -----------------------------------------
 d = D(680, 350)
 hosts = ['web1', 'web2', 'web3']
 cx = [330, 460, 590]
@@ -47,7 +47,7 @@ d.circle(270, 334, 6, k='a'); d.text(282, 338, 'failed : web2 sort du play, les 
 d.h = 350
 put(f'{M}/04-les-playbooks.md', 'ordre', figure(d, "L'ordre d'exécution d'un playbook", "Une tâche se termine sur toutes les machines (5 à la fois par défaut) avant que la suivante commence."), before='## Les handlers')
 
-# --- 05 : la priorité des variables -----------------------------------
+# --- 05: variable precedence -----------------------------------
 d = D(680, 340)
 lv = ["defaults/ d'un rôle", 'group_vars/all', 'group_vars/<groupe>', 'host_vars/<hôte>', 'facts',
       'vars: du play, vars_files', "vars/ d'un rôle", 'set_fact, register', '-e (extra vars)']
@@ -60,7 +60,7 @@ d.arrow([(668, 40), (668, 300)], color='c')
 d.text(660, 326, 'le plus fort', 'ct', anchor='end')
 put(f'{M}/05-variables-et-facts.md', 'priorite', figure(d, 'La priorité des variables', 'Plus la source est précise et tardive, plus elle gagne. Les defaults des rôles sont faits pour être écrasés.'), before="L'idée générale")
 
-# --- 10 : les étapes de test ------------------------------------------
+# --- 10: testing stages ------------------------------------------
 d = D(680, 250)
 steps = [('yamllint', '--syntax-check', ''), ('ansible-lint', 'profil production', ''), ('--check --diff', 'sur un vrai\nenvironnement', 'c'), ('Molecule', 'machine jetable', 'c')]
 for i, (t, s, k) in enumerate(steps):
@@ -80,7 +80,7 @@ for i, t in enumerate(['create', 'converge', 'idempotence', 'verify', 'destroy']
 d.text(340, 240, 'idempotence : un deuxième passage ne doit rien changer', 's', d=9)
 put(f'{M}/10-tester-son-code-ansible.md', 'etapes', figure(d, 'Du test le plus rapide au plus complet', 'On lance les plus rapides à chaque commit, Molecule en CI à chaque merge request.'), before='## Tout enchaîner')
 
-# --- 11 : serial et les lots ------------------------------------------
+# --- 11: serial and batches ------------------------------------------
 d = D(680, 310)
 lots = [('lot 1 · canari', 1), ('lot 2 · 20 %', 4), ('lot 3 · le reste', 15)]
 for i, (t, n) in enumerate(lots):

@@ -5,7 +5,7 @@ M = 'finance'
 
 
 def axes(d, x0, y0, x1, y1, ymax, ystep, yfmt, xmax, xstep, xlabel):
-    """Grille et graduations d'un graphique : (x0, y0) en haut à gauche, (x1, y1) en bas à droite."""
+    """Chart grid and ticks: (x0, y0) top left, (x1, y1) bottom right."""
     for v in range(0, ymax + 1, ystep):
         y = y1 - (y1 - y0) * v / ymax
         d.line(x0, y, x1, y)
@@ -22,7 +22,7 @@ def curve(d, x0, y0, x1, y1, ymax, xmax, f, color, k='thick'):
     return pts[-1]
 
 
-# --- 03 : intérêts composés ------------------------------------------
+# --- 03: compound interest ------------------------------------------
 d = D(680, 320)
 X0, Y0, X1, Y1 = 80, 30, 560, 250
 axes(d, X0, Y0, X1, Y1, 250000, 50000, lambda v: f'{v // 1000} k€', 30, 5, 'années')
@@ -37,7 +37,7 @@ put(f'{M}/03-interets-composes-et-inflation.md', 'composes', figure(d, 'Les int�
     "La courbe pleine est le capital, la droite en tirets ce que tu as versé. Après 30 ans, plus des deux tiers du capital sont des intérêts : l'écart se creuse surtout à la fin."),
     before='### La règle de 72')
 
-# --- 08 : l'effet des frais ------------------------------------------
+# --- 08: the effect of fees ------------------------------------------
 d = D(680, 320)
 X0, Y0, X1, Y1 = 80, 30, 540, 250
 axes(d, X0, Y0, X1, Y1, 80000, 20000, lambda v: f'{v // 1000} k€', 30, 5, 'années')
@@ -50,7 +50,7 @@ put(f'{M}/08-les-frais.md', 'frais', figure(d, "L'effet des frais sur 30 ans",
     "Même placement, même marché : seuls les frais changent. Passer de 0,2 % à 2 % de frais par an coûte presque 30 000 € sur 10 000 € investis."),
     before='## Les différents frais')
 
-# --- 18 : l'ordre des priorités --------------------------------------
+# --- 18: order of priorities --------------------------------------
 d = D(680, 300)
 steps = [('Budget', 'dettes chères'), ('Précaution', '3 à 6 mois'), ('Abondement', 'employeur'),
          ('Projets courts', 'placements sûrs'), ('Long terme', 'PEA, AV, PER'), ('Optimiser', 'locatif, transmission')]

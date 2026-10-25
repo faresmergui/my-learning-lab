@@ -1,15 +1,15 @@
-# Historique des versions
+# Changelog
 
-## v1.0.0 (octobre 2026)
+## v1.0.0 (October 2026)
 
-Première version complète, prête à être mise en ligne.
+First complete version, ready to go online.
 
-**Contenu** : 19 modules, 345 fiches, plus de 2 300 flashcards et un quiz par fiche.
+**Content**: 19 modules, 345 notes, 2,300+ flashcards and a quiz for every note (content in French).
 
-- Tech (12 modules) : Kubernetes, Linux, Terraform, Ansible, Sécurité (dont un guide de méthodologie pentest et CTF), Réseaux, DevOps & CI/CD, Docker, AWS, OpenStack, Observabilité, IA.
-- Perso (7 modules) : japonais (JLPT N5 à N3), badminton (de P12 à expert), Yu-Gi-Oh!, Valorant, piano (sans solfège, lecture en option), finances personnelles, échecs.
-- Une synthèse par module, 6 pages de certification (CKA, AWS SAA, CKS, LFCS, Terraform Associate, EX210), plus de 130 schémas animés.
+- Tech (12 modules): Kubernetes, Linux, Terraform, Ansible, Security (including a pentest and CTF methodology guide), Networking, DevOps & CI/CD, Docker, AWS, OpenStack, Observability, AI.
+- Personal (7 modules): Japanese (JLPT N5 to N3), badminton (from beginner to expert), Yu-Gi-Oh!, Valorant, piano (by ear first, sheet music optional), personal finance, chess.
+- A summary per module, 6 certification pages (CKA, AWS SAA, CKS, LFCS, Terraform Associate, EX210), 130+ animated diagrams.
 
-**Fonctionnalités** : parcours par chapitres et par niveaux, répétition espacée, quiz filtrables par module ou certification, tableau de progression avec prévision sur 14 jours, recherche plein texte (⌘K), export et import de la progression, page 404.
+**Features**: chapter- and level-based learning paths, spaced repetition, quizzes filterable by module or certification, progress dashboard with a 14-day forecast, full-text search (⌘K), progress export and import, 404 page.
 
-**Qualité et sécurité** : CSP par empreintes, données de progression assainies, vérification des types et des liens internes à chaque build, CodeQL, revue des dépendances et Dependabot, actions GitHub figées par SHA.
+**Quality and security**: hash-based CSP, sanitized progress data, type and internal-link checks on every build, CodeQL, dependency review and Dependabot, GitHub Actions pinned by SHA.

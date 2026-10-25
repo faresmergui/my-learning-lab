@@ -4,7 +4,7 @@ from sch_badminton_lib import court, side, NET, SSL, LSD, L, W
 
 B = 'badminton'
 
-# --- Échelle des classements FFBaD -----------------------------------
+# --- FFBaD ranking ladder -----------------------------------
 d = D(680, 250)
 fam = [('NC', ['NC'], 'départ'), ('Promotion', ['P12', 'P11', 'P10'], ''), ('Départemental', ['D9', 'D8', 'D7'], ''),
        ('Régional', ['R6', 'R5', 'R4'], ''), ('National', ['N3', 'N2', 'N1'], '')]
@@ -26,7 +26,7 @@ d.text(345, 240, 'un classement par discipline : simple, double, mixte', 's')
 put(f'{B}/01-classement-ffbad.md', 'echelle-ffbad',
     figure(d, 'Échelle des classements FFBaD', 'Treize marches, de NC à N1. Ce module suit les mêmes paliers.'))
 
-# --- Les services, vue de côté ---------------------------------------
+# --- Serves, side view ---------------------------------------
 d = D(680, 260)
 X, Yh = side(d, 30, 210, 46, 24)
 for xm in (NET - SSL, NET + SSL, L - LSD):
@@ -45,7 +45,7 @@ d.circle(o[0], o[1], 5, k='c')
 put(f'{B}/03-le-service.md', 'services',
     figure(d, 'Trois services vus de côté', 'Même départ, trois trajectoires : le court rase la bande, le flick surprend, le long monte au fond.'))
 
-# --- Défense en double -----------------------------------------------
+# --- Doubles defense -----------------------------------------------
 d = D(680, 300)
 s = 40
 X, Y = court(d, 70, 30, s)
@@ -61,7 +61,7 @@ d.line(X(0.2), Y(W / 2), X(NET - 0.2), Y(W / 2), k='grid')
 put(f'{B}/11-defense.md', 'defense-double',
     figure(d, 'Placement de la défense côte à côte en double', 'Chaque défenseur couvre sa moitié : la ligne pour l\'un, le milieu et le croisé pour l\'autre.'))
 
-# --- Japonais : donner et recevoir -----------------------------------
+# --- Japanese: giving and receiving -----------------------------------
 d = D(680, 240)
 d.box(250, 90, 180, 60, 'moi', 'et mon cercle proche', k='c')
 d.box(20, 90, 150, 60, 'les autres', None)

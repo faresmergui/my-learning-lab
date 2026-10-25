@@ -1,6 +1,6 @@
 ---
-// Icône d'un module : le logo SVG s'il existe dans src/lib/icons.ts,
-// sinon le texte court du champ `code` (k8s, tf, 日…).
+// Module icon: the SVG logo if one exists in src/lib/icons.ts,
+// otherwise the short text from the `code` field (k8s, tf, 日…).
 import { moduleIcons } from '../lib/icons';
 interface Props { id: string; code: string; style?: string }
 const { id, code, style } = Astro.props;

@@ -4,7 +4,7 @@ from inject import put
 # ============================== LINUX ==============================
 M = 'linux'
 
-# Inodes et liens
+# Inodes and links
 d = D(680, 250)
 d.zone(14, 14, 200, 222, 'répertoire')
 for i, (n, k) in enumerate([('data.csv', 'c'), ('backup.csv', 'c'), ('current', '')]):
@@ -41,7 +41,7 @@ for gi, (name, bits, who, k) in enumerate(groups):
 d.text(340, 186, 'r = 4 · w = 2 · x = 1, on additionne par groupe : 750', 's')
 put(f'{M}/02-permissions.md', 'bits', figure(d, 'Lire une ligne de droits', '-rwxr-x--- se lit en trois groupes de trois : 7 pour le propriétaire, 5 pour le groupe, 0 pour les autres.'), fence='-rwxr-x---  1 fares devops')
 
-# États des processus
+# Process states
 d = D(680, 250)
 d.raw('<g transform="translate(0,36)">')
 d.box(14, 100, 96, 50, 'fork()', 'création', d=0)
@@ -64,7 +64,7 @@ d.raw('</g>')
 d.h = 296
 put(f'{M}/03-processus-et-signaux.md', 'etats', figure(d, 'Les états d\'un processus', 'Beaucoup de processus en D signalent un problème de disque ou de réseau (NFS), pas de CPU.'), before='## Les signaux')
 
-# Diagnostic réseau en 5 marches
+# Network troubleshooting in 5 steps
 d = D(680, 200)
 steps = [('1 interface', 'ip -br a'), ('2 route', 'ip r get 1.1.1.1'), ('3 DNS', 'dig +short api'), ('4 port', 'nc -zv api 443'), ('5 appli', 'curl -v https://…')]
 for i, (t, cmd) in enumerate(steps):
@@ -98,7 +98,7 @@ d.text(620, 186, 'agrandir', 's')
 d.text(620, 243, 'lvextend -r', 'ct')
 put(f'{M}/06-disques-montages-lvm.md', 'lvm', figure(d, 'Les trois couches de LVM', 'On agrandit un LV à chaud, en ajoutant un disque au VG si besoin.'), fence='/dev/sdb   /dev/sdc        ← PV')
 
-# systemd : drop-in
+# systemd: drop-in
 d = D(680, 200)
 d.box(14, 20, 250, 56, '/lib/systemd/system/nginx.service', 'fourni par le paquet', tk='s', d=0)
 d.box(14, 110, 250, 70, '/etc/systemd/system/\nnginx.service.d/override.conf', 'systemctl edit nginx', k='c', tk='s', d=1)

@@ -1,7 +1,7 @@
-"""Insère (ou met à jour) un schéma dans une fiche Markdown.
+"""Inserts (or updates) a diagram in a Markdown note.
 
-Chaque schéma est encadré par <!-- schema:nom --> ... <!-- /schema:nom -->,
-ce qui permet de relancer le script sans dupliquer : le bloc est remplacé.
+Each diagram is wrapped in <!-- schema:name --> ... <!-- /schema:name -->,
+so the script can be re-run without duplicating anything: the block is replaced.
 """
 import re
 
@@ -19,14 +19,14 @@ def apply(text, sid, html, fence=None, before=None, after=None):
     if m:
         return text[:m.start()] + b + text[m.end():]
     if fence:
-        # le bloc de code ``` ... ``` qui contient ce texte
+        # the ``` ... ``` code block that contains this text
         for fm in re.finditer(r'^```[^\n]*\n.*?^```[ \t]*$', text, re.S | re.M):
             if fence in fm.group(0):
                 return text[:fm.start()] + b + text[fm.end():]
         raise ValueError(f'{sid}: bloc introuvable ({fence!r})')
     lines = text.split('\n')
     anchor = before or after
-    # on ne cherche qu'après le frontmatter
+    # only search after the frontmatter
     fm_end = [i for i, l in enumerate(lines) if l.strip() == '---'][1]
     for i in range(fm_end + 1, len(lines)):
         if lines[i].startswith(anchor):

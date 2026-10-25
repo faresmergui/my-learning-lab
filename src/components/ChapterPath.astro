@@ -1,7 +1,7 @@
 ---
-// Parcours d'un module : la liste des chapitres et leurs fiches, rangés par
-// niveau quand le module en a (JLPT pour le japonais, classement en badminton).
-// L'état (fait / en cours) dépend de ta progression, il est calculé dans le navigateur.
+// A module's learning path: its chapters and their notes, grouped by level when
+// the module has levels (JLPT for Japanese, rankings for badminton).
+// The state (done / in progress) depends on the user's progress and is computed in the browser.
 import { groupByStage, ficheUrl, type Module, type Fiche } from '../lib/content';
 interface Props { mod: Module; fiches: Fiche[]; current?: string }
 const { mod, fiches, current } = Astro.props;
@@ -51,7 +51,7 @@ const stages = groupByStage(mod, fiches);
     path.querySelectorAll<HTMLElement>('[data-fiche]').forEach((a) => {
       if (p.read[a.dataset.fiche!]) a.classList.add('is-read');
     });
-    // Le parcours défile seul : on y amène la fiche ouverte (ou le chapitre en cours).
+    // The path scrolls on its own: bring the open note (or current chapter) into view.
     const target = path.querySelector<HTMLElement>('a.here') || path.querySelector<HTMLElement>(':scope > li.current');
     if (target && path.scrollHeight > path.clientHeight) {
       const delta = target.getBoundingClientRect().top - path.getBoundingClientRect().top;

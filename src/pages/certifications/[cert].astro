@@ -1,6 +1,6 @@
 ---
-// Page d'une certification : le format de l'examen, ses domaines (avec les fiches
-// qui les couvrent et ce qui manque), puis la synthèse « jour J ».
+// Certification page: exam format, its domains (with the notes that cover them
+// and what is missing), then the exam-day summary.
 import { url } from '../../lib/url';
 import Base from '../../layouts/Base.astro';
 import { render } from 'astro:content';
@@ -109,7 +109,7 @@ const maxWeight = Math.max(1, ...d.domains.map((x) => x.weight ?? 0));
   box.querySelector('[data-detail]')!.textContent = `· ${read}/${c.fiches.length} fiches lues · ${mastered}/${c.cards.length} cartes maîtrisées`;
   (box.querySelector('[data-bar]') as HTMLElement).style.setProperty('--w', `${pct}%`);
 
-  // Coche les fiches lues, et compte par domaine.
+  // Tick the notes already read, and count per domain.
   document.querySelectorAll<HTMLElement>('[data-fiche]').forEach((li) => li.classList.toggle('read', !!p.read[li.dataset.fiche!]));
   document.querySelectorAll<HTMLElement>('[data-domain]').forEach((sec) => {
     const ids = sec.dataset.domain!.split(' ').filter(Boolean);

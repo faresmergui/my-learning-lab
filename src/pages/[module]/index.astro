@@ -1,5 +1,5 @@
 ---
-// Page d'un module : son parcours, et des raccourcis pour réviser ou faire le quiz.
+// Module page: its learning path, plus shortcuts to review or take the quiz.
 import { url } from '../../lib/url';
 import Base from '../../layouts/Base.astro';
 import ModuleIcon from '../../components/ModuleIcon.astro';
@@ -69,7 +69,7 @@ const hasSynthese = (await getSyntheses()).some((s) => s.id === mod.id);
 
 <script>
   import { load } from '../../lib/progress';
-  // Le bouton principal pointe vers la première fiche pas encore lue.
+  // The main button points to the first unread note.
   const btn = document.getElementById('start-btn');
   const p = load();
   const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-fiche]')];
@@ -78,7 +78,7 @@ const hasSynthese = (await getSyntheses()).some((s) => s.id === mod.id);
     if (next) { btn.setAttribute('href', next.href); btn.textContent = `Continuer : ${next.textContent}`; }
     else btn.textContent = 'Relire depuis le début';
   }
-  // Avancement de chaque niveau : part des fiches lues.
+  // Progress of each level: share of notes read.
   document.querySelectorAll<HTMLElement>('[data-stage]').forEach((row) => {
     const ids = (row.dataset.stage || '').split(',').filter(Boolean);
     if (!ids.length) return;

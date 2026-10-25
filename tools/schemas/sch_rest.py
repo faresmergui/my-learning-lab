@@ -1,7 +1,7 @@
 from svg import D, figure
 from inject import put
 
-# ============================== SÉCURITÉ ==============================
+# ============================== SECURITY ==============================
 M = 'securite'
 
 d = D(680, 280)
@@ -93,7 +93,7 @@ d.text(516, 170, '≈ 20 Mo, utilisateur non root', 'okt')
 d.arrow([(298, 116), (380, 116)], color='c', k='flow', label='COPY --from', dy=20)
 put(f'{M}/04-securite-des-conteneurs.md', 'multistage', figure(d, 'Un build multi-étapes', 'Les outils de build restent dans la première étape. L\'image déployée ne contient que le binaire.'), before="## À l'exécution")
 
-# ============================== RÉSEAUX ==============================
+# ============================== NETWORKING ==============================
 M = 'reseaux'
 
 d = D(680, 260)
@@ -413,7 +413,7 @@ d.text(X(17.5) - 6, Y(0) - 7, 'gel des features', 'at', anchor='end')
 d.text(X(0) + 4, 20, 'budget d\'erreur restant · SLO 99,9 % sur 30 jours (43 min)', 's', anchor='start')
 put(f'{M}/08-pratiques-sre.md', 'budget', figure(d, 'La consommation du budget d\'erreur', 'Une alerte sur la vitesse de consommation prévient bien avant que le budget soit vide.'), before='## Les rituels')
 
-# ============================== JAPONAIS ==============================
+# ============================== JAPANESE ==============================
 M = 'japonais'
 
 d = D(680, 330)

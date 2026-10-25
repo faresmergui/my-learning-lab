@@ -1,3 +1,3 @@
-// Échappe un texte avant de l'insérer dans du HTML construit à la main (innerHTML).
+// Escapes text before inserting it into hand-built HTML (innerHTML).
 const MAP: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 export const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) => MAP[c]);

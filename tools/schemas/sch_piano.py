@@ -8,8 +8,8 @@ BLACK_AFTER = {0: 'do♯', 1: 'ré♯', 3: 'fa♯', 4: 'sol♯', 5: 'la♯'}
 
 
 def keyboard(d, x, y, n, ww=40, wh=150, on=(), on_black=(), names=True, blabels=None, start=0):
-    """Clavier de n touches blanches à partir de do (start : décalage, 6 = partir du si). on : indices des blanches
-    surlignées ; on_black : indices (de la blanche de gauche) des noires surlignées."""
+    """Keyboard of n white keys starting from C (start: offset, 6 = start from B). on: indices of highlighted
+    white keys; on_black: indices (of the white key on the left) of highlighted black keys."""
     bw, bh = ww * 0.6, wh * 0.62
     for i in range(n):
         cls = 'dg-kw on' if i in on else 'dg-kw'
@@ -26,7 +26,7 @@ def keyboard(d, x, y, n, ww=40, wh=150, on=(), on_black=(), names=True, blabels=
     return d
 
 
-# --- 01 : le clavier ----------------------------------------------------
+# --- 01: the keyboard ----------------------------------------------------
 d = D(680, 280)
 keyboard(d, 60, 40, 14, on=(0, 7, 3, 10), blabels={0: 'do♯', 1: 'ré♯', 3: 'fa♯', 4: 'sol♯', 5: 'la♯'})
 d.text(60 + 1.5 * 40, 28, 'groupe de 2', 's')
@@ -38,7 +38,7 @@ d.text(60 + 4 * 40, 266, 'une octave = 12 demi-tons', 'ct')
 put(f'{M}/01-le-clavier-et-les-notes.md', 'clavier', figure(d, 'Le clavier',
     "Do est à gauche du groupe de deux noires, fa à gauche du groupe de trois. Mi-fa et si-do ne sont séparés que d'un demi-ton."), before="## L'octave")
 
-# --- 05 : la gamme majeure ---------------------------------------------
+# --- 05: the major scale ---------------------------------------------
 d = D(680, 230)
 x0 = 130
 keyboard(d, x0, 60, 8, ww=52, wh=150, on=range(8))
@@ -50,7 +50,7 @@ d.text(340, 22, 'do majeur : T – T – ½ – T – T – T – ½', 'tl')
 put(f'{M}/07-intervalles-et-gamme-majeure.md', 'gamme', figure(d, 'La gamme de do majeur',
     "Les deux demi-tons tombent naturellement sur mi-fa et si-do : do majeur n'a besoin d'aucune touche noire."), before='## Les degrés')
 
-# --- 06 : le cycle des quintes -----------------------------------------
+# --- 06: the circle of fifths -----------------------------------------
 d = D(680, 380)
 cx, cy = 340, 190
 majors = ['do', 'sol', 'ré', 'la', 'mi', 'si', 'fa♯\nsol♭', 'ré♭', 'la♭', 'mi♭', 'si♭', 'fa']
@@ -72,7 +72,7 @@ d.text(120, 60, '+1 bémol ←', 'at', anchor='end')
 put(f'{M}/08-gammes-mineures-et-tonalites.md', 'cycle', figure(d, 'Le cycle des quintes',
     "Extérieur : tonalités majeures. Intérieur : leurs relatifs mineurs. Au centre : le nombre d'altérations de l'armure."), before='Ce cycle sert à tout')
 
-# --- 07 : majeur et mineur ---------------------------------------------
+# --- 07: major and minor ---------------------------------------------
 d = D(680, 230)
 keyboard(d, 30, 40, 7, ww=40, wh=140, on=(0, 2, 4))
 d.text(30 + 140, 24, 'C : do – mi – sol', 'ct')
@@ -83,7 +83,7 @@ d.text(370 + 140, 205, 'tierce mineure (3) + tierce majeure (4)', 's')
 put(f'{M}/09-les-accords-et-les-renversements.md', 'triades', figure(d, 'Accord majeur et accord mineur',
     "Seule la note du milieu change : en la descendant d'un demi-ton, l'accord majeur devient mineur."), before='## La gamme harmonisée')
 
-# --- 12 : la pentatonique ----------------------------------------------
+# --- 12: the pentatonic scale ----------------------------------------------
 d = D(680, 210)
 keyboard(d, 60, 40, 14, ww=40, wh=140, on=(0, 1, 2, 4, 5, 7, 8, 9, 11, 12))
 d.text(340, 24, 'pentatonique de do majeur : do, ré, mi, sol, la (sans fa ni si)', 'ct')
@@ -92,7 +92,7 @@ put(f'{M}/14-improviser-et-jouer-d-oreille.md', 'penta', figure(d, 'La gamme pen
 print('ok')
 
 
-# --- 14 : ii-V-I sans fondamentale ---------------------------------------
+# --- 14: rootless ii-V-I ---------------------------------------
 d = D(680, 230)
 chords = [('Dm9', 'position A', (3, 5, 7, 9)), ('G13', 'position B', (3, 5, 6, 9)), ('Cmaj9', 'position A', (2, 4, 6, 8))]
 for i, (name, pos, on) in enumerate(chords):
@@ -107,7 +107,7 @@ put(f'{M}/16-voicings-et-ii-v-i.md', 'rootless', figure(d, 'Le ii-V-I sans fonda
     "Dm9 (fa-la-do-mi), G13 (fa-la-si-mi), Cmaj9 (mi-sol-si-ré) : la main reste au même endroit et les voix glissent d'un demi-ton ou d'un ton."),
     before='## Le ii-V-i mineur')
 
-# --- 13 : du plus clair au plus sombre ----------------------------------
+# --- 13: from brightest to darkest ----------------------------------
 d = D(680, 250)
 modes = [('lydien', 'fa♯'), ('ionien', ''), ('mixolydien', 'si♭'), ('dorien', 'mi♭'),
          ('éolien', 'la♭'), ('phrygien', 'ré♭'), ('locrien', 'sol♭')]
@@ -125,12 +125,12 @@ put(f'{M}/15-les-modes-et-l-harmonie-modale.md', 'modes', figure(d, 'Les modes, 
     before='## La note caractéristique')
 
 
-# --- 02 : les quatre accords en renversements ----------------------------
+# --- 02: the four chords in inversions ----------------------------
 d = D(680, 250)
 voicings = [('C', (0, 2, 4)), ('G', (-1, 1, 4)), ('Am', (0, 2, 5)), ('F', (0, 3, 5))]
 for i, (name, on) in enumerate(voicings):
     x = 20 + i * 165
-    # 7 blanches à partir du si grave : k = 0 pour do, -1 pour le si.
+    # 7 white keys from the low B: k = 0 for C, -1 for B.
     keyboard(d, x, 50, 7, ww=20, wh=110, on=[k + 1 for k in on], names=False, start=6)
     d.text(x + 70, 32, name, 'tl')
     if i:

@@ -4,7 +4,7 @@ from inject import put
 # ============================== YU-GI-OH! ==============================
 M = 'yugioh'
 
-# --- 01 : les zones du terrain ----------------------------------------
+# --- 01: the field zones ----------------------------------------
 d = D(680, 300)
 X = lambda c: 20 + c * 92
 W = 74
@@ -21,7 +21,7 @@ d.box(X(6), 96, W, 84, 'Cime-\ntière', tk='s', d=3)
 d.box(X(6), 192, W, 84, 'Deck', tk='s', d=3)
 put(f'{M}/01-le-deroule-d-un-duel.md', 'zones', figure(d, 'Les zones du terrain', "Les monstres de l'Extra Deck vont dans une zone Monstre Extra, ou dans une zone pointée par un monstre Lien."), fence='[Extra Monstre]')
 
-# --- 03 : construire puis résoudre une chaîne -------------------------
+# --- 03: building then resolving a chain -------------------------
 d = D(680, 230)
 d.text(70, 24, 'on empile', 'zl')
 d.arrow([(70, 190), (70, 40)], color='c')
@@ -34,7 +34,7 @@ d.box(500, 120, 166, 60, '2e à se résoudre', 'ne fait rien', d=3)
 d.text(340, 212, 'le dernier maillon ajouté se résout en premier', 'ct', d=4)
 put(f'{M}/03-la-chaine-et-les-vitesses.md', 'chaine', figure(d, 'Une chaîne se résout à l\'envers', "C'est pour cela qu'une réponse peut nier un effet activé avant elle."), before='## Les vitesses de sort')
 
-# --- 04 : la régularité ----------------------------------------------
+# --- 04: consistency ----------------------------------------------
 d = D(680, 230)
 d.text(14, 20, 'mains de départ (5 cartes, deck de 40) avec au moins un starter', 'zl', anchor='start')
 for i, (n, p) in enumerate([(8, 70), (10, 78), (12, 85), (15, 92)]):
@@ -47,7 +47,7 @@ put(f'{M}/04-construire-un-deck.md', 'regularite', figure(d, 'Plus de starters, 
 # =============================== VALORANT ==============================
 M = 'valorant'
 
-# --- 01 : le rythme d'une manche --------------------------------------
+# --- 01: the rhythm of a round --------------------------------------
 d = D(680, 190)
 d.text(74, 46, '30 s', 's'); d.text(299, 46, '1 min 40', 's'); d.text(564, 46, '45 s', 's')
 d.box(14, 56, 120, 42, "phase d'achat", tk='s', d=0)
@@ -60,7 +60,7 @@ d.text(564, 144, "le temps joue pour l'attaque", 'at', d=2)
 d.text(564, 162, 'désamorçage : 7 s (palier à 3,5 s)', 's', d=3)
 put(f'{M}/01-le-deroule-d-une-partie.md', 'rythme', figure(d, "Le rythme d'une manche", "La pose du spike inverse le chronomètre : c'est alors à la défense de se dépêcher."), before='Le chronomètre change donc de sens')
 
-# --- 03 : les trois premières manches ---------------------------------
+# --- 03: the first three rounds ---------------------------------
 d = D(680, 250)
 for c, t in enumerate(['manche 1', 'manche 2', 'manche 3']):
     d.text(220 + c * 160, 24, t, 'zl')
@@ -77,7 +77,7 @@ for r, (lab, cells) in enumerate(rows):
 d.text(380, 240, 'bonus de défaite : 1 900, puis 2 400 · victoire : 3 000', 's', d=6)
 put(f'{M}/03-l-economie.md', 'debut', figure(d, 'Les trois premières manches', "L'équipe qui perd la manche pistolet sauve en manche 2 pour tout acheter en manche 3."), before="À l'inverse, l'équipe qui gagne")
 
-# --- 08 : la défense en 2-1-2 -----------------------------------------
+# --- 08: 2-1-2 defense -----------------------------------------
 d = D(680, 330)
 d.box(270, 14, 140, 34, 'spawn défense', tk='s', d=0)
 d.zone(24, 80, 230, 150, 'site A')
@@ -95,7 +95,7 @@ d.arrow('M196 146 C 250 240, 430 240, 484 146', color='a', k='dash', start=True)
 d.text(340, 244, 'rotation', 'at')
 put(f'{M}/08-defendre-et-reprendre-un-site.md', 'repartition', figure(d, 'La défense en 2-1-2', "Chaque site garde un anchor ; les autres tournent quand l'information est sûre."), before='Deux types de défenseurs')
 
-# --- 07 : l'après-pose en tir croisé ----------------------------------
+# --- 07: post-plant crossfire ----------------------------------
 d = D(680, 300)
 d.zone(110, 20, 460, 250, 'site après la pose')
 d.raw('<path d="M340 128 L354 142 L340 156 L326 142 Z" class="dg-dot dg-a dg-pop" style="--d:0"/>')

@@ -1,10 +1,10 @@
 from svg import D, figure
 from inject import put
 
-# ============================ OBSERVABILITÉ ============================
+# ============================ OBSERVABILITY ============================
 M = 'observabilite'
 
-# --- 03 : l'architecture de Prometheus --------------------------------
+# --- 03: Prometheus architecture --------------------------------
 d = D(680, 330)
 d.text(14, 40, 'cibles', 'zl', anchor='start')
 targets = [('app', 'bibliothèque client'), ('node_exporter', 'la machine'), ('mysqld_exporter', 'une base'), ('blackbox_exporter', 'sondes HTTP, ICMP'), ('pushgateway', 'jobs batch')]
@@ -23,7 +23,7 @@ for i, (y, t, s, k) in enumerate(outs):
 d.text(593, 306, 'via remote_write', 's')
 put(f'{M}/03-prometheus.md', 'archi', figure(d, "L'architecture de Prometheus", "Prometheus va chercher les métriques (pull) ; il garde peu d'historique et délègue les notifications à Alertmanager."), fence='découverte de services (Kubernetes, Consul')
 
-# --- 04 : la vie d'une alerte -----------------------------------------
+# --- 04: the life of an alert -----------------------------------------
 d = D(680, 210)
 st = [('inactive', 'condition fausse', ''), ('pending', 'vraie depuis\nmoins que for', 'c'), ('firing', 'vraie pendant\nfor (10 min)', 'a'), ('Alertmanager', 'regroupe (30 s),\nchoisit la route', 'c'), ('receiver', 'Slack, PagerDuty…', 'ok')]
 for i, (t, s, k) in enumerate(st):
@@ -39,7 +39,7 @@ d.text(475, 140, "agissent ici", 's')
 d.arrow([(475, 112), (475, 96)])
 put(f'{M}/04-promql-et-alertes.md', 'vie', figure(d, "La vie d'une alerte", "La durée for évite de réveiller quelqu'un pour un pic de quelques secondes."), before='Les **silences** et **inhibitions**')
 
-# --- 06 : Grafana au centre -------------------------------------------
+# --- 06: Grafana at the center -------------------------------------------
 d = D(680, 250)
 d.box(190, 14, 300, 64, 'Grafana', 'tableaux de bord, Explore,\nalertes, annotations', k='c', d=0)
 d.arrow([(340, 78), (340, 118)], color='c', end=False)
@@ -52,7 +52,7 @@ for i, (t, s, q) in enumerate(srcs):
     d.text(x + 83, 150, q, 's', anchor='start')
 put(f'{M}/06-grafana.md', 'centre', figure(d, 'Grafana au centre', 'Grafana ne stocke rien : il interroge chaque source dans son propre langage.'), fence='┌───────── Grafana ─────────┐')
 
-# --- 07 : la chaîne d'un log ------------------------------------------
+# --- 07: a log's pipeline ------------------------------------------
 d = D(680, 212)
 steps = [('application', 'stdout, fichier,\njournald', '', ''), ('agent', 'lire, parser,\nenrichir, masquer', 'c', 'Fluent Bit\nVector · Alloy\nFilebeat\nOTel Collector'),
          ('tampon', 'optionnel', 'ghost', 'Kafka\nLogstash'), ('stockage', 'indexé', 'c', 'Loki\nElasticsearch\nDatadog · Splunk'), ('recherche', 'tableaux de bord', '', 'Grafana\nKibana\nDatadog')]
@@ -66,7 +66,7 @@ for i, (t, s, k, tools) in enumerate(steps):
 d.text(14, 124, 'outils', 'zl', anchor='start')
 put(f'{M}/07-collecter-les-logs.md', 'chaine', figure(d, "La chaîne d'un log", "Masquer les données sensibles se fait dans l'agent, avant que le log ne soit stocké."), fence='application ──► stdout / fichier / journald')
 
-# --- 08 : Loki, écrire puis chercher ----------------------------------
+# --- 08: Loki, write then query ----------------------------------
 d = D(680, 300)
 d.text(14, 16, 'écriture', 'zl', anchor='start')
 d.box(14, 24, 140, 50, 'logs entrants', d=0)
@@ -83,7 +83,7 @@ d.arrow([(134, 247), (168, 247)], color='a'); d.arrow([(340, 247), (384, 247)], 
 d.arrow([(450, 206), (450, 190), (300, 190), (300, 174)], color='a')
 put(f'{M}/08-loki.md', 'flux', figure(d, 'Loki : indexer peu, lire vite', "Seules les étiquettes sont indexées ; le contenu est filtré à la lecture, d'où l'importance de bien choisir les étiquettes."), fence='logs entrants ──► distributor')
 
-# --- 11 : l'arbre d'une trace -----------------------------------------
+# --- 11: a trace tree -----------------------------------------
 d = D(680, 280)
 d.text(14, 24, 'trace 4bf92f35… · POST /commandes · 1 840 ms au total', 'ct', anchor='start')
 spans = [('api-gateway', 0, 40, 0, ''), ('commandes', 40, 1790, 0, 'c'), ('SELECT clients', 60, 25, 1, ''), ('POST paiement', 100, 1600, 1, 'a'),
@@ -100,10 +100,10 @@ d.line(X0, 44, X0, 262, k='grid')
 d.text(X0, 272, '0', 's'); d.text(X0 + W, 272, '1 840 ms', 's')
 put(f'{M}/11-traces-et-opentelemetry.md', 'arbre', figure(d, "L'arbre d'une trace", "La trace montre d'un coup d'œil où part le temps : ici, l'appel au prestataire de paiement."), fence='trace 4bf92f35…')
 
-# ================================= IA =================================
+# ================================= AI =================================
 M = 'ia'
 
-# --- 02 : le contexte renvoyé à chaque requête ------------------------
+# --- 02: context resent with every request ------------------------
 d = D(680, 290)
 d.zone(14, 14, 420, 262, 'requête n°3 envoyée au modèle', k='c')
 rows = [('prompt système (rôle, règles)', 'c'), ('message 1 + réponse 1', ''), ('message 2 + réponse 2', ''), ("fichiers, résultats d'outils", ''), ('message 3', 'c')]
@@ -116,7 +116,7 @@ d.arrow([(570, 130), (570, 188)], color='a')
 d.text(456, 32, 'tout est renvoyé à chaque fois', 's', anchor='start')
 put(f'{M}/02-comment-pense-un-llm.md', 'contexte', figure(d, 'Un modèle sans mémoire', "Chaque requête renvoie toute la conversation : plus elle est longue, plus elle coûte et plus le modèle se disperse."), fence='requête n°3 envoyée au modèle')
 
-# --- 05 : la boucle d'un agent ----------------------------------------
+# --- 05: an agent's loop ----------------------------------------
 d = D(680, 300)
 d.box(60, 14, 480, 40, '« pourquoi le déploiement api est en erreur ? »', k='ghost', tk='s', d=0)
 d.box(60, 100, 200, 60, 'le modèle', 'choisit une action', k='c', d=1)
@@ -129,7 +129,7 @@ d.box(60, 230, 480, 54, 'réponse', "DB_HOST pointe vers l'ancien service : voic
 d.arrow([(160, 160), (160, 228)], color='ok')
 put(f'{M}/05-agents-et-outils.md', 'boucle', figure(d, "La boucle d'un agent", "Un agent n'est qu'un modèle qui appelle des outils en boucle ; ses droits sont ceux des outils qu'on lui donne."), fence='objectif : « pourquoi le déploiement api')
 
-# --- 06 : le RAG ------------------------------------------------------
+# --- 06: RAG ------------------------------------------------------
 d = D(680, 330)
 d.zone(14, 14, 652, 98, 'ingestion · régulière')
 ing = [('documents', 'runbooks, wiki,\npostmortems'), ('chunks', 'découpage'), ('embeddings', 'texte → vecteurs'), ('base vectorielle', '+ titre, date, droits')]

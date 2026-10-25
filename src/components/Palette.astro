@@ -1,7 +1,7 @@
 ---
-// Palette de recherche ⌘K (ou Ctrl+K) : saute vers n'importe quelle page ou fiche,
-// et cherche dans le texte de toutes les fiches. Les deux listes sont des fichiers statiques
-// téléchargés à la demande : /palette.json à l'ouverture, /search.json à la première recherche.
+// ⌘K (or Ctrl+K) search palette: jump to any page or note, and search the text of
+// every note. Both lists are static files fetched on demand: /palette.json when the
+// palette opens, /search.json on the first search.
 ---
 <div class="palette-bg" id="palette">
   <div class="palette">
@@ -28,27 +28,27 @@
   let sel = 0;
   let shown: Hit[] = [];
 
-  // Recherche tolérante : ignore les accents et la casse.
+  // Forgiving search: ignores accents and case.
   const norm = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
-  // Index plein texte : téléchargé une seule fois, à la première recherche.
+  // Full-text index: downloaded once, on the first search.
   let index: (Section & { n: string; nh: string })[] | null = null;
   let loading: Promise<void> | null = null;
   function loadIndex() {
     loading ??= fetch(url('/search.json'))
       .then((r) => r.json())
       .then((data: Section[]) => { index = data.map((e) => ({ ...e, n: norm(e.x), nh: norm(e.t + ' ' + e.h) })); render(); })
-      .catch(() => { /* hors ligne : la palette garde la recherche par titre */ });
+      .catch(() => { /* offline: the palette falls back to title search */ });
     return loading;
   }
 
-  /** Extrait d'environ 140 caractères autour du premier mot trouvé, mots surlignés. */
+  /** ~140-character excerpt around the first match, with matches highlighted. */
   function snippet(text: string, words: string[]) {
     const n = norm(text);
     const at = Math.max(0, n.indexOf(words[0]));
     const start = Math.max(0, at - 50);
     let part = text.slice(start, start + 140);
-    // La normalisation garde la longueur pour le français courant : les positions correspondent.
+    // Normalization keeps the length for everyday French, so positions line up.
     let html = '';
     let i = 0;
     const np = norm(part);
@@ -107,7 +107,7 @@
     if (li) goTo(Number(li.dataset.i));
   });
   pal.addEventListener('click', (e) => { if (e.target === pal) close(); });
-  // D'autres éléments (le bouton « Recherche » du menu) peuvent ouvrir la palette.
+  // Other elements (the menu's Search button) can open the palette.
   document.addEventListener('palette:open', open);
   document.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {

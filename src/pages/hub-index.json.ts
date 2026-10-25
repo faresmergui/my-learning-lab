@@ -1,6 +1,6 @@
-// Fichier statique /hub-index.json : la liste des modules, fiches et cartes, utilisée
-// par les compteurs (accueil, menu, tableau de bord). Téléchargé une fois, puis gardé
-// en cache par le navigateur, au lieu d'être recopié dans chacune des pages.
+// Static file /hub-index.json: the list of modules, notes and cards used by the
+// counters (home, menu, dashboard). Downloaded once and cached by the browser,
+// instead of being copied into every page.
 import { getHubIndex } from '../lib/content';
 
 export async function GET() {

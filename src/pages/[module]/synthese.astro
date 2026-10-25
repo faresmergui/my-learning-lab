@@ -1,6 +1,6 @@
 ---
-// Synthèse d'un module : un aide-mémoire sur une seule page, avec son sommaire.
-// Le texte vient de src/content/syntheses/<module>.md.
+// Module summary: a one-page cheat sheet with its table of contents.
+// The text comes from src/content/syntheses/<module>.md.
 import { url } from '../../lib/url';
 import Base from '../../layouts/Base.astro';
 import ModuleIcon from '../../components/ModuleIcon.astro';
@@ -51,8 +51,8 @@ const toc = [
 </Base>
 
 <script>
-  // Sommaire : suit la section en cours de lecture. Un clic sur une entrée la sélectionne
-  // tout de suite, même si la section est trop près du bas pour remonter en haut de l'écran.
+  // Table of contents: follows the section being read. Clicking an entry selects it
+  // right away, even if the section is too close to the bottom to reach the top of the screen.
   const toc = document.querySelector<HTMLElement>('[data-toc]');
   if (toc) {
     const links = [...toc.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')];
@@ -63,14 +63,14 @@ const toc = [
       if (picked >= 0) return mark(picked);
       let cur = 0;
       targets.forEach((t, i) => { if (t.getBoundingClientRect().top < 120) cur = i; });
-      // Tout en bas de la page, la dernière section visible l'emporte.
+      // At the very bottom of the page, the last visible section wins.
       if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) {
         targets.forEach((t, i) => { if (t.getBoundingClientRect().top < innerHeight) cur = i; });
       }
       mark(cur);
     };
     links.forEach((a, i) => a.addEventListener('click', () => { picked = i; mark(i); }));
-    // Le choix par clic tient jusqu'à ce que la personne fasse défiler elle-même.
+    // A clicked choice holds until the reader scrolls on their own.
     for (const ev of ['wheel', 'touchmove', 'keydown']) addEventListener(ev, () => { picked = -1; }, { passive: true });
     spy();
     addEventListener('scroll', spy, { passive: true });

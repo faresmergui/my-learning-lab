@@ -1,5 +1,5 @@
 ---
-// Page d'une fiche : le parcours à gauche, le contenu Markdown à droite.
+// Note page: the learning path on the left, the Markdown content on the right.
 import { url } from '../../lib/url';
 import Base from '../../layouts/Base.astro';
 import ChapterPath from '../../components/ChapterPath.astro';
@@ -69,8 +69,8 @@ const next = fiches[i + 1];
   btn.addEventListener('click', () => { markRead(id, !load().read[id]); paint(); });
   paint();
 
-  // Schémas : ils s'animent quand ils arrivent à l'écran (sauf si le système
-  // demande de réduire les animations, auquel cas ils restent affichés tels quels).
+  // Diagrams animate when they scroll into view (unless the OS asks for
+  // reduced motion, in which case they are shown as is).
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => entries.forEach((e) => {
       if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }

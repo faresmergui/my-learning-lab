@@ -85,7 +85,7 @@ const perso = await getModules('perso');
 
   $('today-date').textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 
-  // Message du jour
+  // Message of the day
   if (todo === 0) {
     $('hero-sub').textContent = 'Tout est à jour.';
     $('hero-lead').textContent = 'Aucune carte à réviser. Profite-en pour lire une nouvelle fiche.';
@@ -120,7 +120,7 @@ const perso = await getModules('perso');
     $('resume-icon').textContent = '↺';
   }
 
-  // Terminal : un vrai résumé, tapé lettre par lettre
+  // Terminal: a real summary, typed out letter by letter
   const bar = (pct: number) => '█'.repeat(Math.round(pct / 10)).padEnd(10, '░');
   const rows = Object.entries(idx.modules)
     .filter(([, m]) => m.cards.length)
@@ -151,10 +151,10 @@ const perso = await getModules('perso');
     term.innerHTML = html + '<span class="p">❯</span> <span class="caret"></span>';
   })();
 
-  // Heatmap : 20 semaines, une case par jour, du plus ancien au plus récent
+  // Heatmap: 20 weeks, one cell per day, oldest to newest
   const DAY = 86_400_000;
   const today = new Date(); today.setHours(12, 0, 0, 0);
-  const start = today.getTime() - (19 * 7 + ((today.getDay() + 6) % 7)) * DAY; // commence un lundi
+  const start = today.getTime() - (19 * 7 + ((today.getDay() + 6) % 7)) * DAY; // starts on a Monday
   const cells = [];
   for (let t = start; t <= today.getTime(); t += DAY) {
     const c = p.activity[dayKey(t)] ?? 0;
@@ -175,7 +175,7 @@ const perso = await getModules('perso');
     el.textContent = last
       ? `Dernier export : ${days === 0 ? "aujourd'hui" : days === 1 ? 'hier' : `il y a ${days} jours`}.`
       : 'Aucun export depuis ce navigateur pour l\'instant.';
-    // Rappel discret : progression non vide et pas d'export depuis deux semaines.
+    // Gentle reminder: progress exists and nothing exported for two weeks.
     el.classList.toggle('warn', !isEmpty(p) && (days === null || days >= 14));
     $('undo-import').hidden = !canUndoImport();
   }
@@ -186,7 +186,7 @@ const perso = await getModules('perso');
   ($('import') as HTMLInputElement).addEventListener('change', async (e) => {
     const input = e.target as HTMLInputElement;
     const f = input.files?.[0];
-    input.value = ''; // pour pouvoir choisir deux fois le même fichier
+    input.value = ''; // so the same file can be picked twice
     if (!f) return;
     let backup;
     try { backup = await readBackup(f); } catch { alert('Ce fichier ne ressemble pas à une sauvegarde du hub.'); return; }

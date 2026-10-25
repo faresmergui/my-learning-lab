@@ -1,43 +1,43 @@
-// Progression de Fares, stockée dans le navigateur (localStorage).
-// Ce fichier tourne côté navigateur uniquement. Tout passe par load()/save()
-// pour qu'on puisse un jour remplacer localStorage par un fichier ou une API
-// sans toucher au reste du site.
+// Learning progress, stored in the browser (localStorage).
+// This file runs in the browser only. Everything goes through load()/save()
+// so localStorage could one day be swapped for a file or an API
+// without touching the rest of the site.
 import { url } from './url';
 
 const KEY = 'hub:v1';
 const DAY = 86_400_000;
 
 export type CardState = {
-  due: number;      // timestamp (ms) de la prochaine révision
-  interval: number; // intervalle actuel en jours (0 = en apprentissage)
-  ease: number;     // facteur de facilité, 2.5 au départ
-  reps: number;     // nombre de réussites d'affilée
-  lapses: number;   // nombre d'oublis
+  due: number;      // timestamp (ms) of the next review
+  interval: number; // current interval in days (0 = learning)
+  ease: number;     // ease factor, starts at 2.5
+  reps: number;     // consecutive successful reviews
+  lapses: number;   // number of lapses
 };
 
 export type Progress = {
   cards: Record<string, CardState>;
-  read: Record<string, number>;                         // fiche -> date de lecture
-  quiz: Record<string, { right: number; total: number }>; // fiche -> cumul des réponses
-  activity: Record<string, number>;                     // 'YYYY-MM-DD' -> nb d'actions
+  read: Record<string, number>;                         // note -> date read
+  quiz: Record<string, { right: number; total: number }>; // note -> cumulative answers
+  activity: Record<string, number>;                     // 'YYYY-MM-DD' -> number of actions
   last?: { url: string; title: string; module: string };
 };
 
 const empty = (): Progress => ({ cards: {}, read: {}, quiz: {}, activity: {} });
 
 /* ---------------- Validation ----------------
-   Les données viennent du navigateur ou d'un fichier importé : on ne garde que
-   ce qui a la bonne forme (des nombres là où on attend des nombres, une URL interne
-   pour « reprendre »). Une sauvegarde modifiée à la main ne peut donc pas injecter
-   de HTML ou de lien javascript: dans les pages. */
+   Data comes from the browser or from an imported file: only well-formed values
+   are kept (numbers where numbers are expected, an internal URL for "resume").
+   A hand-edited backup therefore cannot inject HTML or a javascript: link
+   into the pages. */
 
 const num = (v: unknown, def = 0) => (typeof v === 'number' && Number.isFinite(v) ? v : def);
 const obj = (v: unknown): Record<string, unknown> =>
   v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : {};
 const str = (v: unknown, max = 300) => (typeof v === 'string' ? v.slice(0, max) : '');
-// « /\\site.com » est lu comme « //site.com » (un autre site) par les navigateurs : refusé aussi.
+// Browsers read "/\\site.com" as "//site.com" (another site): rejected too.
 const isInternalUrl = (u: string) => /^\/(?![/\\])/.test(u) && !/[\s\\]/.test(u);
-// Clés qui modifieraient le prototype d'un objet au lieu d'y ajouter une entrée.
+// Keys that would modify an object's prototype instead of adding an entry.
 const safeEntries = (v: unknown) => Object.entries(obj(v)).filter(([k]) => k !== '__proto__' && k !== 'constructor' && k !== 'prototype');
 
 function sanitize(raw: unknown): Progress {
@@ -56,8 +56,8 @@ function sanitize(raw: unknown): Progress {
   return p;
 }
 
-// Fiches renommées : l'ancien identifiant pointe vers le nouveau, pour que
-// la progression (fiches lues, cartes, quiz) suive le fichier renommé.
+// Renamed notes: the old ID maps to the new one, so that progress
+// (notes read, cards, quiz) follows the renamed file.
 const RENAMED: Record<string, string> = {
   'badminton/01-amorti': 'badminton/04-amorti',
   'badminton/03-degagement-et-smash': 'badminton/04-degagement-et-smash',
@@ -66,10 +66,10 @@ const RENAMED: Record<string, string> = {
   'badminton/06-tactique-simple': 'badminton/09-tactique-simple',
   'badminton/07-tactique-double': 'badminton/10-tactique-double',
   'badminton/08-preparation-physique': 'badminton/14-preparation-physique',
-  // Sécurité : insertion des 3 fiches méthodo (2026-10-25), décalage de panorama et certifications.
+  // Security: 3 methodology notes inserted (2026-10-25), tools overview and certifications shifted.
   'securite/10-panorama-des-outils': 'securite/13-panorama-des-outils',
   'securite/11-certifications-securite': 'securite/14-certifications-securite',
-  // Piano réorganisé le 2026-10-25 (parcours sans solfège d'abord).
+  // Piano reorganized on 2026-10-25 (play-by-ear path first, sheet music later).
   'piano/02-lire-une-partition': 'piano/20-lire-une-partition',
   'piano/03-le-rythme': 'piano/21-le-rythme',
   'piano/05-intervalles-et-gamme-majeure': 'piano/07-intervalles-et-gamme-majeure',
@@ -119,7 +119,7 @@ export function load(): Progress {
 }
 
 export function save(p: Progress) {
-  try { localStorage.setItem(KEY, JSON.stringify(p)); } catch { /* navigation privée */ }
+  try { localStorage.setItem(KEY, JSON.stringify(p)); } catch { /* private browsing */ }
 }
 
 export const dayKey = (t = Date.now()) => {
@@ -132,12 +132,12 @@ function bump(p: Progress) {
   p.activity[k] = (p.activity[k] ?? 0) + 1;
 }
 
-/* ---------------- Répétition espacée ----------------
-   Version simplifiée de l'algorithme SM-2 (celui d'Anki).
-   1 À revoir   -> revient dans 10 min, la carte redevient "nouvelle"
-   2 Difficile  -> intervalle × 1,2, la carte devient un peu plus dure
-   3 Bien       -> 1 j, puis 3 j, puis intervalle × facilité
-   4 Facile     -> comme Bien mais plus loin, la carte devient plus facile */
+/* ---------------- Spaced repetition ----------------
+   Simplified version of the SM-2 algorithm (the one Anki uses).
+   1 Again  -> back in 10 min, the card becomes "new" again
+   2 Hard   -> interval × 1.2, the card gets slightly harder
+   3 Good   -> 1 day, then 3 days, then interval × ease
+   4 Easy   -> like Good but further out, the card gets easier */
 
 export type Grade = 1 | 2 | 3 | 4;
 
@@ -163,7 +163,7 @@ export function schedule(s: CardState | undefined, g: Grade, now = Date.now()): 
   return c;
 }
 
-/** Texte affiché sous chaque bouton : "dans 3 j". */
+/** Label shown under each button: "dans 3 j" (in 3 days). */
 export function preview(s: CardState | undefined, g: Grade) {
   const next = schedule(s, g);
   if (next.interval === 0) return 'dans 10 min';
@@ -178,14 +178,14 @@ export function gradeCard(id: string, g: Grade) {
   save(p);
 }
 
-/** Une carte est "maîtrisée" quand elle ne revient pas avant une semaine. */
+/** A card is "mastered" when it won't come back for at least a week. */
 export const isMastered = (s?: CardState) => !!s && s.interval >= 7;
 export const isDue = (s: CardState | undefined, now = Date.now()) => !s || s.due <= now;
 
-/** Nombre de nouvelles cartes proposées au maximum par session. */
+/** Maximum number of new cards per session. */
 export const NEW_PER_SESSION = 15;
 
-/** File de révision : cartes en retard d'abord, puis quelques nouvelles. */
+/** Review queue: overdue cards first, then a few new ones. */
 export function reviewQueue<T extends { id: string }>(cards: T[], p = load()) {
   const now = Date.now();
   const due = cards.filter((c) => p.cards[c.id] && p.cards[c.id].due <= now)
@@ -194,7 +194,7 @@ export function reviewQueue<T extends { id: string }>(cards: T[], p = load()) {
   return [...due, ...fresh];
 }
 
-/* ---------------- Fiches, quiz, activité ---------------- */
+/* ---------------- Notes, quiz, activity ---------------- */
 
 export function markRead(fiche: string, read = true) {
   const p = load();
@@ -218,9 +218,9 @@ export function recordAnswer(fiche: string, right: boolean) {
   save(p);
 }
 
-/** Jours consécutifs d'activité, en comptant aujourd'hui ou hier. */
+/** Consecutive days of activity, counting from today or yesterday. */
 export function streak(p = load()) {
-  // On recule jour par jour dans le calendrier (et non de 24 h) pour rester juste au changement d'heure.
+  // Step back one calendar day at a time (not 24 h) to stay correct across DST changes.
   const d = new Date();
   const key = () => dayKey(d.getTime());
   let n = 0;
@@ -229,18 +229,18 @@ export function streak(p = load()) {
   return n;
 }
 
-/* ---------------- Sauvegarde ----------------
-   La progression ne vit que dans ce navigateur : l'export la copie dans un fichier.
-   À l'import, on montre d'abord ce que contient le fichier, et on garde une copie
-   de la progression actuelle pour pouvoir annuler. */
+/* ---------------- Backup ----------------
+   Progress only lives in this browser: export copies it to a file.
+   On import, the file's contents are shown first, and a copy of the current
+   progress is kept so the import can be undone. */
 
-const EXPORTED = 'hub:exported';          // date du dernier export
-const BEFORE_IMPORT = 'hub:v1:avant-import'; // progression remplacée par le dernier import
+const EXPORTED = 'hub:exported';          // date of the last export
+const BEFORE_IMPORT = 'hub:v1:avant-import'; // progress replaced by the last import
 
 const getItem = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
-const setItem = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* navigation privée */ } };
+const setItem = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* private browsing */ } };
 
-/** Ce qu'il y a dans une progression, en quelques chiffres. */
+/** What a progress snapshot contains, in a few numbers. */
 export function summary(p: Progress) {
   return {
     cards: Object.keys(p.cards).length,
@@ -251,7 +251,7 @@ export function summary(p: Progress) {
 
 export const isEmpty = (p: Progress) => { const s = summary(p); return !s.cards && !s.read && !s.days; };
 
-/** Date du dernier export (ms), ou null si jamais exporté depuis ce navigateur. */
+/** Date of the last export (ms), or null if never exported from this browser. */
 export function lastExport(): number | null {
   const v = Number(getItem(EXPORTED));
   return Number.isFinite(v) && v > 0 ? v : null;
@@ -266,12 +266,12 @@ export function exportJson() {
   document.body.append(a);
   a.click();
   a.remove();
-  // Safari a besoin que le lien vive un instant après le clic.
+  // Safari needs the link to stay around briefly after the click.
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   setItem(EXPORTED, String(Date.now()));
 }
 
-/** Lit un fichier de sauvegarde sans rien enregistrer, pour pouvoir le montrer avant. */
+/** Reads a backup file without saving anything, so it can be previewed first. */
 export async function readBackup(file: File): Promise<{ progress: Progress; exportedAt: number | null }> {
   if (file.size > 5_000_000) throw new Error('Fichier trop volumineux');
   const data = JSON.parse(await file.text());
@@ -281,7 +281,7 @@ export async function readBackup(file: File): Promise<{ progress: Progress; expo
   return { progress, exportedAt: num(data.exportedAt) || null };
 }
 
-/** Remplace la progression, en gardant l'ancienne de côté. */
+/** Replaces the progress, keeping the previous one aside. */
 export function applyImport(p: Progress) {
   const current = getItem(KEY);
   if (current) setItem(BEFORE_IMPORT, current);
@@ -290,7 +290,7 @@ export function applyImport(p: Progress) {
 
 export const canUndoImport = () => getItem(BEFORE_IMPORT) !== null;
 
-/** Revient à la progression d'avant le dernier import. */
+/** Restores the progress from before the last import. */
 export function undoImport() {
   const before = getItem(BEFORE_IMPORT);
   if (before === null) return;

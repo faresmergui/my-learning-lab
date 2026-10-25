@@ -1,9 +1,8 @@
-"""Petit générateur de schémas SVG pour les fiches.
+"""Small SVG diagram generator for the notes.
 
-Les couleurs ne sont pas écrites en dur : chaque élément reçoit une classe
-(dg-box, dg-c, dg-l...) stylée dans global.css avec les variables du thème.
-Le même schéma s'affiche donc bien en Tech (sombre) et en Perso (papier).
---c est la couleur du module, posée sur la fiche.
+Colors are not hard-coded: each element gets a class (dg-box, dg-c, dg-l...)
+styled in global.css with the theme variables, so the same diagram looks right
+in Tech (dark) and Perso (paper). --c is the module color, set on the note.
 """
 from html import escape
 
@@ -17,7 +16,7 @@ class D:
         self.w, self.h = w, h
         self.els = []
 
-    # --- texte ---------------------------------------------------------
+    # --- text ----------------------------------------------------------
     def text(self, x, y, t, k='t', anchor='middle', d=None):
         lines = t.split('\n')
         attrs = f'x="{x}" y="{y}" class="dg-{k}" text-anchor="{anchor}"'
@@ -31,7 +30,7 @@ class D:
             self.els.append(f'<text {attrs}>{sp}</text>')
         return self
 
-    # --- formes --------------------------------------------------------
+    # --- shapes --------------------------------------------------------
     def box(self, x, y, w, h, t='', sub=None, k='', rx=9, d=None, tk='t'):
         cls = f'dg-box {"dg-" + k if k else ""}'.strip()
         st = f' style="--d:{d}"' if d is not None else ''
@@ -70,14 +69,14 @@ class D:
         self.els.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" class="dg-{k}"/>')
         return self
 
-    # --- flèches -------------------------------------------------------
+    # --- arrows --------------------------------------------------------
     def _marker(self, k):
         return f'url(#{self.id}-{k or "n"})'
 
     def arrow(self, pts, color='', k='', label=None, at=0.5, dy=-7, end=True, start=False, draw=False, d=None, lk='s'):
-        """pts : liste de points (polyligne) ou chaîne de chemin SVG.
-        color : '' (neutre), 'c' (module), 'a' (accent), 'ok' (vert).
-        k : classes en plus, par ex. 'flow' (tirets animés) ou 'dash'."""
+        """pts: list of points (polyline) or an SVG path string.
+        color: '' (neutral), 'c' (module), 'a' (accent), 'ok' (green).
+        k: extra classes, e.g. 'flow' (animated dashes) or 'dash'."""
         path = pts if isinstance(pts, str) else 'M' + ' L'.join(f'{x} {y}' for x, y in pts)
         cls = ' '.join(c for c in ('dg-l', color, k, 'draw' if draw else '') if c)
         attrs = f'd="{path}" class="{cls}"'
@@ -102,7 +101,7 @@ class D:
         self.els.append(s)
         return self
 
-    # --- sortie --------------------------------------------------------
+    # --- output --------------------------------------------------------
     def svg(self, title):
         m = ''.join(
             f'<marker id="{self.id}-{k}" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">'

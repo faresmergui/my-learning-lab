@@ -4,7 +4,7 @@ from inject import put
 # ================================ AWS =================================
 M = 'aws'
 
-# --- 02 : comment AWS décide ------------------------------------------
+# --- 02: how AWS decides ------------------------------------------
 d = D(680, 390)
 qs = [('Un Deny explicite quelque part ?', 'oui', 'non', 'REFUS'),
       ("Une SCP de l'organisation l'autorise ?", 'non', 'oui', 'REFUS'),
@@ -23,7 +23,7 @@ d.box(185, 344, 180, 38, 'AUTORISÉ', k='ok', d=4)
 d.arrow([(275, 312), (275, 342)], color='ok')
 put(f'{M}/02-iam-et-organizations.md', 'decision', figure(d, "Comment AWS décide d'autoriser une requête", "Un seul Deny suffit à refuser ; sans Allow explicite, la réponse est non."), fence='Deny explicite quelque part')
 
-# --- 03 : un VPC typique ----------------------------------------------
+# --- 03: a typical VPC ----------------------------------------------
 d = D(680, 360)
 d.zone(14, 14, 652, 334, 'VPC 10.0.0.0/16 · eu-west-3', k='c')
 d.box(290, 26, 100, 36, 'Internet Gateway', tk='s', k='a', d=0)
@@ -38,7 +38,7 @@ for j, (az, base) in enumerate([('AZ a', 0), ('AZ b', 1)]):
     d.arrow([(340, 62), (340, 94), (x + 153, 94), (x + 153, 104)], color='a', d=1)
 put(f'{M}/03-vpc-et-reseau.md', 'vpc', figure(d, 'Un VPC typique sur deux zones', "Seuls les sous-réseaux publics ont une route vers l'IGW ; le privé sort par la NAT, les données ne sortent pas."), fence='VPC 10.0.0.0/16 (eu-west-3)')
 
-# --- 05 : ALB et Auto Scaling -----------------------------------------
+# --- 05: ALB and Auto Scaling -----------------------------------------
 d = D(680, 340)
 d.box(270, 14, 140, 36, 'Internet', d=0)
 d.box(200, 78, 280, 50, 'ALB', 'sous-réseaux publics, AZ a + AZ b', k='a', d=1)
@@ -55,7 +55,7 @@ d.text(340, 286, 'groupe cible géré par un Auto Scaling group : min 2, desired
 d.text(340, 306, 'launch template : AMI, m7g.large, rôle IAM, user data', 's', d=6)
 put(f'{M}/05-load-balancing-et-auto-scaling.md', 'asg', figure(d, "L'architecture de base : ALB et Auto Scaling", "Une instance qui échoue au health check est retirée puis remplacée ; l'ASG garde le nombre voulu."), fence='Internet ─► ALB')
 
-# --- 08 : RDS Multi-AZ et réplicas ------------------------------------
+# --- 08: RDS Multi-AZ and replicas ------------------------------------
 d = D(680, 270)
 d.box(30, 104, 190, 60, 'principale', 'AZ a · lecture et écriture', k='c', d=0)
 d.box(470, 20, 196, 56, 'secours Multi-AZ', 'AZ b · non lisible', k='ok', d=1)
@@ -70,7 +70,7 @@ d.text(400, 126, 'asynchrone', 's')
 d.text(400, 212, 'asynchrone', 's')
 put(f'{M}/08-bases-de-donnees.md', 'rds', figure(d, 'RDS : Multi-AZ et réplicas de lecture', "Le Multi-AZ sert à la disponibilité, les réplicas à la lecture et à la reprise dans une autre région."), fence='Multi-AZ (synchrone, bascule auto)')
 
-# --- 14 : les stratégies de reprise -----------------------------------
+# --- 14: recovery strategies -----------------------------------
 d = D(680, 300)
 d.arrow([(60, 262), (664, 262)], end=True)
 d.arrow([(60, 262), (60, 16)], end=True)
@@ -88,7 +88,7 @@ put(f'{M}/14-resilience-et-reprise.md', 'dr', figure(d, 'Les quatre stratégies 
 # =============================== DOCKER ===============================
 M = 'docker'
 
-# --- 01 : un processus avec des œillères ------------------------------
+# --- 01: a process with blinkers ------------------------------
 d = D(680, 280)
 d.zone(14, 14, 652, 254, 'hôte Linux', k='')
 d.box(30, 44, 180, 140, "processus de l'hôte", 'sshd, systemd…\nvue normale', d=0)
@@ -100,7 +100,7 @@ for x in (120, 330, 548):
 d.box(30, 212, 620, 40, 'un seul noyau Linux, partagé par tous', k='a', d=3)
 put(f'{M}/01-comprendre-les-conteneurs.md', 'oeilleres', figure(d, 'Un conteneur est un processus isolé', "Pas de machine virtuelle : les namespaces limitent ce qu'il voit, les cgroups ce qu'il consomme."), fence='Hôte Linux (un seul noyau)')
 
-# --- 01 : les couches d'une image -------------------------------------
+# --- 01: image layers -------------------------------------
 d = D(680, 250)
 d.box(40, 16, 182, 38, 'écriture conteneur 1', k='a', tk='s', d=0)
 d.box(238, 16, 182, 38, 'écriture conteneur 2', k='a', tk='s', d=0)
@@ -113,7 +113,7 @@ for i, (t, s, k) in enumerate(layers):
 d.text(444, 39, 'disparaît avec le conteneur', 's', anchor='start')
 put(f'{M}/01-comprendre-les-conteneurs.md', 'couches', figure(d, "Les couches d'une image", "Deux conteneurs partagent les mêmes couches en lecture ; chacun n'écrit que dans sa propre couche."), fence='couche écrivable du conteneur')
 
-# --- 05 : trois façons de monter --------------------------------------
+# --- 05: three ways to mount --------------------------------------
 d = D(680, 250)
 d.text(129, 22, 'hôte', 'zl')
 d.text(551, 22, 'conteneur', 'zl')
@@ -127,7 +127,7 @@ for i, (t, s, dst, lab, k) in enumerate(rows):
     d.arrow([(244, y + 26), (434, y + 26)], color='c' if k else '', label=lab, dy=-8, d=i)
 put(f'{M}/05-volumes-et-donnees.md', 'montages', figure(d, 'Volume, bind mount et tmpfs', 'Les données qui comptent vont dans un volume : elles survivent à la suppression du conteneur.'), fence='/var/lib/docker/volumes/pgdata/_data')
 
-# --- 06 : le bridge ---------------------------------------------------
+# --- 06: the bridge ---------------------------------------------------
 d = D(680, 330)
 d.box(14, 40, 110, 40, 'Internet', d=0)
 d.zone(160, 10, 506, 310, 'hôte')

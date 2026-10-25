@@ -1,7 +1,7 @@
-// Kanji par niveau du JLPT, pour la page de synthèse du japonais.
-// Le JLPT ne publie plus de liste officielle depuis 2010 : ces listes suivent
-// les listes de référence couramment utilisées pour réviser.
-// Format d'une ligne : kanji | lectures on (katakana) | lectures kun (hiragana) | sens
+// Kanji by JLPT level, for the Japanese summary page.
+// The JLPT has not published an official list since 2010: these follow the
+// reference lists commonly used for studying.
+// Line format: kanji | on readings (katakana) | kun readings (hiragana) | meaning (French)
 const N5 = `
 日|ニチ・ジツ|ひ・か|jour, soleil
 一|イチ・イツ|ひと(つ)|un

@@ -1,6 +1,6 @@
-// Préfixe des liens internes. En local il vaut "/" ; sur GitHub Pages (site de projet)
-// il vaut "/<nom-du-dépôt>/". Astro le lit dans `base` (astro.config.mjs).
+// Prefix for internal links. Locally it is "/"; on GitHub Pages (project site)
+// it is "/<repo-name>/". Astro reads it from `base` (astro.config.mjs).
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-/** Lien interne : url('/tech/') donne '/tech/' en local et '/my-learning-hub/tech/' en ligne. */
+/** Internal link: url('/tech/') gives '/tech/' locally and '/my-learning-hub/tech/' online. */
 export const url = (path: string) => BASE + path;

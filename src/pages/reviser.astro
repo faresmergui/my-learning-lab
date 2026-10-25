@@ -1,6 +1,6 @@
 ---
-// Révision par flashcards avec répétition espacée.
-// Filtres possibles dans l'adresse : /reviser/?module=kubernetes ou ?fiche=kubernetes/07-taints
+// Flashcard review with spaced repetition.
+// URL filters: /reviser/?module=kubernetes or ?fiche=kubernetes/07-taints
 import { url } from '../lib/url';
 import Base from '../layouts/Base.astro';
 import { getAllCards, getModules, getCertIndex, jsonForScript } from '../lib/content';
@@ -62,7 +62,7 @@ const certs = await getCertIndex();
   const params = new URLSearchParams(location.search);
   const mod = params.get('module');
   const fiche = params.get('fiche');
-  // ?cert=cka : seulement les cartes des fiches liées à cette certification.
+  // ?cert=cka: only cards from the notes linked to that certification.
   const cert = params.get('cert');
   const certInfo: { title: string; fiches: string[] } | undefined = cert ? JSON.parse(document.getElementById('cert-index')!.textContent!)[cert] : undefined;
   const certFiches = certInfo ? new Set(certInfo.fiches) : null;
@@ -72,8 +72,8 @@ const certs = await getCertIndex();
   document.querySelectorAll<HTMLElement>('[data-filter]').forEach((a) => a.classList.toggle('on', (a.dataset.filter || null) === current));
   if (mod) loadIndex().then((idx) => { if (idx.modules[mod]?.universe === 'perso') document.body.classList.add('perso'); });
 
-  // Une révision ciblée sur une fiche montre toutes ses cartes ; sinon on suit le planning.
-  // Les cartes sont mélangées à chaque session pour ne pas apprendre l'ordre au lieu du contenu.
+  // A review targeted at one note shows all its cards; otherwise follow the schedule.
+  // Cards are shuffled every session so the order isn't learned instead of the content.
   const shuffle = <T,>(a: T[]) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
   let queue = shuffle(fiche ? scoped : reviewQueue(scoped));
   const total = queue.length;
@@ -89,7 +89,7 @@ const certs = await getCertIndex();
     if (!c) return finish();
     const s = load().cards[c.id];
     $('rv-q').innerHTML = c.q;
-    // Une question très courte (un kana, un kanji) s'affiche en grand.
+    // A very short question (one kana, one kanji) is shown large.
     $('rv-q').classList.toggle('big', c.q.replace(/<[^>]+>/g, '').trim().length <= 3);
     $('rv-a').innerHTML = c.a;
     $('rv-tag').textContent = c.moduleTitle.toLowerCase();
@@ -114,7 +114,7 @@ const certs = await getCertIndex();
     if (!flipped || !queue[0]) return;
     const c = queue.shift()!;
     gradeCard(c.id, g);
-    if (g === 1) queue.push(c); else done++; // une carte ratée revient en fin de session
+    if (g === 1) queue.push(c); else done++; // a missed card comes back at the end of the session
     flipped = false;
     grades.classList.remove('on');
     flash.classList.add('leave');

@@ -1,13 +1,13 @@
 from svg import D
 L, W = 13.4, 6.1
 NET = L / 2
-SSL = 1.98      # ligne de service court, depuis le filet
-LSD = 0.76      # ligne de service long double, depuis le fond
-SIDE = 0.46     # couloir latéral
+SSL = 1.98      # short service line, from the net
+LSD = 0.76      # doubles long service line, from the back
+SIDE = 0.46     # side alley
 
 
 def court(d, x0, y0, s, labels=False):
-    """Terrain vu de dessus, filet vertical au centre."""
+    """Court seen from above, net vertical in the middle."""
     X = lambda m: round(x0 + m * s, 1)
     Y = lambda m: round(y0 + m * s, 1)
     d.rect(X(0), Y(0), L * s, W * s, k='floor', rx=2)
@@ -22,7 +22,7 @@ def court(d, x0, y0, s, labels=False):
     return X, Y
 
 
-# --- Vue de côté : trajectoires ---------------------------------------
+# --- Side view: trajectories ---------------------------------------
 def side(d, x0, ground, sx, sy, xmin=0.0, xmax=L, hmax=8):
     X = lambda m: round(x0 + (m - xmin) * sx, 1)
     Yh = lambda h: round(ground - h * sy, 1)

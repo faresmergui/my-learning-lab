@@ -1,6 +1,6 @@
 ---
-// Tableau de bord global : la progression de tous les modules sur une page.
-// La page est générée vide, le navigateur la remplit avec ta progression.
+// Global dashboard: progress across every module on one page.
+// The page is rendered empty; the browser fills it with the user's progress.
 import { url } from '../lib/url';
 import Base from '../layouts/Base.astro';
 import ModuleIcon from '../components/ModuleIcon.astro';
@@ -8,7 +8,7 @@ import { getModules, getFiches, moduleOf, ficheUrl, cardId, inline, jsonForScrip
 const modules = await getModules();
 const fiches = await getFiches();
 const count = (slug: string) => fiches.filter((f) => moduleOf(f) === slug).length;
-// Texte des cartes, pour afficher la liste des cartes difficiles.
+// Card text, used to list the hardest cards.
 const cardText = Object.fromEntries(
   fiches.flatMap((f) => f.data.cards.map((c) => [cardId(f.id, c), { q: inline(c.q), module: moduleOf(f), url: ficheUrl(f) }])),
 );
@@ -78,7 +78,7 @@ const cardText = Object.fromEntries(
   const $ = (sel: string, root: ParentNode = document) => root.querySelector<HTMLElement>(sel)!;
   const pctOf = (a: number, b: number) => (b ? Math.round((a / b) * 100) : 0);
 
-  // Quiz : cumul des réponses par module (le stockage est par fiche).
+  // Quiz: answers summed per module (storage is per note).
   const quizOf = (slug: string) => {
     const r = idx.modules[slug].fiches.reduce((a, f) => {
       const q = p.quiz[f.id];
@@ -87,7 +87,7 @@ const cardText = Object.fromEntries(
     return r.total ? Math.round((r.right / r.total) * 100) : null;
   };
 
-  // Lignes du tableau
+  // Table rows
   const totals = { read: 0, fiches: 0, mastered: 0, cards: 0, due: 0, right: 0, answers: 0 };
   const byUniverse: Record<string, { done: number; total: number; fiches: number; read: number }> = {
     tech: { done: 0, total: 0, fiches: 0, read: 0 }, perso: { done: 0, total: 0, fiches: 0, read: 0 },
@@ -111,7 +111,7 @@ const cardText = Object.fromEntries(
     $('[data-quiz]', row).textContent = q === null ? '–' : `${q}%`;
   }
 
-  // Tuiles du haut
+  // Top tiles
   const set = (k: string, v: string) => { const el = document.querySelector(`[data-g="${k}"]`); if (el) el.textContent = v; };
   set('pct', `${pctOf(totals.read + totals.mastered, totals.fiches + totals.cards)}%`);
   set('pct-d', `${totals.read} fiches lues sur ${totals.fiches}`);
@@ -131,10 +131,10 @@ const cardText = Object.fromEntries(
     $('[data-u-bar]', el).style.setProperty('--w', `${pct}%`);
   }
 
-  // Prévisions : nombre de cartes qui arrivent à échéance chaque jour.
-  // Les cartes en retard sont comptées aujourd'hui.
-  // Les jours sont construits par le calendrier (new Date(a, m, j + i)) et non en ajoutant
-  // 24 h : au changement d'heure, un jour dure 23 ou 25 h et le même jour apparaissait deux fois.
+  // Forecast: number of cards falling due each day.
+  // Overdue cards are counted today.
+  // Days are built from the calendar (new Date(y, m, d + i)) rather than by adding
+  // 24 h: across a DST change a day lasts 23 or 25 h and the same day showed up twice.
   const now = new Date();
   const dates = Array.from({ length: 14 }, (_, i) => new Date(now.getFullYear(), now.getMonth(), now.getDate() + i));
   const index = new Map(dates.map((d, i) => [dayKey(d.getTime()), i]));
@@ -155,7 +155,7 @@ const cardText = Object.fromEntries(
     ? `${week} révision${week > 1 ? 's' : ''} prévue${week > 1 ? 's' : ''} sur les 7 prochains jours. Les nouvelles cartes ne sont pas comptées.`
     : 'Pas encore de cartes révisées. Lance une première session pour voir apparaître le planning.';
 
-  // Cartes difficiles : celles que tu as le plus oubliées, puis la facilité la plus basse.
+  // Hard cards: the most often forgotten first, then the lowest ease.
   const hard = Object.entries(p.cards)
     .filter(([id, s]) => texts[id] && (s.lapses > 0 || s.ease < 2.5) && !isMastered(s))
     .sort(([, a], [, b]) => b.lapses - a.lapses || a.ease - b.ease)

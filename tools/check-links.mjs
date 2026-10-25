@@ -1,6 +1,6 @@
-// Vérifie, après `npm run build`, que chaque lien interne du site mène à une page qui existe.
-// Usage : node tools/check-links.mjs [dossier] (par défaut dist/).
-// Le préfixe des liens (BASE_PATH, ex. /my-learning-hub) est lu comme dans astro.config.mjs.
+// After `npm run build`, checks that every internal link in the site points to an existing page.
+// Usage: node tools/check-links.mjs [folder] (defaults to dist/).
+// The link prefix (BASE_PATH, e.g. /my-learning-hub) is read the same way as in astro.config.mjs.
 import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
 import { join, dirname, normalize } from 'node:path';
 
@@ -35,9 +35,9 @@ for (const page of pages) {
 }
 
 if (broken.size) {
-  console.error(`${broken.size} lien(s) interne(s) cassé(s) :`);
-  for (const [link, page] of [...broken].slice(0, 30)) console.error(`  ${link}  (dans ${page})`);
-  if (broken.size > 30) console.error(`  … et ${broken.size - 30} autres`);
+  console.error(`${broken.size} broken internal link(s):`);
+  for (const [link, page] of [...broken].slice(0, 30)) console.error(`  ${link}  (in ${page})`);
+  if (broken.size > 30) console.error(`  … and ${broken.size - 30} more`);
   process.exit(1);
 }
-console.log(`${pages.length} pages vérifiées, aucun lien interne cassé.`);
+console.log(`${pages.length} pages checked, no broken internal links.`);

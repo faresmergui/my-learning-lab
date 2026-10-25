@@ -12,7 +12,7 @@
   --line: #242833;
   --text: #e9eaf0;
   --muted: #8a8f9d;
-  --accent: #e03a46;          /* rouge signature, dérivé de #C5212E */
+  --accent: #e03a46;          /* signature red, derived from #C5212E */
   --accent-soft: rgba(224, 58, 70, .14);
   --ok: #34d399;
   --warn: #fbbf24;
@@ -49,7 +49,7 @@ body {
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 code, kbd, pre { font-family: var(--font-mono); }
 
-/* --- Fond : grille de points + halo qui dérive lentement --- */
+/* --- Background: dot grid + slowly drifting glow --- */
 .backdrop { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
 .backdrop::before {
   content: ""; position: absolute; inset: 0;
@@ -100,7 +100,7 @@ kbd { font-size: 11px; padding: 1px 6px; border: 1px solid var(--line); border-b
 
 main { padding: 28px clamp(16px, 4vw, 56px) 80px; max-width: 1180px; width: 100%; min-width: 0; }
 
-/* --- Animation d'entrée en cascade (--i = rang de l'élément) --- */
+/* --- Staggered entrance animation (--i = element rank) --- */
 .rise { animation: rise .7s var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 
@@ -338,7 +338,7 @@ a { color: inherit; }
 .module.soon { opacity: .55; }
 .module.soon:hover { opacity: .8; }
 
-/* Corps des fiches, écrit en Markdown */
+/* Note body, written in Markdown */
 .prose > * { max-width: 72ch; }
 .prose > .diagram { max-width: none; }
 .prose > * + * { margin-top: 12px; }
@@ -384,7 +384,7 @@ body.perso .prose pre { background: #1f1c17 !important; }
 .progress-dots { flex: 1; max-width: 340px; margin: 0 16px; }
 .progress-dots i { flex: 1; width: auto; min-width: 4px; }
 @media (max-width: 900px) {
-  /* Sur mobile, la fiche passe avant le parcours */
+  /* On mobile, the note comes before the learning path */
   .module-layout > .main-col { order: -1; }
 }
 @media (max-width: 600px) {
@@ -480,7 +480,7 @@ body.perso .prose pre { background: #1f1c17 !important; }
 .dg-fillOk { fill: color-mix(in srgb, var(--ok, #2f9e6e) 16%, transparent); }
 .dg-floor { fill: color-mix(in srgb, var(--surface-2) 80%, transparent); }
 @keyframes dg-flow { to { stroke-dashoffset: -12; } }
-/* Apparition au défilement (classe posée par le script de la fiche) */
+/* Reveal on scroll (class set by the note page script) */
 .diagram.anim .dg-pop, .diagram.anim text { opacity: 0; }
 .diagram.anim .draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
 .diagram.anim.in .dg-pop, .diagram.anim.in text { animation: dg-in .5s var(--ease) forwards; animation-delay: calc(var(--d, 0) * 120ms); }
@@ -505,9 +505,9 @@ body.perso .prose pre { background: #1f1c17 !important; }
 .stage-row.empty-stage { opacity: .6; }
 .stage-row .stage-badge { min-width: 4.6rem; text-align: center; }
 
-/* Le parcours (ou le sommaire) reste fixe à l'écran pendant qu'on lit, et a sa
-   propre barre de défilement. Le titre de la page est dans la colonne de droite,
-   donc la colonne de gauche commence tout en haut et ne bouge jamais. */
+/* The learning path (or table of contents) stays fixed while reading and has its
+   own scrollbar. The page title sits in the right column, so the left column
+   starts at the very top and never moves. */
 @media (min-width: 901px) {
   .module-layout { margin-top: 0; margin-bottom: -52px; }
   .path-col { position: sticky; top: 28px; height: calc(100vh - 56px); display: flex; flex-direction: column; }
@@ -517,7 +517,7 @@ body.perso .prose pre { background: #1f1c17 !important; }
   .path-col .path li[data-fiches]:not(:last-child)::after { content: ""; position: absolute; left: 20px; top: 22px; bottom: -14px; width: 2px; background: var(--line); z-index: 0; }
 }
 
-/* --- Synthèses --------------------------------------------------------- */
+/* --- Summaries ---------------------------------------------------------- */
 .toc { padding: 16px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
 .toc ol { list-style: none; padding: 0; margin: 8px 0 0; counter-reset: toc; }
 .toc li { counter-increment: toc; }
@@ -561,12 +561,12 @@ body.perso .prose pre { background: #1f1c17 !important; }
 .page-head { display: grid; gap: 10px; }
 .page-title { display: flex; gap: 18px; align-items: center; }
 
-/* Les petits débordements décoratifs (tampon incliné) ne doivent pas créer de scroll horizontal. */
+/* Small decorative overflows (the tilted stamp) must not cause horizontal scrolling. */
 html, body { overflow-x: clip; }
 
-/* ---- Synthèses en couleur ----
-   Chaque section (un h2 et tout ce qui le suit) reçoit une couleur --s, qui tourne sur une petite palette.
-   Les règles « h2:nth-of-type(n) ~ * » s'écrasent dans l'ordre : un élément prend la couleur du dernier h2 qui le précède. */
+/* ---- Colored summaries ----
+   Each section (an h2 and everything after it) gets a color --s, cycling through a small palette.
+   The "h2:nth-of-type(n) ~ *" rules override each other in order: an element takes the color of the last h2 before it. */
 .prose.synthese { --s: var(--c); counter-reset: syn; }
 .prose.synthese > h2:nth-of-type(1), .prose.synthese > h2:nth-of-type(1) ~ * { --s: var(--c); }
 body.perso .prose.synthese > h2:nth-of-type(1), body.perso .prose.synthese > h2:nth-of-type(1) ~ * { --s: var(--c); }
@@ -637,11 +637,11 @@ body.perso .toc li:nth-child(6n+2) { --s: #0f766e; } body.perso .toc li:nth-chil
 body.perso .toc li:nth-child(6n+4) { --s: #b45309; } body.perso .toc li:nth-child(6n+5) { --s: #15803d; } body.perso .toc li:nth-child(6n) { --s: #be185d; }
 .toc a:not(.btn)::before { color: var(--s, inherit); opacity: 1; }
 .toc a.here { box-shadow: inset 3px 0 0 var(--s, var(--accent)); }
-/* Une marge en bas de page pour que la dernière section puisse remonter en haut de l'écran. */
+/* Bottom spacing so the last section can scroll up to the top of the screen. */
 .syn-end { height: 0; }
 @media (min-width: 901px) { .syn-end { height: max(0px, calc(100vh - 240px)); } }
 
-/* ---- Fiches : une touche de la couleur du module (--c), plus discrète que dans les synthèses ---- */
+/* ---- Notes: a touch of the module color (--c), subtler than in the summaries ---- */
 .prose:not(.synthese) { --cc: color-mix(in srgb, var(--c, var(--accent)) 65%, var(--text)); }
 .prose:not(.synthese) > h2 { display: flex; align-items: center; gap: 10px; }
 .prose:not(.synthese) > h2::before { content: ""; flex: none; width: 4px; height: .95em; border-radius: 2px; background: var(--c, var(--accent)); }
@@ -679,13 +679,13 @@ body.perso .toc li:nth-child(6n+4) { --s: #b45309; } body.perso .toc li:nth-chil
 .cert-domain li small { color: var(--muted); font: 11px var(--font-mono); white-space: nowrap; }
 .cert-missing { margin-top: 10px; font-size: 13px; color: var(--muted); border-left: 3px solid var(--warn); padding-left: 10px; }
 .cert-missing b { color: var(--warn); }
-/* Clavier de piano dans les schémas */
+/* Piano keyboard in diagrams */
 .dg-kw { fill: var(--surface); stroke: var(--muted); stroke-width: 1.2; }
 .dg-kb { fill: var(--text); stroke: var(--text); stroke-width: 1; }
 .dg-kw.on { fill: color-mix(in srgb, var(--c) 30%, var(--surface)); stroke: var(--c); }
 .dg-kb.on { fill: var(--c); stroke: var(--c); }
 .dg-kbt { font: 600 10px var(--font-mono); fill: var(--surface); }
-/* Échiquier (module échecs) : cases, surbrillance et pièces. */
+/* Chessboard (chess module): squares, highlights and pieces. */
 .dg-sql { fill: var(--surface); }
 .dg-sqd { fill: color-mix(in srgb, var(--c) 24%, var(--surface)); }
 .dg-sqh { fill: color-mix(in srgb, var(--accent) 34%, transparent); }
@@ -694,8 +694,8 @@ body.perso .toc li:nth-child(6n+4) { --s: #b45309; } body.perso .toc li:nth-chil
 .dg-pb { font-size: 31px; fill: var(--text); }
 .dg-coord { font: 600 10px var(--font-mono); fill: var(--muted); }
 
-/* Mobile : les filtres défilent sur une ligne au lieu d'occuper un demi-écran,
-   le compteur de cartes reste sur une ligne, le tampon 学 ne touche plus le bord. */
+/* Mobile: filters scroll on a single line instead of taking half the screen,
+   the card counter stays on one line, and the 学 stamp no longer touches the edge. */
 @media (max-width: 700px) {
   .filters { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; margin-inline: -16px; padding-inline: 16px; }
   .filters::-webkit-scrollbar { display: none; }

@@ -3,7 +3,7 @@ from inject import put
 
 M = 'securite'
 
-# --- fiche 10 : la boucle des phases ---------------------------------
+# --- note 10: the phase loop ---------------------------------
 d = D(680, 230)
 phases = [('1 · Recon', 'cadrer'), ('2 · Énumérer', 'tout lister'),
           ('3 · Vecteurs', 'quelle faille'), ('4 · Exploiter', "l'accès"),
@@ -15,7 +15,7 @@ for i, (t, s) in enumerate(phases):
     d.box(x, y, w, 56, t, s, k=k, tk='s', d=i)
     if i:
         d.arrow([(x - 14, y + 28), (x - 2, y + 28)], color='c')
-# boucle de retour : de privesc (5) vers énumération (2)
+# feedback loop: from privesc (5) back to enumeration (2)
 d.arrow([(x0 + 4*step + w/2, y + 58), (x0 + 4*step + w/2, 150),
          (x0 + step + w/2, 150), (x0 + step + w/2, y + 58)], color='a', k='dash')
 d.text(680/2, 170, "une découverte tardive → on revient énumérer", 's')
@@ -24,7 +24,7 @@ put(f'{M}/10-methodologie-le-fil-conducteur.md', 'phases',
     "On avance de la reconnaissance à la documentation, mais chaque nouvelle information renvoie à l'énumération : le trajet n'est jamais une ligne droite."),
     before='| Phase | Question')
 
-# --- fiche 11 : le trajet type d'une machine -------------------------
+# --- note 11: a typical machine walkthrough -------------------------
 d = D(680, 250)
 steps = [('Scan', 'ports ouverts'), ('Énumérer', 'chaque service'),
          ('Accès initial', 'un pied dedans'), ('Stabiliser', 's\'orienter'),

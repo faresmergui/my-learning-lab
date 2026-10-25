@@ -1,6 +1,6 @@
 ---
-// Explorateur de kanji par niveau JLPT (page de synthèse du japonais).
-// Les données sont dans src/data/kanji.ts. Tout le filtrage se fait dans le navigateur.
+// Kanji explorer by JLPT level (Japanese summary page).
+// Data lives in src/data/kanji.ts. All filtering happens in the browser.
 import { LEVELS } from '../data/kanji';
 const total = LEVELS.reduce((a, l) => a + l.kanji.length, 0);
 ---
@@ -50,12 +50,12 @@ const total = LEVELS.reduce((a, l) => a + l.kanji.length, 0);
 
     const apply = () => {
       const q = search.value.trim().toLowerCase();
-      // En français, on cherche le début des mots (« eau » ne trouve pas « nouveau »).
+      // French meanings match on word starts ("eau" must not match "nouveau").
       const latin = /^[a-zà-ÿœ' -]+$/.test(q);
       const match = (s: string) => latin ? s.split(/[\s,()·]+/).some((w) => w.startsWith(q)) : s.includes(q);
       let shown = 0;
       grids.forEach((g) => {
-        // Pendant une recherche, on cherche dans tous les niveaux.
+        // While searching, look across all levels.
         const visible = q ? true : g.dataset.grid === level;
         let n = 0;
         g.querySelectorAll<HTMLElement>('.kx-tile').forEach((t) => {

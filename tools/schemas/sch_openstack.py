@@ -3,7 +3,7 @@ from inject import put
 
 M = 'openstack'
 
-# --- 02 : architecture ------------------------------------------------
+# --- 02: architecture ------------------------------------------------
 d = D(680, 340)
 d.box(14, 92, 96, 44, 'utilisateurs', d=0)
 d.box(134, 92, 112, 44, 'VIP HAProxy', k='a', d=1)
@@ -23,7 +23,7 @@ d.text(568, 218, 'API', 's', anchor='start')
 d.arrow([(310, 290), (390, 290)], start=True, color='c', label='RBD', dy=-8)
 put(f'{M}/02-architecture-d-un-cloud.md', 'archi', figure(d, "Les rôles des machines d'un cloud OpenStack", "Les contrôleurs décident, les computes font tourner les VM, Ceph garde les disques."), fence='Contrôleurs (x3)')
 
-# --- 02 : trajet d'une création d'instance ----------------------------
+# --- 02: an instance creation's journey ----------------------------
 d = D(680, 350)
 row = [('openstack\nserver create', '', ''), ('nova-api', 'jeton, quotas,\nBUILD en base', 'c'), ('nova-conductor', 'orchestre', 'c'), ('nova-scheduler', 'choisit l\'hôte', 'c'), ('nova-compute', 'sur l\'hôte choisi', 'a')]
 for i, (t, s, k) in enumerate(row):
@@ -49,7 +49,7 @@ for i, (t, s) in enumerate(low):
 d.text(340, 322, 'statut ACTIVE, puis cloud-init lit les métadonnées (clé SSH, user data)', 'ct', d=9)
 put(f'{M}/02-architecture-d-un-cloud.md', 'trajet', figure(d, "Le trajet d'une création d'instance", "Quand une création échoue, ce trajet dit dans quels logs chercher : nova-api, puis scheduler, puis compute."), fence='1. openstack server create')
 
-# --- 08 : le scheduling en entonnoir ----------------------------------
+# --- 08: funnel scheduling ----------------------------------
 d = D(680, 340)
 stages = [('demande', 'flavor m1.large (4 vCPU, 8 Go, 40 Go) + image + zone', 600, ''),
           ('1. Placement', 'qui a assez de ressources libres ? → 37 hôtes', 500, 'c'),
@@ -64,7 +64,7 @@ for i, (t, s, w, k) in enumerate(stages):
 d.text(340, 326, "allocation enregistrée dans Placement, puis nova-compute crée l'instance", 's', d=4)
 put(f'{M}/08-nova-placement-et-scheduling.md', 'entonnoir', figure(d, "Le choix d'un hôte en trois étapes", "Placement élimine sur les ressources, les filtres sur les règles, les poids classent ceux qui restent."), fence='Demande : flavor m1.large')
 
-# --- 09 : un projet type ----------------------------------------------
+# --- 09: a typical project ----------------------------------------------
 d = D(680, 350)
 d.box(170, 14, 340, 50, 'réseau externe « public »', 'provider, VLAN 200 · 203.0.113.0/24', k='a', d=0)
 d.box(270, 104, 140, 50, 'routeur r1', 'SNAT 203.0.113.10', k='c', d=1)
@@ -82,7 +82,7 @@ d.text(140, 114, '203.0.113.25', 's', anchor='start')
 d.text(140, 128, '→ web1', 's', anchor='start')
 put(f'{M}/09-neutron-les-concepts.md', 'projet', figure(d, 'Un projet type dans Neutron', "Les VM n'ont que des IP privées ; le routeur fait le SNAT vers l'extérieur et l'IP flottante rend web1 joignable."), fence='Réseau externe « public »')
 
-# --- 10 : OVN sous le capot -------------------------------------------
+# --- 10: OVN under the hood -------------------------------------------
 d = D(680, 430)
 d.box(40, 14, 260, 40, 'neutron-server (ML2/OVN)', k='c', d=0)
 d.box(40, 90, 260, 58, 'OVN Northbound DB', 'switches et routeurs logiques,\nACL, NAT, load balancers', d=1)
@@ -105,7 +105,7 @@ d.box(526, 360, 140, 44, 'réseau externe', 'interface physique', k='a', d=7)
 d.arrow([(380, 382), (524, 382)], color='a')
 put(f'{M}/10-neutron-ovn-sous-le-capot.md', 'ovn', figure(d, 'De Neutron à OpenFlow avec OVN', "Une règle qui manque sur un hôte se cherche dans l'ordre : NB, SB, puis OpenFlow sur br-int."), fence='OVN Northbound DB')
 
-# --- 12 : placement des données Ceph -----------------------------------
+# --- 12: Ceph data placement -----------------------------------
 d = D(680, 290)
 d.box(40, 24, 190, 54, 'objet', "4 Mo d'un disque RBD", d=0)
 d.box(300, 24, 190, 54, 'placement group', 'du pool « volumes »', k='c', d=1)
@@ -120,7 +120,7 @@ for i, (h, o) in enumerate([('hôte A', 'OSD.4'), ('hôte B', 'OSD.11'), ('hôte
 d.text(340, 266, 'perdre un hôte ne perd aucune donnée : Ceph recrée la copie manquante ailleurs', 's', d=5)
 put(f'{M}/12-ceph-pour-openstack.md', 'crush', figure(d, 'Comment Ceph place un objet', 'Personne ne garde de table « objet → disque » : CRUSH recalcule la position à chaque accès.'), fence='placement group (PG)')
 
-# --- 15 : l'arbre d'un load balancer ----------------------------------
+# --- 15: a load balancer tree ----------------------------------
 d = D(680, 340)
 d.box(14, 20, 110, 44, 'clients', d=0)
 d.box(180, 14, 300, 56, 'load balancer « web-lb »', 'VIP 10.20.0.50\nIP flottante 203.0.113.12', k='a', d=1)
