@@ -1,6 +1,6 @@
-# Sur chaque pull request (dont celles de Dependabot), compare les dépendances
-# avant/après et bloque la PR si elle ajoute un paquet avec une faille connue
-# sérieuse.
+# On every pull request (including Dependabot's), compares dependencies before
+# and after, and blocks the PR if it adds a package with a known high-severity
+# vulnerability.
 name: Revue des dépendances
 
 on:

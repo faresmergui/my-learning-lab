@@ -1,7 +1,7 @@
-# CodeQL : l'analyseur de sécurité de GitHub. Il lit le code (TypeScript, JavaScript
-# et les workflows eux-mêmes) à la recherche de failles connues : injection de HTML,
-# workflow qui exécute du texte non fiable, etc. Les alertes apparaissent dans
-# l'onglet Security → Code scanning. Gratuit pour un dépôt public.
+# CodeQL: GitHub's security analyzer. It reads the code (TypeScript, JavaScript
+# and the workflows themselves) looking for known vulnerability patterns: HTML
+# injection, workflows running untrusted text, etc. Alerts show up under
+# Security → Code scanning. Free for public repositories.
 name: CodeQL
 
 on:
@@ -9,7 +9,7 @@ on:
     branches: [main]
   pull_request:
   schedule:
-    - cron: '17 6 * * 1'   # chaque lundi matin, pour les nouvelles règles
+    - cron: '17 6 * * 1'   # every Monday morning, to pick up new rules
   workflow_dispatch:
 
 permissions:
@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
-      security-events: write   # pour publier les alertes dans l'onglet Security
+      security-events: write   # to publish alerts to the Security tab
     strategy:
       fail-fast: false
       matrix:

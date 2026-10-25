@@ -1,15 +1,28 @@
-# Dependabot ouvre une PR par semaine quand une action GitHub ou un paquet npm
-# a une nouvelle version (et tout de suite en cas de faille connue).
+# Dependabot opens a weekly PR when a GitHub Action or an npm package has a new
+# version (and right away when a known vulnerability is published).
+# The cooldown waits 7 days after a release before proposing it: a hijacked
+# package is usually spotted and pulled within that window. Security updates skip it.
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       dependances:
         patterns: ['*']
+    ignore:
+      # `astro check` does not support TypeScript 7 yet: stay on 6.x until it does.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
+      # Node type definitions follow the Node version used by the site (22).
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']

@@ -1,5 +1,5 @@
-# Pipeline du site : vérifie chaque proposition de modification, et met le site
-# en ligne sur GitHub Pages à chaque push sur main. Explications : docs/ARCHITECTURE.md.
+# Site pipeline: checks every proposed change, and publishes the site to
+# GitHub Pages on every push to main. Details (in French): docs/ARCHITECTURE.md.
 name: Build et déploiement
 
 on:
@@ -8,11 +8,11 @@ on:
   pull_request:
   workflow_dispatch:
 
-# Par défaut, le jeton GitHub du workflow ne peut que lire le code.
+# By default, the workflow's GitHub token can only read the code.
 permissions:
   contents: read
 
-# Un seul déploiement à la fois ; une PR mise à jour annule son build précédent.
+# One deployment at a time; an updated PR cancels its previous build.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -22,8 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      # Les actions sont figées sur une empreinte (SHA) : un tag peut être déplacé, pas une empreinte.
-      # Dependabot (.github/dependabot.yml) propose les mises à jour.
+      # Actions are pinned to a commit SHA: a tag can be moved, a SHA cannot.
+      # Dependabot (.github/dependabot.yml) proposes the updates.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -33,17 +33,17 @@ jobs:
           node-version: 22
           cache: npm
 
-      # npm ci installe exactement les versions de package-lock.json ;
-      # --ignore-scripts empêche les paquets d'exécuter du code à l'installation.
+      # npm ci installs the exact versions from package-lock.json;
+      # --ignore-scripts stops packages from running code at install time.
       - run: npm ci --ignore-scripts
 
-      # Bloque la pipeline si une dépendance a une faille connue sérieuse.
+      # Fails the pipeline if a dependency has a known high-severity vulnerability.
       - run: npm audit --audit-level=high
 
-      # Vérifie les types (TypeScript) et le format du contenu des pages .astro.
+      # Type-checks TypeScript and the .astro pages.
       - run: npm run check
 
-      # Donne l'adresse et le préfixe du site (ex. /my-learning-hub/) à Astro.
+      # Gives Astro the site URL and path prefix (e.g. /my-learning-hub/).
       - id: pages
         if: github.event_name != 'pull_request'
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
@@ -53,7 +53,7 @@ jobs:
           SITE_URL: ${{ steps.pages.outputs.origin }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
 
-      # Chaque lien interne du site construit doit mener à une page qui existe.
+      # Every internal link in the built site must point to an existing page.
       - run: npm run check:links
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
@@ -68,7 +68,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Seul ce job peut publier : il reçoit juste les droits nécessaires à GitHub Pages.
+    # Only this job can publish: it gets just the permissions GitHub Pages needs.
     permissions:
       pages: write
       id-token: write
