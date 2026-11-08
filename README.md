@@ -1,6 +1,6 @@
 # my-learning-hub
 
-My personal site for learning and reviewing. Tech side: Kubernetes, Linux, Terraform, Ansible, security, networking, DevOps, Docker, AWS, OpenStack, observability, AI and Omarchy. Personal side: Japanese, badminton, Yu-Gi-Oh!, Valorant, piano, personal finance and chess.
+My personal site for learning and reviewing. Tech side: Kubernetes, Linux, Terraform, Ansible, security, networking, DevOps, Docker, AWS, OpenStack, observability, AI and Omarchy. Personal side: Japanese, badminton, Yu-Gi-Oh! (theory, plus a module with my own decks), Valorant, piano, personal finance and chess.
 
 Chapter-based learning paths, notes, flashcards with spaced repetition, quizzes and progress tracking. No account and no database: a static site that runs locally or on GitHub Pages.
 
@@ -8,7 +8,7 @@ Chapter-based learning paths, notes, flashcards with spaced repetition, quizzes 
 
 ## Features
 
-- **20 modules, 369 notes, 2,400+ flashcards**, a quiz for every note and a one-page summary per module.
+- **21 modules, 370 notes, 2,400+ flashcards**, a quiz for every note and a one-page summary per module.
 - **Spaced repetition** (simplified SM-2, the algorithm behind Anki) with a 14-day review forecast.
 - **Certification tracks** (CKA, AWS SAA, CKS, LFCS, Terraform Associate, Red Hat EX210) built on top of the existing notes.
 - **Full-text search** with a ⌘K / Ctrl+K palette.

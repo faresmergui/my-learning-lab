@@ -15,7 +15,7 @@ cards:
 - q: Que sépare le point-virgule (;) ?
   a: 'Ce qui est **avant** le point-virgule se fait **à l''activation** : payer un coût, choisir une cible. Ce qui est **après** se fait **à la résolution**. Nier l''effet n''annule pas ce qui est avant le point-virgule.'
 - q: Pourquoi Called by the Grave (*Appelé par la Tombe*) répond-il si bien à Ash Blossom (Floraison de Cendres et Joyeux Printemps) ?
-  a: 'Parce que défausser Ash est un **coût** : Ash est déjà au cimetière quand son effet est sur la chaîne. Called by the Grave cible Ash au cimetière, la bannit et nie ses effets : Ash se résout sans rien faire.'
+  a: 'Parce que défausser Ash est un **coût** : Ash est déjà au cimetière quand son effet est sur la chaîne. Called by the Grave cible Ash au cimetière, la bannit et nie ses effets : Ash se résout sans rien faire. (La carte est interdite en TCG depuis le 19 octobre 2026, mais la règle du coût reste la même.)'
 - q: Différence entre « puis » (then) et « et si vous le faites » (and if you do) ?
   a: 'Les deux exigent que la première action réussisse. Avec **« puis »**, les actions sont **successives** : un « quand » déclenché par la première rate son timing. Avec **« et si vous le faites »**, elles sont **simultanées**.'
 - q: Que signifie « aussi » (also) entre deux actions ?
@@ -81,7 +81,7 @@ Tout ce qui est **avant le point-virgule** est fait au moment de l'activation : 
 
 - **Nier l'effet ne rend pas le coût.** La carte défaussée reste au cimetière.
 - **Le coût ne peut pas être « répondu ».** L'adversaire voit le coût payé, puis répond à l'activation.
-- **Le coût peut créer une opportunité.** Une hand trap qui se défausse elle-même (Ash Blossom (*Floraison de Cendres et Joyeux Printemps*), Ghost Belle (*Beauté Fantôme et Manoir Hanté*), Droll) est déjà au cimetière pendant que son effet attend sur la chaîne. Called by the Grave (*Appelé par la Tombe*) peut alors la cibler, la bannir et nier ses effets : elle se résout sans rien faire.
+- **Le coût peut créer une opportunité.** Une hand trap qui se défausse elle-même (Ash Blossom (*Floraison de Cendres et Joyeux Printemps*), Ghost Belle (*Beauté Fantôme et Manoir Hanté*), Droll) est déjà au cimetière pendant que son effet attend sur la chaîne. Called by the Grave (*Appelé par la Tombe*) peut alors la cibler, la bannir et nier ses effets : elle se résout sans rien faire. La carte est interdite en TCG depuis le 19 octobre 2026, mais le principe vaut pour tout effet qui touche le cimetière.
 
 ## Le ciblage
 

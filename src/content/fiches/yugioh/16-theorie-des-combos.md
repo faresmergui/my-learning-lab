@@ -25,14 +25,14 @@ cards:
 - q: Qu'est-ce qu'un deck qui « grind » ?
   a: 'Un deck qui gagne sur la durée : il récupère ses cartes du cimetière, réutilise ses effets et produit de la valeur à chaque tour, même après avoir été interrompu.'
 quiz:
-- q: Ta ligne commence par une recherche, puis tout en découle. L'adversaire a montré qu'il joue Ash Blossom (Floraison de Cendres et Joyeux Printemps), et ton deck en contient encore un exemplaire. Que fais-tu de Crossout Designator (Désignateur de la Suppression) en main ?
+- q: Ta ligne commence par une recherche, puis tout en découle. L'adversaire a montré qu'il joue Ash Blossom (Floraison de Cendres et Joyeux Printemps). Tu as en main un second starter qui fait aussi une recherche, moins importante. Que fais-tu ?
   options:
-  - Je le garde pour plus tard
-  - Je l'active avant la recherche, en déclarant Ash Blossom
-  - Je l'active après la recherche
-  - Je le défausse
+  - Je lance directement ma recherche clé
+  - Je joue d'abord le second starter pour appâter Ash
+  - Je passe mon tour
+  - Je défausse ma recherche clé
   answer: 1
-  explain: 'Crossout Designator bannit un Ash de ton deck et nie les effets activés des cartes de ce nom ce tour, y compris celles de l''adversaire : il protège ton point d''étranglement avant qu''il soit touché.'
+  explain: 'Depuis la banlist TCG du 19 octobre 2026, Crossout Designator et Called by the Grave sont interdites : pour protéger ton point d''étranglement, tu l''appâtes avec un effet crédible mais secondaire.'
 - q: Deux lignes mènent au même terrain final. La première a un seul point d'étranglement au tout début ; la seconde a deux points moins graves. L'adversaire a 3 cartes en main au tour 1 ; tu joues premier. Laquelle préférer ?
   options:
   - Toujours la plus courte
@@ -98,7 +98,7 @@ Un **point d'étranglement** est un effet dont la négation coupe la ligne. Les 
 2. **l'invocation d'un monstre pivot** (souvent un Lien qui recherche ou qui invoque) ;
 3. **l'effet qui remplit le cimetière** dont dépend tout le reste.
 
-Un deck bien construit **double** ses points d'étranglement (deux cartes différentes qui font la même chose) ou les **protège** (Called by the Grave (*Appelé par la Tombe*), Crossout Designator (*Désignateur de la Suppression*)).
+Un deck bien construit **double** ses points d'étranglement (deux cartes différentes qui font la même chose) ou les **protège** en appâtant d'abord les hand traps adverses (Called by the Grave et Crossout Designator, qui servaient à ça, sont interdites en TCG depuis le 19 octobre 2026).
 
 ## Choisir sa ligne
 

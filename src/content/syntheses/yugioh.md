@@ -49,16 +49,15 @@ Une invocation par procédure ne s'active pas : la plupart des hand traps n'y r�
 | Effect Veiler (*Illusionniste d'Effet*) | les effets d'un monstre face recto (Main Phase adverse) |
 | Infinite Impermanence (*Infini Éphémère*) | les effets d'un monstre ; depuis la main si tu ne contrôles aucune carte |
 | Ghost Ogre (*Ogre Fantôme et Lapin des Neiges*) | détruit la carte qui active son effet |
-| Droll & Lock Bird (*Hurluberlu et Oiseau de Verrouillage*) | plus aucune carte du deck vers la main ce tour |
+| Droll & Lock Bird (*Hurluberlu et Oiseau de Verrouillage*, limitée à 1) | plus aucune carte du deck vers la main ce tour |
 | Nibiru (*Nibiru, l'Être Primitif*) | après 5 invocations adverses ou plus, sacrifie tous les monstres face recto |
 
 Vise le **point d'étranglement** du combo, pas la première carte venue.
 
 ## Les staples
 
-- **Called by the Grave** (*Appelé par la Tombe*) : répond à une hand trap déjà dans le cimetière.
-- **Crossout Designator** (*Désignateur de la Suppression*) : neutralise une hand trap d'avance.
-- Board breakers : **Harpie's Feather Duster** (*Le Plumeau de Dame Harpie*) (magies et pièges), **Dark Ruler No More** (*Plus du Tout Gouverneur des Ténèbres*) (monstres qui nient), **Kaiju** (sacrifice : ni destruction ni ciblage), **Lightning Storm** (*Orage Foudroyant*), **Evenly Matched** (*À Forces Égales*), **Forbidden Droplet** (*Gouttelette de l'Interdit*).
+- **Called by the Grave** (*Appelé par la Tombe*) et **Crossout Designator** (*Désignateur de la Suppression*) : les deux réponses aux hand traps, **interdites en TCG** depuis la banlist du 19 octobre 2026. Il reste l'appât et les points d'étranglement doublés.
+- Board breakers : **Harpie's Feather Duster** (*Le Plumeau de Dame Harpie*, limitée à 1) (magies et pièges), **Dark Ruler No More** (*Plus du Tout Gouverneur des Ténèbres*) (monstres qui nient), **Kaiju** (sacrifice : ni destruction ni ciblage), **Lightning Storm** (*Orage Foudroyant*), **Evenly Matched** (*À Forces Égales*), **Forbidden Droplet** (*Gouttelette de l'Interdit*).
 
 ## Premier ou second
 
