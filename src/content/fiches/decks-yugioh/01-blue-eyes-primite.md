@@ -1,9 +1,9 @@
 ---
-title: 'Mon deck : Blue-Eyes Primite'
-chapter: 22
+title: Blue-Eyes Primite
+chapter: 1
 order: 1
 duration: 20
-level: Mon deck
+level: Deck principal
 tags:
 - Blue-Eyes
 - Primite
@@ -82,7 +82,7 @@ quiz:
   explain: Called by the Grave et Crossout Designator sont interdites en TCG. Il faut appâter Ash avant Wishes.
 ---
 
-Cette fiche est celle de **ton deck principal**. Elle complète les chapitres de théorie avec ta liste, tes lignes de combo selon ta main de départ et les points où l'adversaire peut t'arrêter.
+Cette fiche est celle de **ton deck principal**. Elle complète la théorie du module Yu-Gi-Oh! avec ta liste, tes lignes de combo selon ta main de départ et les points où l'adversaire peut t'arrêter.
 
 > **Vérifiée le 8 novembre 2026.** Ta liste est légale avec la [banlist TCG du 19 octobre 2026](https://www.yugioh-card.com/en/limited/list_2026-10-19/) : Bystial Magnamhut, Droll & Lock Bird, Harpie's Feather Duster et Solemn Judgment sont limitées à 1, et tu en joues 1. Le moteur (Sage, Maiden, Wishes, True Light, Mausoleum, Roar, Ether Beryl, Lordly Lode, Drillbeam) est le même que dans la [liste Top 4 du WCQ Regional de Saint-Domingue du 25 octobre 2026](https://ygoprodeck.com/deck/primite-blue-eyes-741079). À revérifier à chaque nouvelle banlist.
 
