@@ -4,7 +4,7 @@
 
 - New Tech module **Omarchy** (DHH's Arch + Hyprland setup, version 4): 16 notes in 3 stages (getting started, mastering the system, customizing and optimizing), 112 flashcards, 64 quiz questions, 9 diagrams and a summary. Covers booting from an external SSD next to Windows.
 - Yu-Gi-Oh!: new **Archetypes** stage (8 notes, 59 flashcards, 32 quiz questions, 5 diagrams): classic Exodia and Millennium Exodia (Millennium Ankh), then Blue-Eyes in depth for the TCG format of October 2026 (cards and roles, the Primite engine used by the meta build, deck building, game lines, matchups and a training plan). Summary updated.
-- New Perso module **Mes decks Yu-Gi-Oh!**: one note per deck actually played, starting with Blue-Eyes Primite (decklist, combo lines by starting hand, choke points, practice plan).
+- New Perso module **Mes decks Yu-Gi-Oh!**: one note per deck actually played, starting with Blue-Eyes Primite (decklist, combo lines by starting hand, choke points, practice plan) and a one-page summary.
 - Yu-Gi-Oh!: notes updated for the TCG Forbidden & Limited list of October 19, 2026 (Called by the Grave, Crossout Designator, Triple Tactics Talent forbidden; Droll & Lock Bird limited).
 - Dependencies: Astro 7.4.7, marked 18.1.2 (Node.js 22.23.4 or later required).
 
