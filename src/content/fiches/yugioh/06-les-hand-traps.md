@@ -79,12 +79,12 @@ La plupart sont des **monstres à effet rapide** (vitesse 2) dont le coût est d
 | **Infinite Impermanence** (*Infini Éphémère*) | les effets d'un monstre face recto ; posé, aussi la colonne de magies et pièges | depuis la main si tu ne contrôles aucune carte |
 | **Ghost Ogre & Snow Rabbit** (*Ogre Fantôme et Lapin des Neiges*) | **détruit** un monstre ou une carte face recto qui active son effet | contre les magies continues ou de terrain clés |
 | **Ghost Belle & Haunted Mansion** (*Beauté Fantôme et Manoir Hanté*) | un effet qui récupère ou invoque depuis le cimetière, ou y bannit | contre les decks qui utilisent beaucoup leur cimetière |
-| **Droll & Lock Bird** (*Hurluberlu et Oiseau de Verrouillage*) | après une recherche, plus personne n'ajoute de carte du deck à sa main ce tour | contre les decks qui font plusieurs recherches par tour |
+| **Droll & Lock Bird** (*Hurluberlu et Oiseau de Verrouillage*, limitée à 1) | après une recherche, plus personne n'ajoute de carte du deck à sa main ce tour | contre les decks qui font plusieurs recherches par tour |
 | **D.D. Crow** (*Corbeau D.D.*) | bannit une carte du cimetière adverse | contre une carte qui doit s'activer depuis le cimetière |
 | **Nibiru, the Primal Being** (*Nibiru, l'Être Primitif*) | sacrifie tous les monstres face recto, après 5 invocations adverses ou plus ce tour | en fin de combo, quand l'adversaire a déjà tout engagé |
-| **Dimension Shifter** (*Migrateur Dimensionnel*) | toute carte envoyée au cimetière est bannie à la place, jusqu'à la fin du tour suivant | à activer si ton cimetière est vide, contre les decks cimetière |
+| **Dimension Shifter** (*Migrateur Dimensionnel*, **interdite en TCG**) | toute carte envoyée au cimetière est bannie à la place, jusqu'à la fin du tour suivant | à activer si ton cimetière est vide, contre les decks cimetière |
 
-D'autres familles existent selon les époques : les **Bystial**, qui bannissent un monstre LUMIÈRE ou TÉNÈBRES d'un cimetière pour s'invoquer ; les cartes qui font **piocher** à chaque invocation adverse, comme **Maxx "C"** (*Cancrelat Maxx*) et la série des **Mulcharmy**. Le statut de ces cartes change souvent dans la banlist : vérifie toujours la liste en vigueur.
+D'autres familles existent selon les époques : les **Bystial**, qui bannissent un monstre LUMIÈRE ou TÉNÈBRES d'un cimetière pour s'invoquer ; les cartes qui font **piocher** à chaque invocation adverse, comme **Maxx "C"** (*Cancrelat Maxx*, interdite en TCG) et la série des **Mulcharmy**. Le statut de ces cartes change souvent dans la banlist : vérifie toujours la liste en vigueur.
 
 ## Où frapper
 
@@ -100,6 +100,8 @@ Le joueur qui combote cherche à les esquiver :
 
 - **appâter** : utiliser d'abord un effet moins important pour attirer la hand trap ;
 - **ordonner son combo** pour que la carte la plus vulnérable arrive quand l'adversaire a déjà répondu ;
-- **jouer des réponses** : Called by the Grave (*Appelé par la Tombe*) ou Crossout Designator (*Désignateur de la Suppression*) (voir le chapitre « Les staples ») annulent une hand trap précise.
+- **doubler ses points d'étranglement** : avoir deux cartes différentes qui mènent au même résultat, pour qu'une seule hand trap ne suffise pas.
+
+Les réponses génériques Called by the Grave (*Appelé par la Tombe*) et Crossout Designator (*Désignateur de la Suppression*) sont **interdites en TCG** depuis la banlist TCG du 19 octobre 2026 (voir « Les staples »).
 
 > **À retenir.** Une hand trap s'active depuis la main, pendant le tour adverse, et coûte une carte. Elle vaut ce que vaut sa cible : vise le point d'étranglement du combo, pas la première carte venue. Ash pour le deck, Ghost Belle pour le cimetière, Veiler ou Impermanence pour un monstre sur le terrain, Nibiru en fin de combo.
