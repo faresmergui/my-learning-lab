@@ -22,7 +22,7 @@ cards:
 - q: Pourquoi faut-il savoir ce qu'un archétype cherche depuis le Deck ?
   a: 'Parce que les **recherches** sont les cibles naturelles d''Ash Blossom, et qu''elles révèlent souvent la suite du combo : savoir quelle carte va arriver permet d''anticiper.'
 - q: Qu'est-ce qu'une dépendance au Cimetière ?
-  a: Un archétype dont les effets se déclenchent ou se rejouent **depuis le Cimetière**. Les cartes qui bannissent au lieu d'envoyer au Cimetière (Dimension Shifter, D.D. Crow, Ghost Belle) le gênent beaucoup.
+  a: Un archétype dont les effets se déclenchent ou se rejouent **depuis le Cimetière**. Les cartes qui bannissent au lieu d'envoyer au Cimetière (D.D. Crow, Ghost Belle ; Dimension Shifter, aujourd'hui interdite en TCG) le gênent beaucoup.
 - q: Comment apprendre un nouvel archétype rapidement ?
   a: Lire ses cartes clés, regarder **deux ou trois combos** commentés, noter ses recherches et ses points d'étranglement, puis jouer quelques parties de test contre lui en essayant différents moments d'interruption.
 quiz:
@@ -53,7 +53,7 @@ quiz:
 - q: Ton adversaire joue Tearlaments, qui fusionne quand ses monstres sont envoyés au Cimetière. Quelle carte de side est la plus forte contre lui ?
   options:
   - Une carte qui détruit les Magies
-  - Dimension Shifter, qui bannit les cartes au lieu de les envoyer au Cimetière
+  - Dimension Shifter, qui bannit les cartes au lieu de les envoyer au Cimetière (interdite en TCG aujourd'hui, mais c'est le principe qui compte)
   - Une carte qui augmente l'ATK
   - Une hand trap qui nie une Invocation Normale
   answer: 1
@@ -154,7 +154,7 @@ Les archétypes ci-dessous ont tous marqué le jeu compétitif ces dernières an
 ### Tearlaments
 
 - **Plan** : **envoyer des cartes du Deck au Cimetière** (meulage), et fusionner quand les monstres Tearlaments y arrivent, y compris pendant le tour adverse.
-- **Faiblesse majeure** : Dimension Shifter (*Migrateur Dimensionnel*), D.D. Crow (*Corbeau D.D.*), et tout ce qui bannit au lieu d'envoyer au Cimetière. Sans arrivée au Cimetière, le moteur s'arrête.
+- **Faiblesse majeure** : Dimension Shifter (*Migrateur Dimensionnel*, interdite en TCG), D.D. Crow (*Corbeau D.D.*), et tout ce qui bannit au lieu d'envoyer au Cimetière. Sans arrivée au Cimetière, le moteur s'arrête.
 
 ### Un moteur : Fiendsmith
 

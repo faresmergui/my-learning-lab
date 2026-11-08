@@ -86,7 +86,9 @@ Pour savoir quoi attendre en tournoi :
 
 1. regarder les **tops** des grands tournois récents (YCS, régionaux, nationaux) : quels decks, en quelle proportion ;
 2. comparer les **listes** d'un même deck : quels ratios sont stables, quelles cartes varient ;
-3. repérer les **hand traps et techs** les plus jouées, pour savoir lesquelles anticiper (et donc quelles réponses prévoir, comme Called by the Grave (*Appelé par la Tombe*) ou Crossout Designator (*Désignateur de la Suppression*)).
+3. repérer les **hand traps et techs** les plus jouées, pour savoir lesquelles anticiper et comment jouer autour.
+
+Exemple : la [banlist TCG du 19 octobre 2026](https://www.yugioh-card.com/en/limited/list_2026-10-19/) a interdit Called by the Grave (*Appelé par la Tombe*) et Crossout Designator (*Désignateur de la Suppression*), les deux réponses génériques aux hand traps. Les listes publiées avant cette date ne sont plus fiables sur ce point : date toujours tes sources.
 
 Le classement en **tiers** (tier 1, 2, 3) résume ces résultats : le tier 1 regroupe les decks les plus représentés et les plus gagnants.
 
@@ -98,6 +100,6 @@ Le classement en **tiers** (tier 1, 2, 3) résume ces résultats : le tier 1 reg
 
 ## Préparer son side deck
 
-Le side deck se construit à partir du méta : si les decks dominants utilisent beaucoup leur cimetière, on prévoit Ghost Belle (*Beauté Fantôme et Manoir Hanté*), D.D. Crow (*Corbeau D.D.*) ou Dimension Shifter (*Migrateur Dimensionnel*) ; s'ils posent beaucoup de pièges, plus de Harpie's Feather Duster (*Le Plumeau de Dame Harpie*). Une **tech** est justement une carte choisie pour un match précis.
+Le side deck se construit à partir du méta : si les decks dominants utilisent beaucoup leur cimetière, on prévoit Ghost Belle (*Beauté Fantôme et Manoir Hanté*), ou D.D. Crow (*Corbeau D.D.*) (Dimension Shifter est interdite en TCG) ; s'ils posent beaucoup de pièges, Harpie's Feather Duster (*Le Plumeau de Dame Harpie*, limitée à 1) et d'autres cartes contre les pièges. Une **tech** est justement une carte choisie pour un match précis.
 
 > **À retenir.** Le méta, c'est ce que tu vas affronter : regarde les résultats récents, pas seulement les listes à la mode. TCG et OCG ont des banlists et des sorties différentes. Un deck bien maîtrisé et un side pensé pour le méta battent souvent un deck plus fort mal joué.

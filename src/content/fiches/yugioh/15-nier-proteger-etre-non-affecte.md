@@ -104,6 +104,6 @@ Une méthode qui marche face à la plupart des terrains :
 2. **Commencer par la carte qu'il ne peut pas contrer.** Si son monstre nie les effets de monstre, ouvre par une magie ; s'il nie les magies, ouvre par une hand trap.
 3. **Retirer d'abord les réponses**, pas les menaces : un monstre qui nie est plus dangereux qu'un gros monstre sans effet.
 4. **Appâter** : lancer une carte moyenne pour lui faire dépenser sa négation, puis jouer ce qui compte.
-5. **Garder une carte de protection** (Called by the Grave (*Appelé par la Tombe*), Crossout Designator (*Désignateur de la Suppression*)) pour le moment où il répond à ton combo.
+5. **Garder un appât ou une seconde ligne** pour le moment où il répond à ton combo (Called by the Grave et Crossout Designator, qui jouaient ce rôle, sont interdites en TCG depuis le 19 octobre 2026).
 
 > **À retenir.** Nier l'activation, nier un effet et nier les effets d'une carte ne font pas la même chose, mais tous consomment la limite d'utilisation. « Ne peut pas être détruit » ne protège que de la destruction ; « non affecté » laisse passer le combat et les procédures. On retire d'abord les réponses adverses, avec la carte qu'il ne peut pas contrer.
