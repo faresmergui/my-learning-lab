@@ -28,7 +28,6 @@ chapters:
   - Le side deck par matchup
   - Analyser ses parties
   - Les questions d'archétype
-  - 'Mon deck : Blue-Eyes Primite'
 stages:
   - label: Bases
     title: Les règles qui comptent
@@ -46,8 +45,4 @@ stages:
     title: Comprendre les règles fines et la théorie
     description: Lire une carte mot à mot, maîtriser le timing et la Damage Step, construire et casser des combos, et décider avec des probabilités. Puis analyser n'importe quel archétype avec sept questions.
     chapters: 11
-  - label: Mon deck
-    title: Blue-Eyes Primite
-    description: Ta liste, tes lignes de combo selon ta main de départ et les points où l'adversaire peut t'arrêter. Vérifiée avec la banlist TCG du 19 octobre 2026.
-    chapters: 1
 ---

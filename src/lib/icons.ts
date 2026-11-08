@@ -37,3 +37,6 @@ export const moduleIcons: Record<string, string> = {
     <circle cx="12.6" cy="9.2" r=".8" fill="currentColor" stroke="none"/>
   </svg>`,
 };
+
+// The player's own decks reuse the Yu-Gi-Oh! cards.
+moduleIcons['decks-yugioh'] = moduleIcons.yugioh;
