@@ -4,7 +4,7 @@ universe: perso
 code: "🃏"
 color: "#7c3aed"
 order: 3
-description: "Des règles de base au niveau expert : PSCT, timing, Damage Step, théorie des combos, probabilités, side deck et analyse des archétypes."
+description: "Des règles de base au niveau expert : PSCT, timing, Damage Step, théorie des combos, probabilités, side deck, analyse des archétypes, puis Exodia et Blue-Eyes en profondeur."
 objective: Comprendre le jeu compétitif moderne, construire un deck cohérent et savoir quoi jouer, et quand, contre un combo adverse.
 chapters:
   - Le déroulé d'un duel
@@ -28,6 +28,14 @@ chapters:
   - Le side deck par matchup
   - Analyser ses parties
   - Les questions d'archétype
+  - "Exodia : gagner sans toucher aux LP"
+  - "Exodia Millénaire : le deck de l'Ânkh"
+  - L'identité Blue-Eyes
+  - Les cartes Blue-Eyes et leurs rôles
+  - "Blue-Eyes Primite : la version méta"
+  - Construire sa liste Blue-Eyes
+  - Les lignes de jeu Blue-Eyes
+  - Devenir le meilleur joueur Blue-Eyes
 stages:
   - label: Bases
     title: Les règles qui comptent
@@ -45,4 +53,8 @@ stages:
     title: Comprendre les règles fines et la théorie
     description: Lire une carte mot à mot, maîtriser le timing et la Damage Step, construire et casser des combos, et décider avec des probabilités. Puis analyser n'importe quel archétype avec sept questions.
     chapters: 11
+  - label: Archétypes
+    title: Exodia et Dragon Blanc aux Yeux Bleus
+    description: "Exodia classique puis Exodia Millénaire avec l'Ânkh, et Blue-Eyes en profondeur sur le format TCG d'octobre 2026 : cartes, moteur Primite, liste, lignes de jeu, matchups et méthode pour devenir le meilleur."
+    chapters: 8
 ---

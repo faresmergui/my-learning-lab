@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- New Tech module **Omarchy** (DHH's Arch + Hyprland setup, version 4): 16 notes in 3 stages (getting started, mastering the system, customizing and optimizing), 112 flashcards, 64 quiz questions, 9 diagrams and a summary. Covers booting from an external SSD next to Windows.
+- Yu-Gi-Oh!: new **Archetypes** stage (8 notes, 59 flashcards, 32 quiz questions, 5 diagrams): classic Exodia and Millennium Exodia (Millennium Ankh), then Blue-Eyes in depth for the TCG format of October 2026 (cards and roles, the Primite engine used by the meta build, deck building, game lines, matchups and a training plan). Summary updated.
+- Dependencies: Astro 7.4, marked 18 (Node.js 22.23.4 or later required).
+
 ## v1.0.0 (October 2026)
 
 First complete version, ready to go online.

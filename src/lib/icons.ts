@@ -36,4 +36,10 @@ export const moduleIcons: Record<string, string> = {
     <path d="M8.5 20.5c0-3.2 1.6-4.8 3.6-6.6-1.6.3-3 .9-4.4 2.1L6 14.2c.5-2.6 2-5.1 4.3-6.7L10 4.5l2.2 1.6c3.6-.2 6.3 2.6 6.3 6.6v7.8"/>
     <circle cx="12.6" cy="9.2" r=".8" fill="currentColor" stroke="none"/>
   </svg>`,
+  // Tiled windows: one tall pane and two stacked ones, like Hyprland's layout.
+  omarchy: `<svg ${attrs}>
+    <rect x="2.8" y="4" width="18.4" height="16" rx="2"/>
+    <path d="M11 4v16M11 12h10.2"/>
+    <path d="M5.2 7.2h3.4" opacity=".6"/>
+  </svg>`,
 };
