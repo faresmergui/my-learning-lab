@@ -17,8 +17,10 @@ cards:
   a: Sage with Eyes of Blue, Maiden of White, Wishes for Eyes of Blue, Primite Dragon Ether Beryl, Primite Lordly Lode et True Light. Sage + Ether Beryl est la meilleure main de départ.
 - q: Que fait Primite Dragon Ether Beryl quand il est Invoqué Normalement ?
   a: Il **pose** Primite Lordly Lode depuis le deck. Poser n'est pas ajouter à la main, donc Droll & Lock Bird ne l'arrête pas.
-- q: Pourquoi Primite Drillbeam a-t-elle besoin d'un Blue-Eyes White Dragon sur le terrain ?
-  a: 'Sa négation demande de contrôler un **monstre Normal**. Blue-Eyes White Dragon est un monstre Normal : sans lui, Drillbeam ne peut pas annuler.'
+- q: Pourquoi laisser un Blue-Eyes White Dragon sur le terrain en fin de combo ?
+  a: 'Pour rendre **Primite Drillbeam gratuite** : si tu contrôles un monstre Normal, tu n''as rien à révéler pour l''activer. Sans lui, il faut révéler une carte « Primite » ou un monstre Normal de ta main.'
+- q: Pourquoi l'invocation de Primite Lordly Lode se joue-t-elle en dernier ?
+  a: 'Après cette invocation, tu ne peux plus activer les effets des monstres invoqués spécialement sur le terrain ce tour. Sa recherche (à l''activation) se joue tôt, son invocation à la toute fin.'
 - q: Quel est le point d'étranglement le plus grave du deck ?
   a: '**Wishes for Eyes of Blue**. Si Ash Blossom ou Infinite Impermanence l''arrête, tu perds Roar et toute la seconde moitié du plateau. Fais d''abord tomber les hand traps avec Ether Beryl et Lordly Lode.'
 - q: Que fait Neo Kaiser Sea Horse dans ce deck ?
@@ -82,7 +84,7 @@ quiz:
   explain: Called by the Grave et Crossout Designator sont interdites en TCG. Il faut appâter Ash avant Wishes.
 ---
 
-Cette fiche est celle de **ton deck principal**. Elle complète la théorie du module Yu-Gi-Oh! avec ta liste, tes lignes de combo selon ta main de départ et les points où l'adversaire peut t'arrêter.
+Cette fiche est celle de **ton deck principal**. La théorie de l'archétype (cartes, moteur Primite, verrous, matchups) est dans le module Yu-Gi-Oh!, de « L'identité Blue-Eyes » (chapitre 24) à « Devenir le meilleur joueur Blue-Eyes » (chapitre 29). Cette fiche-ci l'applique à ta liste, tes lignes de combo selon ta main de départ et les points où l'adversaire peut t'arrêter.
 
 > **Vérifiée le 8 novembre 2026.** Ta liste est légale avec la [banlist TCG du 19 octobre 2026](https://www.yugioh-card.com/en/limited/list_2026-10-19/) : Bystial Magnamhut, Droll & Lock Bird, Harpie's Feather Duster et Solemn Judgment sont limitées à 1, et tu en joues 1. Le moteur (Sage, Maiden, Wishes, True Light, Mausoleum, Roar, Ether Beryl, Lordly Lode, Drillbeam) est le même que dans la [liste Top 4 du WCQ Regional de Saint-Domingue du 25 octobre 2026](https://ygoprodeck.com/deck/primite-blue-eyes-741079). À revérifier à chaque nouvelle banlist.
 
@@ -143,7 +145,7 @@ Cette fiche est celle de **ton deck principal**. Elle complète la théorie du m
 16. Sacrifie un Spirit Dragon : **Blue-Eyes Ultimate Spirit Dragon**.
 17. Sacrifie l'autre : **Crimson Dragon**.
 18. Effet de Crimson Dragon en ciblant Ultimate Spirit : **Stardust Sifr Divine Dragon**.
-19. Lordly Lode en déclarant Blue-Eyes White Dragon : ramène-le du cimetière.
+19. **En dernier** : Lordly Lode en déclarant Blue-Eyes White Dragon : ramène-le du cimetière. Après cette invocation, plus aucun effet de monstre invoqué spécialement sur le terrain ce tour.
 20. Pose tes cartes restantes, surtout **Drillbeam**.
 
 **Terrain final**
@@ -151,11 +153,11 @@ Cette fiche est celle de **ton deck principal**. Elle complète la théorie du m
 | Carte | Rôle |
 | --- | --- |
 | Blue-Eyes Ultimate Spirit Dragon | négation sur n'importe quel effet |
-| Primite Drillbeam (posée) | négation et bannissement, tant que tu contrôles un monstre Normal |
+| Primite Drillbeam (posée) | nie et bannit une carte face recto ; gratuite tant que tu contrôles un monstre Normal |
 | Stardust Sifr Divine Dragon | négation et destruction ; protège tes monstres de la destruction |
 | Neo Blue-Eyes Ultimate Dragon (équipé) | protection contre le ciblage |
 | Crimson Dragon | relais vers Sifr |
-| Blue-Eyes White Dragon | le monstre Normal qui arme Drillbeam |
+| Blue-Eyes White Dragon | le monstre Normal qui rend Drillbeam gratuite |
 
 Garde la négation d'Ultimate Spirit pour le board breaker qui détruirait ton terrain (Dark Ruler No More, Raigeki…), Drillbeam pour les extensions de combo, Sifr en dernier.
 
@@ -196,13 +198,13 @@ Tu gardes **Effect Veiler en main** pour le tour adverse.
 3. **Lordly Lode** en déclarant Blue-Eyes White Dragon : invoque-le depuis le deck.
 4. Invocation Lien de **Hieratic Seal of the Heavenly Spheres** avec Blue-Eyes + Spirit with Eyes of Blue. Pose Drillbeam.
 
-Au tour adverse, Hieratic Seal renvoie une carte adverse face recto dans la main et invoque un Blue-Eyes depuis ton deck : ce monstre Normal arme Drillbeam.
+Au tour adverse, Hieratic Seal renvoie une carte adverse face recto dans la main et invoque un Blue-Eyes depuis ton deck : ce monstre Normal rend Drillbeam gratuite.
 
 ## Ligne D : Lordly Lode seule
 
 1. **Lordly Lode** : ajoute **Drillbeam**.
 2. **Lordly Lode** en déclarant Blue-Eyes White Dragon : invoque-le depuis le deck.
-3. Pose Drillbeam : elle annule et bannit tant que le Blue-Eyes reste sur le terrain.
+3. Pose Drillbeam : au tour adverse, elle nie et bannit une carte, gratuitement tant que le Blue-Eyes reste sur le terrain.
 
 Une seule interruption : complète avec tes hand traps.
 

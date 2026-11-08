@@ -121,3 +121,33 @@ Vise le **point d'étranglement** du combo, pas la première carte venue.
 - Kashtira : Fenrir bannit face verso en réponse à un effet de monstre ; l'appâter d'abord.
 - Labrynth : Mademoiselle Labrynth protégée tant qu'une carte est Posée ; jouer lentement.
 - Snake-Eye et Tearlaments : dépendants du Cimetière, sensibles aux cartes de bannissement.
+
+## Archétype : Exodia
+
+- Victoire **alternative** : les cinq pièces dans ta main, à n'importe quel moment. Les cinq sont **limitées** à 1 exemplaire.
+- Le deck pioche et cherche (Upstart Goblin, Royal Magical Library, Sangan, Witch of the Black Forest) puis vise à tenir assez de tours.
+- Ses ennemis : Droll & Lock Bird (limité depuis le 19 octobre 2026), le bannissement des pièces, la pression rapide sur les LP.
+- Ash Blossom ne nie **pas** une pioche, seulement une recherche ou un envoi depuis le Deck.
+
+## Archétype : Exodia Millénaire
+
+- **Millennium Ankh** (Ânkh Millénaire) montre les cinq pièces depuis la **main, le deck ou le terrain** et invoque **L'Incarné de l'Instoppable Éxodia**. Pièces au cimetière ou bannies : Ânkh bloqué.
+- Moteur : Temple Wedju place des monstres « Millénaire » en zone Magie et Piège ; ils s'invoquent pour **2000 LP** ou en **révélant l'Ânkh**. Bouclier cherche l'Ânkh, Sengenjin un Millénaire, Golem rend l'Ânkh non niable. Cœur des Yeux Bleus se défausse pour l'Ânkh.
+- Ordre : toutes les invocations d'abord, **l'Ânkh en dernier** (plus d'invocation ensuite). L'Incarné pose Feux de la Rage Exxod en End Phase : destruction de toutes les cartes adverses.
+- Contre lui : Ash sur les recherches avant l'Ânkh, puis bannir ou renvoyer l'Incarné (il n'est protégé que de la destruction).
+
+## Archétype : Blue-Eyes (TCG, octobre 2026)
+
+| Famille | Cartes clés | Rôle |
+| --- | --- | --- |
+| Lanceurs | Sage with Eyes of Blue, Maiden of White, Kaibaman the Legend | Syntoniseurs LUMIÈRE Niv. 1 |
+| Soutien | Wishes for Eyes of Blue, True Light, Roar, Ultimate Fusion, Majesty | pose, recycle, nettoie |
+| Payoffs | Blue-Eyes Spirit Dragon, Ultimate Spirit Dragon, Dragon Master Magia | négations et verrous |
+
+- Ligne de base : **Maiden + 1 carte** → True Light → Vœux → Kaibaman → Dragon Blanc → retour de Maiden → **deux Spirit Dragon**.
+- Points de rupture : Ash sur Vœux (effet consommé pour le tour), Ash ou Veiler sur Kaibaman, Ghost Belle sur Maiden. Toujours garder une **seconde source** de Dragon Blanc (Roar).
+- Pièges du deck : True Light détruit **tous tes monstres** s'il quitte le terrain ; le verrou de Spirit Dragon s'applique **aux deux joueurs** ; Super Polymerization punit un deck presque tout LUMIÈRE.
+- Second : Ultimate Fusion (détruit selon les « Blue-Eyes » pris sur le terrain), Majesty (jusqu'à 3 cartes), puis 3000 ATK et plus.
+- **Moteur Primite** (liste méta) : 3 Dragon Béryl Éthérique, 3 Filon Noble, 1 Rayon de Forage. Le Dragon Blanc est un monstre Normal : Filon Noble l'invoque, Rayon de Forage devient gratuit s'il est en jeu. L'invocation de Filon Noble **en dernier** (verrou sur les effets des monstres invoqués spécialement). 16 starters : 93 % de mains jouables en 5 cartes. Dragon Impérial Primite en second.
+- Cœur des Yeux Bleus (légale depuis 2024) est une carte d'Exodia Millénaire ; aucune carte Blue-Eyes annoncée pour *Glorious Victors* (décembre) au 25 octobre.
+- Liste du 19 octobre 2026 : Called by the Grave interdit. Le 12 novembre 2026 (*Magnificent Maestros*) : White Phantom Beast et Deep-Eyes White Dragon arrivent en TCG.

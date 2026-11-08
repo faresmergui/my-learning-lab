@@ -1,6 +1,6 @@
 # my-learning-hub
 
-My personal site for learning and reviewing. Tech side: Kubernetes, Linux, Terraform, Ansible, security, networking, DevOps, Docker, AWS, OpenStack, observability and AI. Personal side: Japanese, badminton, Yu-Gi-Oh!, Valorant, piano, personal finance and chess.
+My personal site for learning and reviewing. Tech side: Kubernetes, Linux, Terraform, Ansible, security, networking, DevOps, Docker, AWS, OpenStack, observability, AI and Omarchy. Personal side: Japanese, badminton, Yu-Gi-Oh! (theory, plus a module with my own decks), Valorant, piano, personal finance and chess.
 
 Chapter-based learning paths, notes, flashcards with spaced repetition, quizzes and progress tracking. No account and no database: a static site that runs locally or on GitHub Pages.
 
@@ -8,11 +8,11 @@ Chapter-based learning paths, notes, flashcards with spaced repetition, quizzes 
 
 ## Features
 
-- **19 modules, 345 notes, 2,300+ flashcards**, a quiz for every note and a one-page summary per module.
+- **21 modules, 370 notes, 2,400+ flashcards**, a quiz for every note and a one-page summary per module.
 - **Spaced repetition** (simplified SM-2, the algorithm behind Anki) with a 14-day review forecast.
 - **Certification tracks** (CKA, AWS SAA, CKS, LFCS, Terraform Associate, Red Hat EX210) built on top of the existing notes.
 - **Full-text search** with a ⌘K / Ctrl+K palette.
-- **130+ animated SVG diagrams**, styled by the theme so they work in both visual moods (dark for Tech, paper for Perso).
+- **140+ animated SVG diagrams**, styled by the theme so they work in both visual moods (dark for Tech, paper for Perso).
 - **Progress stays in the browser** (localStorage), with export / import to a JSON file.
 
 ## Stack
@@ -24,7 +24,7 @@ Chapter-based learning paths, notes, flashcards with spaced repetition, quizzes 
 
 ## Getting started
 
-Requires **Node.js 22.12 or later** (`node -v` to check, `brew install node` otherwise).
+Requires **Node.js 22.23.4 or later** (`node -v` to check, `brew install node` otherwise).
 
 ```bash
 npm install          # once, installs Astro and the checking tools
