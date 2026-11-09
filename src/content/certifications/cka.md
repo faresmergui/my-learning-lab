@@ -32,6 +32,103 @@ domains:
     fiches: [kubernetes/06-pv-pvc-storageclass, kubernetes/06-volumes-ephemeres]
   - name: Se préparer à l'examen
     fiches: [kubernetes/11-passer-l-examen-cka]
+training:
+  start: "2026-11-09"
+  rhythm: "4 sessions de 30 min en semaine et 1 h le week-end, environ 3 h par semaine, sans créneau fixe"
+  weeks:
+    - theme: "Mise en place : alias `k`, autocomplétion, vim. Udemy : architecture du cluster"
+      lab: "Monter `cp1`, `w1` et `w2` avec kubeadm"
+      fiches: [kubernetes/01-composants-du-cluster, kubernetes/01-trajet-d-une-requete]
+    - theme: "Notions de base : pods, ReplicaSets, Deployments, Services, namespaces, YAML généré avec `--dry-run=client -o yaml`"
+      lab: "Tout recréer en commandes impératives"
+      fiches: [kubernetes/03-deployments-et-rolling-updates, kubernetes/04-services]
+    - theme: "Scheduling : labels, taints et tolérations, affinités, ressources, DaemonSets, pods statiques"
+      lab: "Un pod statique sur `w1`"
+      milestone: "Acheter l'examen si la promo Black Friday est là"
+      fiches: [kubernetes/07-taints-et-affinites, kubernetes/07-requests-limits-qos, kubernetes/07-repartir-et-prioriser, kubernetes/03-statefulset-daemonset-job]
+    - theme: "Cycle de vie des applications : rolling updates, ConfigMaps, Secrets, multi-conteneurs, autoscaling, monitoring"
+      lab: "Rolling update puis rollback"
+      fiches: [kubernetes/05-injecter-la-configuration, kubernetes/02-pods-multi-conteneurs, kubernetes/02-probes-et-etats, kubernetes/09-metriques-et-monitoring]
+    - theme: "Maintenance : drain et cordon, mise à jour kubeadm, sauvegarde et restauration etcd"
+      lab: "Mise à jour d'une version mineure, puis restauration etcd"
+      fiches: [kubernetes/01-installer-mettre-a-jour-sauvegarder]
+    - theme: "Sécurité 1 : certificats TLS, kubeconfig, RBAC, `kubectl auth can-i`"
+      lab: "Un utilisateur limité à un namespace"
+      fiches: [kubernetes/08-rbac]
+    - theme: "Fêtes : semaine légère, flashcards et deux scénarios Killercoda"
+      lab: "Repos"
+    - theme: "Sécurité 2 : ServiceAccounts, securityContext, NetworkPolicies"
+      lab: "Isoler un namespace avec une NetworkPolicy"
+      fiches: [kubernetes/08-network-policies, kubernetes/08-pod-security]
+    - theme: "Stockage : PV, PVC, StorageClass, volumes"
+      lab: "Un PVC lié à un PV `hostPath`"
+      fiches: [kubernetes/06-pv-pvc-storageclass, kubernetes/06-volumes-ephemeres]
+    - theme: "Réseau 1 : réseau des pods, CNI, DNS et CoreDNS, Services"
+      lab: "Diagnostiquer la résolution DNS d'un pod"
+      fiches: [reseaux/08-reseau-kubernetes-et-cni, reseaux/03-dns]
+    - theme: "Réseau 2 : Ingress et Gateway API"
+      lab: "Exposer une appli avec une HTTPRoute"
+      fiches: [kubernetes/04-ingress-et-gateway-api]
+    - theme: "Helm, Kustomize, CRD et opérateurs"
+      lab: "Installer un chart, puis un overlay Kustomize"
+      fiches: [kubernetes/10-helm, kubernetes/10-kustomize-et-gitops, kubernetes/10-crd-et-operateurs]
+    - theme: "Installation : reconstruire le cluster de zéro, sans tutoriel, au chrono"
+      lab: "Objectif : moins de 45 min"
+      fiches: [kubernetes/01-installer-mettre-a-jour-sauvegarder]
+    - theme: "Troubleshooting 1 : applications, control plane (`/etc/kubernetes/manifests/`), nœuds (kubelet, `journalctl`)"
+      lab: "Casser puis réparer l'apiserver et le kubelet"
+      fiches: [kubernetes/09-methode-de-debug, linux/07-journald-et-logs]
+    - theme: "Troubleshooting 2 : réseau"
+      lab: "killer.sh à la place du homelab"
+      milestone: "Week-end : killer.sh, session 1 (environ 2 h, exception au rythme)"
+      fiches: [reseaux/08-reseau-kubernetes-et-cni]
+    - theme: "Refaire les tâches ratées de killer.sh, travailler les points faibles"
+      lab: "Selon les points faibles"
+    - theme: "Examens blancs Udemy au chrono"
+      lab: "Un examen blanc complet"
+      milestone: "Réserver la date d'examen"
+      fiches: [kubernetes/11-passer-l-examen-cka]
+    - theme: "killer.sh, session 2, puis seulement des révisions légères"
+      lab: "Repos"
+      milestone: "killer.sh, session 2"
+    - theme: "Semaine de l'examen"
+      milestone: "Examen CKA"
+  tools:
+    - name: "Cours Udemy de Mumshad Mannambeth (KodeKloud)"
+      role: "La colonne vertébrale : tout le programme, en vidéos courtes, avec des labs dans le navigateur."
+      when: "Sessions 1 à 3 de chaque semaine."
+    - name: "killer.sh"
+      role: "Le simulateur le plus proche de l'examen, en plus dur. Deux sessions incluses avec l'examen, chacune ouverte 36 h."
+      when: "Semaines 15 et 18."
+      url: https://killer.sh
+    - name: "Killercoda"
+      role: "Des scénarios CKA gratuits de 10 à 20 min, dans le navigateur."
+      when: "Session 4 de chaque semaine, sans regarder la solution."
+      url: https://killercoda.com
+    - name: "LabEx Pro"
+      role: "Des labs guidés pas à pas. Fait doublon avec Udemy et Killercoda."
+      when: "Seulement sur un sujet qui bloque. Ne pas renouveler pour la seule CKA."
+      url: https://labex.io
+    - name: "Homelab kubeadm"
+      role: "Le vrai cluster : installation, mise à jour, etcd, dépannage des nœuds."
+      when: "Chaque week-end."
+    - name: "Documentation kubernetes.io"
+      role: "La seule documentation autorisée le jour de l'examen."
+      when: "Dans tous les exercices, à la place de Google."
+      url: https://kubernetes.io/docs/
+    - name: "Ce learning hub"
+      role: "Fiches, flashcards et quiz pour réviser."
+      when: "Le quiz du chapitre en fin de semaine, les cartes pendant les temps morts."
+    - name: "Kubernetes the Hard Way"
+      role: "Monter un cluster à la main pour comprendre les rouages. Peu rentable pour l'examen."
+      when: "Après la certification."
+      url: https://github.com/kelseyhightower/kubernetes-the-hard-way
+  checkpoints:
+    - "Chaque fin de semaine : au moins 80 % au quiz du chapitre. Sinon, le thème reste une semaine de plus, une seule fois."
+    - "Semaine 13 : le cluster est remonté sans tutoriel en moins de 45 min."
+    - "killer.sh, session 1 : un score moyen n'est pas grave. Ce qui compte, c'est le nombre de tâches non terminées faute de temps."
+    - "Examens blancs Udemy : au moins 80 % avant de réserver (repère, pas un seuil officiel)."
+    - "Plus de deux semaines de retard au 1er février : l'examen passe à mi-avril."
 ---
 
 ## Ce que l'examen vérifie vraiment
