@@ -4,7 +4,7 @@
 import { url } from '../../lib/url';
 import Base from '../../layouts/Base.astro';
 import { render } from 'astro:content';
-import { getCertifications, getCertIndex, getFiches, getModules, ficheUrl, moduleOf, jsonForScript, type Certification } from '../../lib/content';
+import { getCertifications, getCertIndex, getFiches, getModules, ficheUrl, moduleOf, jsonForScript, inline, type Certification } from '../../lib/content';
 
 export async function getStaticPaths() {
   return (await getCertifications()).map((c) => ({ params: { cert: c.id }, props: { cert: c } }));
@@ -20,7 +20,28 @@ const domains = d.domains.map((dom) => ({
     id: f.id, title: f.data.title, url: ficheUrl(f), color: modOf[moduleOf(f)]?.data.color ?? '#888', module: modOf[moduleOf(f)]?.data.title ?? '',
   })),
 }));
+// Training plan: each week gets its dates and its notes (an unknown note ID fails the build).
+const t = d.training;
+const [y, m, dd] = (t?.start ?? '2000-01-01').split('-').map(Number);
+const fmt = (date: Date) => date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+const weeks = (t?.weeks ?? []).map((w, i) => {
+  const from = new Date(y, m - 1, dd + 7 * i);
+  return {
+    n: i + 1,
+    from: fmt(from),
+    theme: inline(w.theme),
+    lab: w.lab ? inline(w.lab) : '',
+    milestone: w.milestone ? inline(w.milestone) : '',
+    fiches: w.fiches.map((id) => {
+      const f = fiches.find((x) => x.id === id);
+      if (!f) throw new Error(`Certification ${cert.id}, semaine ${i + 1} : fiche inconnue « ${id} »`);
+      return { id: f.id, title: f.data.title, url: ficheUrl(f), quiz: f.data.quiz.length > 0, color: modOf[moduleOf(f)]?.data.color ?? '#888' };
+    }),
+  };
+});
+const plan = t ? { cert: cert.id, start: t.start, weeks: weeks.map((w) => ({ n: w.n, from: w.from, fiches: w.fiches.map((f) => f.id) })) } : null;
 const toc = [
+  ...(t ? [{ slug: 'parcours', text: 'Mon parcours' }, { slug: 'scores', text: 'Mes scores' }, { slug: 'outils', text: 'Les outils' }] : []),
   { slug: 'examen', text: "L'examen" },
   { slug: 'domaines', text: 'Les domaines' },
   ...headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text })),
@@ -57,7 +78,88 @@ const maxWeight = Math.max(1, ...d.domains.map((x) => x.weight ?? 0));
         </div>
       </div>
 
+      {t && (
+        <div class="card rise plan-now" style={`--i:2; --c:${d.color}`} data-plan-now>
+          <div class="eyebrow" data-now-label>cette semaine</div>
+          <div data-now-body></div>
+          <p class="muted plan-status" data-plan-status></p>
+        </div>
+      )}
+
       <article class="card sheet rise" style={`--i:3; padding:28px; --c:${d.color}`}>
+        {t && (
+          <>
+            <div class="prose">
+              <h2 id="parcours">Mon parcours</h2>
+              <p>{weeks.length} semaines, début le {fmt(new Date(y, m - 1, dd))} · rythme : {t.rhythm}.</p><p>Coche une semaine quand elle est faite : le parcours s'adapte si tu prends du retard.</p>
+            </div>
+            <ol class="plan-weeks">
+              {weeks.map((w) => (
+                <li class="plan-week" data-week={w.n} id={`semaine-${w.n}`}>
+                  <label class="plan-check"><input type="checkbox" data-week-check={w.n} /><span><b>S{w.n}</b><small>{w.from}</small></span></label>
+                  <div class="plan-body">
+                    <p class="plan-theme" set:html={w.theme} />
+                    {w.milestone && <p class="plan-milestone" set:html={w.milestone} />}
+                    {w.lab && <p class="plan-lab"><span class="tag">homelab</span> <span set:html={w.lab} /></p>}
+                    {w.fiches.length > 0 && (
+                      <ul class="plan-fiches">
+                        {w.fiches.map((f) => (
+                          <li data-fiche={f.id}>
+                            <a href={f.url}><i style={`--c:${f.color}`}></i>{f.title}</a>
+                            {f.quiz && <a class="plan-quiz" href={url(`/quiz/?fiche=${f.id}`)}>quiz</a>}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ol>
+            {t.checkpoints.length > 0 && (
+              <div class="prose">
+                <h3>Points de contrôle</h3>
+                <ul>{t.checkpoints.map((c) => <li set:html={inline(c)} />)}</ul>
+              </div>
+            )}
+
+            <div class="prose">
+              <h2 id="scores">Mes scores</h2>
+              <p>Note ici tes examens blancs et tes sessions de simulateur. Ils restent dans ce navigateur et partent avec la sauvegarde JSON.</p>
+            </div>
+            <form class="score-form" data-score-form>
+              <label>Source
+                <select name="source">
+                  <option>killer.sh</option>
+                  <option>Examen blanc Udemy</option>
+                  <option>Killercoda</option>
+                  <option>LabEx</option>
+                  <option>Autre</option>
+                </select>
+              </label>
+              <label>Score (%)<input name="score" type="number" min="0" max="100" required /></label>
+              <label>Date<input name="date" type="date" required /></label>
+              <label class="score-note">Remarque<input name="note" maxlength="200" placeholder="ex. RBAC trop lent, 3 tâches pas finies" /></label>
+              <button class="btn primary" type="submit">Ajouter</button>
+            </form>
+            <ul class="score-list" data-score-list></ul>
+
+            <div class="prose">
+              <h2 id="outils">Les outils</h2>
+              <p>Classés par utilité pour cet examen.</p>
+              <table>
+                <thead><tr><th>#</th><th>Outil</th><th>À quoi il sert</th><th>Quand</th></tr></thead>
+                <tbody>{t.tools.map((o, i) => (
+                  <tr>
+                    <td>{i + 1}</td>
+                    <td>{o.url ? <a href={o.url} rel="noopener">{o.name}</a> : o.name}</td>
+                    <td>{o.role}</td>
+                    <td>{o.when}</td>
+                  </tr>
+                ))}</tbody>
+              </table>
+            </div>
+          </>
+        )}
         <div class="prose">
           <h2 id="examen">L'examen</h2>
           <table>
@@ -94,10 +196,11 @@ const maxWeight = Math.max(1, ...d.domains.map((x) => x.weight ?? 0));
     </div>
   </div>
   <script type="application/json" id="cert-data" set:html={jsonForScript(mine)} />
+  {plan && <script type="application/json" id="plan-data" set:html={jsonForScript(plan)} />}
 </Base>
 
 <script>
-  import { load, isMastered } from '../../lib/progress';
+  import { load, isMastered, markWeek, addScore, removeScore, dayKey } from '../../lib/progress';
   const c: { fiches: string[]; cards: string[] } = JSON.parse(document.getElementById('cert-data')!.textContent!);
   const p = load();
   const read = c.fiches.filter((f) => p.read[f]).length;
@@ -116,4 +219,92 @@ const maxWeight = Math.max(1, ...d.domains.map((x) => x.weight ?? 0));
     const n = ids.filter((id) => p.read[id]).length;
     sec.querySelector('[data-count]')!.textContent = ids.length ? `${n}/${ids.length} lues` : 'aucune fiche';
   });
+
+  /* ---------- Training plan ---------- */
+  const planEl = document.getElementById('plan-data');
+  if (planEl) {
+    const plan: { cert: string; start: string; weeks: { n: number; from: string; fiches: string[] }[] } = JSON.parse(planEl.textContent!);
+    const [y, m, d] = plan.start.split('-').map(Number);
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    // Calendar days, not 24 h blocks, so a DST change does not shift the week.
+    const days = Math.round((Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) - Date.UTC(y, m - 1, d)) / 86_400_000);
+    const current = Math.floor(days / 7) + 1; // may be < 1 (not started) or > weeks (finished)
+    const total = plan.weeks.length;
+
+    const render = () => {
+      const p = load();
+      const done = (n: number) => !!p.weeks[`${plan.cert}:${n}`];
+      const ticked = plan.weeks.filter((w) => done(w.n)).length;
+      const late = plan.weeks.filter((w) => w.n < current && !done(w.n)).length;
+
+      document.querySelectorAll<HTMLElement>('[data-week]').forEach((li) => {
+        const n = Number(li.dataset.week);
+        li.classList.toggle('done', done(n));
+        li.classList.toggle('now', n === current);
+        li.classList.toggle('late', n < current && !done(n));
+        (li.querySelector('[data-week-check]') as HTMLInputElement).checked = done(n);
+        li.querySelectorAll<HTMLElement>('[data-fiche]').forEach((f) => f.classList.toggle('read', !!p.read[f.dataset.fiche!]));
+      });
+
+      // "This week" card: a copy of the current week's content (or the first unticked one).
+      const label = document.querySelector('[data-now-label]')!;
+      const body = document.querySelector('[data-now-body]')!;
+      const focus = current < 1 ? 1 : current > total ? 0 : current;
+      if (current < 1) label.textContent = `le parcours démarre le ${plan.weeks[0].from}`;
+      else if (current > total) label.textContent = 'parcours terminé';
+      else label.textContent = `cette semaine · S${current} sur ${total}`;
+      body.replaceChildren();
+      const src = focus ? document.querySelector(`[data-week="${focus}"] .plan-body`) : null;
+      if (src) {
+        const copy = src.cloneNode(true) as HTMLElement;
+        const a = document.createElement('a');
+        a.href = `#semaine-${focus}`; a.className = 'btn'; a.textContent = done(focus) ? 'Semaine cochée ✓' : 'Cocher la semaine en bas';
+        copy.append(a);
+        body.append(copy);
+      }
+      const status = document.querySelector('[data-plan-status]')!;
+      status.textContent = `${ticked}/${total} semaines faites` +
+        (late ? ` · ${late} semaine${late > 1 ? 's' : ''} en retard` : current >= 1 && current <= total ? ' · dans les temps' : '');
+      status.classList.toggle('warn', late >= 2);
+    };
+
+    document.querySelectorAll<HTMLInputElement>('[data-week-check]').forEach((box) =>
+      box.addEventListener('change', () => { markWeek(plan.cert, Number(box.dataset.weekCheck), box.checked); render(); }));
+
+    // Scores
+    const form = document.querySelector<HTMLFormElement>('[data-score-form]')!;
+    const list = document.querySelector<HTMLElement>('[data-score-list]')!;
+    (form.elements.namedItem('date') as HTMLInputElement).value = dayKey();
+    const renderScores = () => {
+      const mine = load().scores.filter((s) => s.cert === plan.cert);
+      list.replaceChildren();
+      if (!mine.length) {
+        const li = document.createElement('li'); li.className = 'muted'; li.textContent = 'Aucun score pour l’instant.';
+        list.append(li);
+        return;
+      }
+      // Newest first on screen; the index stays the stored order for deletion.
+      mine.map((s, i) => ({ s, i })).sort((a, b) => b.s.date.localeCompare(a.s.date)).forEach(({ s, i }) => {
+        const li = document.createElement('li');
+        const b = document.createElement('b'); b.textContent = `${s.score} %`;
+        b.classList.toggle('good', s.score >= 80);
+        const t = document.createElement('span'); t.textContent = `${s.source} · ${new Date(s.date).toLocaleDateString('fr-FR')}${s.note ? ' · ' + s.note : ''}`;
+        const del = document.createElement('button'); del.type = 'button'; del.className = 'score-del'; del.textContent = '×'; del.title = 'Supprimer';
+        del.addEventListener('click', () => { if (confirm('Supprimer ce score ?')) { removeScore(plan.cert, i); renderScores(); } });
+        li.append(b, t, del);
+        list.append(li);
+      });
+    };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const f = new FormData(form);
+      addScore({ cert: plan.cert, source: String(f.get('source')), score: Math.min(100, Math.max(0, Number(f.get('score')))), date: String(f.get('date')), note: String(f.get('note') ?? '').slice(0, 200) });
+      form.reset();
+      (form.elements.namedItem('date') as HTMLInputElement).value = dayKey();
+      renderScores();
+    });
+
+    render();
+    renderScores();
+  }
 </script>

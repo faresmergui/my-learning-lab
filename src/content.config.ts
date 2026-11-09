@@ -95,6 +95,25 @@ const certifications = defineCollection({
       fiches: z.array(z.string()).default([]),  // identifiants : module/fichier
       missing: z.string().optional(),
     })),
+    // Training plan (optional): a dated week-by-week programme and the tools it relies on.
+    // Week n starts `start` + 7 × (n - 1) days; the page works out the current week.
+    training: z.object({
+      start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // Monday of week 1 (YYYY-MM-DD)
+      rhythm: z.string(),             // e.g. "4 × 30 min in the week + 1 h at the weekend"
+      weeks: z.array(z.object({
+        theme: z.string(),            // what the week is about (simple Markdown)
+        lab: z.string().optional(),   // hands-on exercise (homelab...)
+        milestone: z.string().optional(), // a key step: buy the exam, mock exam...
+        fiches: z.array(z.string()).default([]), // notes to read that week: module/file
+      })).min(1),
+      tools: z.array(z.object({
+        name: z.string(),
+        role: z.string(),             // what it is for
+        when: z.string(),             // when to use it in the plan
+        url: z.url().optional(),
+      })).default([]),
+      checkpoints: z.array(z.string()).default([]), // go / no-go rules (simple Markdown)
+    }).optional(),
   }),
 });
 

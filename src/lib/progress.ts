@@ -20,10 +20,15 @@ export type Progress = {
   read: Record<string, number>;                         // note -> date read
   quiz: Record<string, { right: number; total: number }>; // note -> cumulative answers
   activity: Record<string, number>;                     // 'YYYY-MM-DD' -> number of actions
+  weeks: Record<string, number>;                        // '<cert>:<week n>' -> date the week was ticked
+  scores: Score[];                                      // mock exams, simulators...
   last?: { url: string; title: string; module: string };
 };
 
-const empty = (): Progress => ({ cards: {}, read: {}, quiz: {}, activity: {} });
+/** A score typed in by hand (killer.sh, mock exam...). */
+export type Score = { cert: string; date: string; source: string; score: number; note: string };
+
+const empty = (): Progress => ({ cards: {}, read: {}, quiz: {}, activity: {}, weeks: {}, scores: [] });
 
 /* ---------------- Validation ----------------
    Data comes from the browser or from an imported file: only well-formed values
@@ -50,6 +55,15 @@ function sanitize(raw: unknown): Progress {
   for (const [id, v] of safeEntries(d.read)) p.read[id] = num(v);
   for (const [id, v] of safeEntries(d.quiz)) { const q = obj(v); p.quiz[id] = { right: num(q.right), total: num(q.total) }; }
   for (const [k, v] of Object.entries(obj(d.activity))) if (/^\d{4}-\d{2}-\d{2}$/.test(k)) p.activity[k] = num(v);
+  for (const [k, v] of Object.entries(obj(d.weeks))) if (/^[a-z0-9-]{1,40}:\d{1,3}$/.test(k)) p.weeks[k] = num(v);
+  if (Array.isArray(d.scores)) {
+    for (const v of d.scores.slice(0, 500)) {
+      const s = obj(v);
+      const date = str(s.date, 10);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+      p.scores.push({ cert: str(s.cert, 40), date, source: str(s.source, 60), score: Math.min(100, Math.max(0, num(s.score))), note: str(s.note, 200) });
+    }
+  }
   const last = obj(d.last);
   const link = str(last.url);
   if (isInternalUrl(link)) p.last = { url: link, title: str(last.title), module: str(last.module, 60) };
@@ -218,6 +232,31 @@ export function recordAnswer(fiche: string, right: boolean) {
   save(p);
 }
 
+/* ---------------- Training plan ---------------- */
+
+export function markWeek(cert: string, week: number, done = true) {
+  const p = load();
+  const k = `${cert}:${week}`;
+  if (done) p.weeks[k] = Date.now(); else delete p.weeks[k];
+  bump(p);
+  save(p);
+}
+
+export function addScore(s: Score) {
+  const p = load();
+  p.scores.push(s);
+  bump(p);
+  save(p);
+}
+
+/** Removes the i-th score of a certification (in the order they were added). */
+export function removeScore(cert: string, i: number) {
+  const p = load();
+  let n = -1;
+  p.scores = p.scores.filter((s) => !(s.cert === cert && ++n === i));
+  save(p);
+}
+
 /** Consecutive days of activity, counting from today or yesterday. */
 export function streak(p = load()) {
   // Step back one calendar day at a time (not 24 h) to stay correct across DST changes.
@@ -249,7 +288,7 @@ export function summary(p: Progress) {
   };
 }
 
-export const isEmpty = (p: Progress) => { const s = summary(p); return !s.cards && !s.read && !s.days; };
+export const isEmpty = (p: Progress) => { const s = summary(p); return !s.cards && !s.read && !s.days && !Object.keys(p.weeks).length && !p.scores.length; };
 
 /** Date of the last export (ms), or null if never exported from this browser. */
 export function lastExport(): number | null {
