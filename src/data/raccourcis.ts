@@ -77,6 +77,10 @@ export const tools: Tool[] = [
         ['⌃Z', 'Suspendre (fg pour reprendre, bg en arrière-plan)'], ['⌃L', 'Effacer l’écran', true],
         ['⌃S ⌃Q', 'Geler, dégeler l’affichage (si l’écran ne répond plus : ⌃Q)'],
       ] },
+      { title: 'Serveur distant, sans rien installer', cmd: true, items: [
+        ['view fichier', 'Lire un fichier dans vim en lecture seule, avec la coloration (:q pour quitter)', true],
+        ["… | grep -Ei --color=always 'error|fail|warn|$'", 'Mettre en rouge erreurs et alertes en gardant toutes les lignes (ex. journalctl -n 100 | …)', true],
+      ] },
       { title: 'Terminal.app / iTerm2', items: [
         ['⌘T', 'Nouvel onglet'], ['⌘W', 'Fermer l’onglet'], ['⌘⇧[ ⌘⇧]', 'Onglet précédent, suivant'],
         ['⌘K', 'Vider l’écran et l’historique visible'], ['⌘D', 'iTerm2 : couper verticalement'],
