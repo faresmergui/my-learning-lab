@@ -152,6 +152,7 @@ export async function getPaletteEntries() {
     { label: 'Tableau de bord', url: url('/progression/'), kind: 'page' },
     { label: 'Réviser mes cartes', url: url('/reviser/'), kind: 'action' },
     { label: 'Lancer un quiz', url: url('/quiz/'), kind: 'action' },
+    { label: 'Raccourcis (Vim, terminal, tmux, Git, kubectl…)', url: url('/raccourcis/'), kind: 'page' },
     ...mods.map((m) => ({ label: m.data.title, url: url(`/${m.id}/`), kind: 'module' })),
     ...fiches.map((f) => ({ label: f.data.title, url: ficheUrl(f), kind: byId[moduleOf(f)]?.data.title ?? 'fiche' })),
   ];

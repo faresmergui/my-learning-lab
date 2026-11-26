@@ -1,0 +1,134 @@
+---
+// Shortcuts cheat sheet: every tool on one page, filterable by tool and by text.
+// The data lives in src/data/raccourcis.ts (one line per shortcut).
+import { url } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import { tools } from '../data/raccourcis';
+
+const keys = (k: string) => k.split(' ').filter(Boolean);
+const count = tools.reduce((n, t) => n + t.sections.reduce((m, s) => m + s.items.length, 0), 0);
+---
+<Base title="Raccourcis" nav="raccourcis" description="Tous les raccourcis à retenir sur une page : Vim, terminal, tmux, Git, kubectl, macOS, Zen, VS Code, Obsidian, DaVinci Resolve.">
+  <div class="crumbs rise">raccourcis</div>
+  <h1 class="rise">Raccourcis</h1>
+  <p class="lead rise" style="--i:1">{count} raccourcis, {tools.length} outils, une seule page. <kbd>/</kbd> pour chercher, ★ pour ne garder que l’essentiel.</p>
+
+  <div class="sc-bar rise" style="--i:2">
+    <input id="sc-q" type="search" placeholder="Chercher : coller, onglet, rollout, ⌃R…" autocomplete="off" aria-label="Chercher un raccourci" />
+    <button type="button" class="tag sc-star" id="sc-star" aria-pressed="false">★ essentiels</button>
+  </div>
+  <div class="filters sc-filters rise" style="--i:2">
+    <a class="tag on" href={url('/raccourcis/')} data-tool="">tout</a>
+    {tools.map((t) => <a class="tag" href={url(`/raccourcis/?outil=${t.id}`)} data-tool={t.id} style={`--c:${t.color}`}>{t.title.toLowerCase()}</a>)}
+  </div>
+  <p class="muted sc-empty" id="sc-empty" hidden>Aucun raccourci ne correspond.</p>
+
+  <div class="sc-grid rise" style="--i:3">
+    {tools.map((t) => (
+      <section class="card sc-tool" id={t.id} data-tool={t.id} style={`--c:${t.color}`}>
+        <h2><i></i>{t.title}</h2>
+        {t.note && <p class="sc-note">{t.note}</p>}
+        {t.sections.map((s) => (
+          <div class="sc-sec">
+            <h3>{s.title}</h3>
+            <ul>
+              {s.items.map(([k, d, star]) => (
+                <li class={star ? 'star' : ''} data-text={`${k} ${d} ${s.title} ${t.title}`}>
+                  <span class="sc-keys">
+                    {s.cmd
+                      ? <code>{k}</code>
+                      : keys(k).map((p) => (p === '/' ? <span class="sc-or">ou</span> : <kbd>{p}</kbd>))}
+                  </span>
+                  <span class="sc-desc">{d}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style is:global>
+  .sc-bar { display: flex; gap: 10px; align-items: center; margin-top: 22px; flex-wrap: wrap; }
+  .sc-bar input { flex: 1; min-width: 200px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font: inherit; }
+  .sc-bar input:focus { outline: none; border-color: var(--accent); }
+  .sc-star { cursor: pointer; padding: 6px 12px; font-size: 12px; }
+  .sc-star[aria-pressed="true"] { border-color: var(--warn); color: var(--warn); }
+  .sc-filters { justify-content: flex-start; }
+  .sc-filters a.on { border-color: var(--c, var(--accent)); }
+  .sc-empty { margin-top: 24px; }
+  .sc-grid { columns: 3 340px; column-gap: 16px; margin-top: 18px; }
+  .sc-tool { break-inside: avoid; margin-bottom: 16px; padding: 16px 18px; display: block; }
+  .sc-tool h2 { display: flex; align-items: center; gap: 8px; font-size: 17px; margin-bottom: 6px; }
+  .sc-tool h2 i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+  .sc-note { color: var(--muted); font-size: 12.5px; margin-bottom: 6px; }
+  .sc-sec h3 { font: 500 11px var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--c); margin: 12px 0 4px; }
+  .sc-sec ul { list-style: none; padding: 0; }
+  .sc-sec li { display: grid; grid-template-columns: minmax(96px, auto) 1fr; gap: 10px; align-items: baseline; padding: 3px 0; border-top: 1px dashed color-mix(in srgb, var(--line) 70%, transparent); font-size: 13.5px; }
+  .sc-sec li:first-child { border-top: 0; }
+  .sc-sec li.star .sc-desc::after { content: " ★"; color: var(--warn); font-size: 11px; }
+  .sc-keys { display: flex; flex-wrap: wrap; gap: 3px; align-items: baseline; }
+  .sc-keys kbd { font-size: 12px; color: var(--text); background: var(--surface-2); white-space: nowrap; }
+  .sc-keys code { font-size: 12px; color: var(--text); overflow-wrap: anywhere; }
+  .sc-or { font-size: 11px; color: var(--muted); }
+  .sc-desc { color: var(--muted); }
+  .sc-sec li:hover .sc-desc { color: var(--text); }
+  .sc-grid [hidden] { display: none !important; }
+  @media (max-width: 600px) { .sc-sec li { grid-template-columns: minmax(64px, 40%) 1fr; gap: 8px; } .sc-tool { padding: 14px; } }
+</style>
+
+<script>
+  const norm = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+  const q = document.getElementById('sc-q') as HTMLInputElement;
+  const starBtn = document.getElementById('sc-star')!;
+  const empty = document.getElementById('sc-empty')!;
+  const tabs = [...document.querySelectorAll<HTMLAnchorElement>('.sc-filters [data-tool]')];
+  const cards = [...document.querySelectorAll<HTMLElement>('.sc-tool')];
+  const rows = cards.map((c) => ({ c, items: [...c.querySelectorAll<HTMLElement>('li')].map((li) => ({ li, n: norm(li.dataset.text!) })) }));
+
+  let tool = new URLSearchParams(location.search).get('outil') ?? '';
+  let starOnly = false;
+  try { starOnly = localStorage.getItem('raccourcis:star') === '1'; } catch { /* storage blocked */ }
+
+  function apply() {
+    const words = norm(q.value).split(/\s+/).filter(Boolean);
+    let shown = 0;
+    for (const { c, items } of rows) {
+      let any = false;
+      if (!tool || c.dataset.tool === tool) {
+        for (const { li, n } of items) {
+          const ok = (!starOnly || li.classList.contains('star')) && words.every((w) => n.includes(w));
+          li.hidden = !ok;
+          any ||= ok;
+        }
+      }
+      c.hidden = !any;
+      for (const sec of c.querySelectorAll<HTMLElement>('.sc-sec')) sec.hidden = !sec.querySelector('li:not([hidden])');
+      if (any) shown++;
+    }
+    empty.hidden = shown > 0;
+    tabs.forEach((a) => a.classList.toggle('on', (a.dataset.tool ?? '') === tool));
+    starBtn.setAttribute('aria-pressed', String(starOnly));
+  }
+
+  tabs.forEach((a) => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    tool = a.dataset.tool ?? '';
+    history.replaceState(null, '', a.href);
+    apply();
+  }));
+  starBtn.addEventListener('click', () => {
+    starOnly = !starOnly;
+    try { localStorage.setItem('raccourcis:star', starOnly ? '1' : '0'); } catch { /* storage blocked */ }
+    apply();
+  });
+  q.addEventListener('input', apply);
+  document.addEventListener('keydown', (e) => {
+    const t = e.target as HTMLElement;
+    if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(t.tagName)) { e.preventDefault(); q.focus(); }
+    if (e.key === 'Escape' && t === q) { q.value = ''; apply(); q.blur(); }
+  });
+  apply();
+</script>
